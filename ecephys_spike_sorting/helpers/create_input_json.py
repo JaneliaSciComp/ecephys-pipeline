@@ -175,7 +175,7 @@ def createInputJson(output_file,
 
             "kilosort_helper_params": {
 
-                "matlab_home_directory": "/usr/local/MATLAB",
+                "matlab_home_directory": kilosort_output_tmp,
                 "kilosort_repository": kilosort_repository,
                 "npy_matlab_repository": npy_matlab_repository,
                 "master_file_path": master_file_path,
