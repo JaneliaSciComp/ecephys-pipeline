@@ -185,8 +185,7 @@ def createInputJson(output_file,
                 "ks_make_copy": ks_make_copy,
                 "surface_channel_buffer": 15,
 
-                "kilosort2_params":
-                {
+                "kilosort2_params": {
                     "fproc": fproc_str,
                     "chanMap": "'chanMap.mat'",
                     "fshigh": 150,
@@ -204,6 +203,106 @@ def createInputJson(output_file,
                     "whiteningRange": whiteningRange,
                     "nNeighbors": nNeighbors
                 }
+            },
+
+            "ks_postprocessing_params" : {
+                "within_unit_overlap_window" : 0.000333,
+                "between_unit_overlap_window" : 0.000333,
+                "between_unit_dist_um" : 42,
+                "deletion_mode" : 'lowAmpCluster'
+            },
+
+            "waveform_metrics" : {
+                "waveform_metrics_file" : os.path.join(kilosort_output_directory, 'waveform_metrics.csv')
+            },
+
+            "cluster_metrics" : {
+                "cluster_metrics_file" : os.path.join(kilosort_output_directory, 'metrics.csv')
+            },
+
+            "extract_from_npx_params" : {
+                "npx_directory": npx_directory,
+                "settings_xml": settings_xml,
+                "npx_extractor_executable": r"C:\Users\svc_neuropix\Documents\GitHub\npxextractor\Release\NpxExtractor.exe",
+                "npx_extractor_repo": r"C:\Users\svc_neuropix\Documents\GitHub\npxextractor"
+            },
+
+            "depth_estimation_params" : {
+                "hi_noise_thresh" : 50.0,
+                "lo_noise_thresh" : 3.0,
+                "save_figure" : 1,
+                "figure_location" : os.path.join(extracted_data_directory, 'probe_depth.png'),
+                "smoothing_amount" : 5,
+                "power_thresh" : 2.5,
+                "diff_thresh" : -0.06,
+                "freq_range" : [0, 10],
+                "max_freq" : 150,
+                "channel_range" : [374, 384],
+                "n_passes" : 10,
+                "air_gap" : 25,
+                "time_interval" : 5,
+                "skip_s_per_pass" : 10,
+                "start_time" : 10
+            }, 
+
+            "median_subtraction_params" : {
+                "median_subtraction_executable": "C:\\Users\\svc_neuropix\\Documents\\GitHub\\spikebandmediansubtraction\\Builds\\VisualStudio2013\\Release\\SpikeBandMedianSubtraction.exe",
+                "median_subtraction_repo": "C:\\Users\\svc_neuropix\\Documents\\GitHub\\spikebandmediansubtraction\\",
+            },
+
+            "mean_waveform_params" : {
+                "mean_waveforms_file" : os.path.join(kilosort_output_directory, 'mean_waveforms.npy'),
+                "samples_per_spike" : 82,
+                "pre_samples" : 20,
+                "num_epochs" : 1,           #epochs not implemented for c_waves
+                "spikes_per_epoch" : 1000,
+                "spread_threshold" : 0.12,
+                "site_range" : 16,    
+                "cWaves_path" : cWaves_path,
+                "use_C_Waves" : True,
+                "snr_radius" : 8
+            },
+
+            "noise_waveform_params" : {
+                "classifier_path" : os.path.join(modules_directory, 'noise_templates', 'rf_classifier.pkl'),
+                "multiprocessing_worker_count" : 10,
+                "use_random_forest" : noise_template_use_rf
+            },
+
+            "quality_metrics_params" : {
+                "isi_threshold" : 0.0015,
+                "min_isi" : 0.000166,
+                "num_channels_to_compare" : 13,
+                "max_spikes_for_unit" : 500,
+                "max_spikes_for_nn" : 10000,
+                "n_neighbors" : 4,
+                'n_silhouette' : 10000,
+                "drift_metrics_interval_s" : 51,
+                "drift_metrics_min_spikes_per_interval" : 10
+            },
+
+            "catGT_helper_params" : {
+                "run_name" : catGT_run_name,
+                "gate_string" : gate_string,
+                "probe_string" : probe_string,
+                "trigger_string": trigger_string,
+                "stream_string" : catGT_stream_string,
+                "cmdStr" : catGT_cmd_string,
+                "catGTPath" : catGTPath,
+                "gfix_edits": catGT_gfix_edits
+            },
+
+            "tPrime_helper_params" : {
+                "tPrime_path" : tPrime_path,
+                "sync_period" : sync_period,
+                "toStream_sync_params" : toStream_sync_params,
+                "ni_sync_params" : niStream_sync_params,
+                "toStream_path_3A" : toStream_path_3A,
+                "fromStream_list_3A" : fromStream_list_3A
+            },  
+
+            "psth_events": {
+                "event_ex_param_str": event_ex_param_str
             }
         }
 

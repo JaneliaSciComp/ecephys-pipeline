@@ -41,8 +41,8 @@ RUN cd /app/kilosort2/CUDA && \
 WORKDIR /app/npy-matlab
 RUN git clone https://github.com/kwikteam/npy-matlab.git .
 
-ADD ecephys_spike_sorting /app/ecephys_spike_sorting
+WORKDIR /app/ecephys_spike_sorting
+COPY ecephys_spike_sorting ecephys_spike_sorting
+COPY matlab matlab
 
 ENV PYTHONPATH=/app/ecephys_spike_sorting:${PYTHONPATH}
-
-WORKDIR /app/ecephys_spike_sorting
