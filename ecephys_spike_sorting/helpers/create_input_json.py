@@ -47,7 +47,7 @@ def createInputJson(output_file,
     cWaves_path = r'/app/C_Waves'
 
     master_file_path = r'/app/ecephys_spike_sorting/matlab'
-    master_file_name = 'main_KS2_datashift.m'
+    master_file_name = r'main_KS2_datashift.m'
 
     # for config files and kilosort working space
     kilosort_output_tmp = r'/tmp/kilosort_datatemp'

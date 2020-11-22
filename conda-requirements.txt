@@ -1,0 +1,15 @@
+coverage
+sphinx
+pytest
+ruamel.yaml
+matplotlib
+scipy
+numpy
+pandas
+GitPython
+pillow
+xarray
+scikit-learn
+h5py
+urllib3
+requests
