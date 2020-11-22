@@ -2,8 +2,6 @@ FROM  matlab-centos8:2020b
 
 USER root
 
-RUN dnf config-manager -y --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
-
 RUN dnf install -y \
         git \
         wget
