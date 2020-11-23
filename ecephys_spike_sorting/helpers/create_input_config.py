@@ -13,6 +13,7 @@ def main(argv):
     parser.add_argument('output_path', help='Output path path')
     parser.add_argument('--ks_output_path', help='Kilosort output path')
     parser.add_argument('--csb_seed', type=int, default=1, help='Run seed')
+    parser.add_argument('--ks_working_dir', 'Kilosort working directory')
     parser.add_argument('--ks_copy_results', action='store_true',
                         help='Make a copy of the kilosort results for postprocessing')
 

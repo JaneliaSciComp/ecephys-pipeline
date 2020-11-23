@@ -22,6 +22,7 @@ final_params = get_params(params + default_params())
 inputDir = file(final_params.input_path)
 outputDir = file(final_params.output_path)
 configDir = file(final_params.config_path)
+ksWorkingDir = file(final_params.ks_working_dir)
 
 if( !outputDir.exists() ) {
     outputDir.mkdirs()
@@ -56,6 +57,7 @@ process kilosortConfig {
         ${kilosortInputConfig} \
         ${kilosortOutputDir} \
         --csb_seed ${final_params.csb_seed} \
+        --ks_copy_results ${ksWorkingDir} \
         --ks_copy_results
     """
 }
@@ -87,6 +89,7 @@ process kilosort {
     outputConfigFile = config_file(configDir, probeName, 'kilosort', 'output')
     """
     umask 000
+    mkdir -p ${ksWorkingDir}
     python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
         --input_json ${inputConfigFile} \

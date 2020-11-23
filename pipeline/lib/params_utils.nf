@@ -6,6 +6,7 @@ def default_params() {
     params.crepo = 'registry.int.janelia.org/janeliascicomp/'
     params.ecephys_version = '1.0'
     params.csb_seed = 101
+    params.ks_working_dir = '/tmp/kilosort_datatemp'
 
     return params
 }
@@ -19,6 +20,7 @@ def get_params(Map params) {
     final_params.containersRepo = params.crepo == '' || params.crepo.endsWith('/') ? params.crepo : "${params.crepo}/"
     final_params.ecephys_version = params.ecephys_version == '' ? '' : ":${params.ecephys_version}"
     final_params.csb_seed = params.csb_seed
+    final_params.ks_working_dir = params.ks_working_dir
 
     return final_params
 }

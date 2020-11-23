@@ -35,22 +35,23 @@ def createInputJson(output_file,
                     whiteningRange=32,
                     CSBseed=1,
                     LTseed=1,
-                    nNeighbors=32
+                    nNeighbors=32,
+                    ks_working_dir='/tmp/kilosort_datatemp'
                     ):
 
     # hard coded paths to code on your computer and system
-    ecephys_directory = r'/app/ecephys_spike_sorting/ecephys_spike_sorting'
-    kilosort_repository = r'/app/kilosort2'
-    npy_matlab_repository = r'/app/npy-matlab'
-    catGTPath = r'/app/CatGT'
-    tPrime_path = r'/app/TPrime'
-    cWaves_path = r'/app/C_Waves'
+    ecephys_directory = '/app/ecephys_spike_sorting/ecephys_spike_sorting'
+    kilosort_repository = '/app/kilosort2'
+    npy_matlab_repository = '/app/npy-matlab'
+    catGTPath = '/app/CatGT'
+    tPrime_path = '/app/TPrime'
+    cWaves_path = '/app/C_Waves'
 
-    master_file_path = r'/app/ecephys_spike_sorting/matlab'
-    master_file_name = r'main_KS2_datashift.m'
+    master_file_path = '/app/ecephys_spike_sorting/matlab'
+    master_file_name = 'main_KS2_datashift.m'
 
     # for config files and kilosort working space
-    kilosort_output_tmp = r'/tmp/kilosort_datatemp'
+    kilosort_output_tmp = ks_working_dir
 
     # derived directory names
 
