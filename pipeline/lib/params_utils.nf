@@ -3,7 +3,8 @@ def default_params() {
 
     params.out = ''
     params.config = ''
-    params.crepo = ''
+    params.crepo = 'registry.int.janelia.org/janeliascicomp/'
+    params.ecephys_version = '1.0'
     params.csb_seed = 101
 
     return params
@@ -16,6 +17,7 @@ def get_params(Map params) {
     final_params.output_path = params.out != '' ? params.out : params.in
     final_params.config_path = params.config != '' ? params.config : final_params.output_path
     final_params.containersRepo = params.crepo == '' || params.crepo.endsWith('/') ? params.crepo : "${params.crepo}/"
+    final_params.ecephys_version = params.ecephys_version == '' ? '' : ":${params.ecephys_version}"
     final_params.csb_seed = params.csb_seed
 
     return final_params

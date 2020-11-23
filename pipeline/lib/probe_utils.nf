@@ -18,12 +18,21 @@ def probe_name(probe) {
         probe
 }
 
-def input_config(configDir, probeName) {
-    file("${configDir}/${probeName}-input.json")
+def config_file(configDir, probeName, step, type) {
+    file("${configDir}/${probeName}-${step}-${type}.json")
 }
 
-def output_config(configDir, probeName) {
-    file("${configDir}/${probeName}-output.json")
+def filter_config(config, fields) {
+    return config.subMap(fields)
 }
 
-def 
+def read_config(cf) {
+    jsonSlurper = new groovy.json.JsonSlurper()
+    return jsonSlurper.parse(cf)
+}
+
+def write_config(data, cf) {
+    json_str = groovy.json.JsonOutput.toJson(data)
+    json_beauty = groovy.json.JsonOutput.prettyPrint(json_str)
+    cf.write(json_beauty)
+}

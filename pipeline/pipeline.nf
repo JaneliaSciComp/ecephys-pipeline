@@ -11,8 +11,10 @@ include { default_params; get_params } from './lib/params_utils.nf'
 include { 
     probe_str; 
     probe_name;
-    input_config;
-    output_config 
+    config_file;
+    filter_config;
+    read_config;
+    write_config 
 } from './lib/probe_utils.nf'
 
 final_params = get_params(params + default_params())
@@ -28,8 +30,12 @@ if( !configDir.exists() ) {
     configDir.mkdirs()
 }
 
+def global_config(configDir, probeName) {
+    return config_file(configDir, probeName, 'all', 'config')
+}
+
 process kilosortConfig {
-    container = "${final_params.containersRepo}ecephys:1.0"
+    container = "${final_params.containersRepo}ecephys${final_params.ecephys_version}"
 
     input:
     tuple val(probe), val(probeFile)
@@ -39,7 +45,7 @@ process kilosortConfig {
 
     script:
     probeName = probe_name(probe)
-    kilosortInputConfig = input_config(configDir, probeName)
+    kilosortInputConfig = global_config(configDir, probeName)
     probeStr = probe_str(probe)
     kilosortOutputDir = file("${outputDir}/${probeName}/imec${probeStr}_ks2")
     """
@@ -55,7 +61,7 @@ process kilosortConfig {
 }
 
 process kilosort {
-    container = "${final_params.containersRepo}ecephys:1.0"
+    container = "${final_params.containersRepo}ecephys${final_params.ecephys_version}"
 
     label 'requireGPU'
 
@@ -67,14 +73,23 @@ process kilosort {
 
     script:
     probeName = probe_name(probe)
-    kilosortInputConfig = input_config(configDir, probeName)
-    kilosortOutputConfig = output_config(configDir, probeName)
+    configFile = global_config(configDir, probeName)
+    config = read_config(configFile)
+    kilosortConfig = filter_config(config, [
+        'kilosort_helper_params',
+        'directories',
+        'ephys_params',
+        'common_files'
+    ])
+
+    inputConfigFile = write_config(kilosortConfig, config_file(configDir, probeName, 'kilosort', 'input'))
+    outputConfigFile = config_file(configDir, probeName, 'kilosort', 'output')
     """
     umask 000
     python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
-        --input_json ${kilosortInputConfig} \
-        --output_json ${kilosortOutputConfig}
+        --input_json ${inputConfigFile} \
+        --output_json ${outputConfigFile}
     """
 }
 
@@ -89,14 +104,22 @@ process kilosortPostProcessing {
 
     script:
     probeName = probe_name(probe)
-    kilosortInputConfig = input_config(configDir, probeName)
-    kilosortOutputConfig = output_config(configDir, probeName)
+    configFile = global_config(configDir, probeName)
+    config = read_config(configFile)
+    kilosortPostProcessingConfig = filter_config(config, [
+        'ks_postprocessing_params',
+        'directories',
+        'ephys_params'
+    ])
+
+    inputConfigFile = write_config(kilosortConfig, config_file(configDir, probeName, 'kilosort_postprocessing', 'input'))
+    outputConfigFile = config_file(configDir, probeName, 'kilosort_postprocessing', 'output')
     """
     umask 000
     python \
         -m ecephys_spike_sorting.modules.kilosort_postprocessing \
-        --input_json ${kilosortInputConfig} \
-        --output_json ${kilosortOutputConfig}
+        --input_json ${inputConfigFile} \
+        --output_json ${outputConfigFile}
     """
 }
 
