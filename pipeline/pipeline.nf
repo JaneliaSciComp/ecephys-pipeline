@@ -57,7 +57,7 @@ process kilosortConfig {
         ${kilosortInputConfig} \
         ${kilosortOutputDir} \
         --csb_seed ${final_params.csb_seed} \
-        --ks_copy_results ${ksWorkingDir} \
+        --ks_working_dir ${ksWorkingDir} \
         --ks_copy_results
     """
 }
