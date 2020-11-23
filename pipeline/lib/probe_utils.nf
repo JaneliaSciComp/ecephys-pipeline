@@ -19,7 +19,7 @@ def probe_name(probe) {
 }
 
 def config_file(configDir, probeName, step, type) {
-    file("${configDir}/${probeName}-${step}-${type}.json")
+    return file("${configDir}/${probeName}-${step}-${type}.json")
 }
 
 def filter_config(config, fields) {

@@ -82,7 +82,8 @@ process kilosort {
         'common_files'
     ])
 
-    inputConfigFile = write_config(kilosortConfig, config_file(configDir, probeName, 'kilosort', 'input'))
+    inputConfigFile = config_file(configDir, probeName, 'kilosort', 'input')
+    write_config(kilosortConfig, inputConfigFile)
     outputConfigFile = config_file(configDir, probeName, 'kilosort', 'output')
     """
     umask 000
@@ -112,7 +113,8 @@ process kilosortPostProcessing {
         'ephys_params'
     ])
 
-    inputConfigFile = write_config(kilosortConfig, config_file(configDir, probeName, 'kilosort_postprocessing', 'input'))
+    inputConfigFile = config_file(configDir, probeName, 'kilosort_postprocessing', 'input')
+    write_config(kilosortPostProcessingConfig, inputConfigFile)
     outputConfigFile = config_file(configDir, probeName, 'kilosort_postprocessing', 'output')
     """
     umask 000
