@@ -81,7 +81,7 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
 
     print('Removing within-unit overlapping spikes...')
 
-    spikes_to_remove = np.zeros((0,), dtype=int)
+    spikes_to_remove = np.zeros((0,), dtype='int')
 
     for idx1, unit_id1 in enumerate(sorted_unit_list):
 
@@ -106,7 +106,7 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
 
     print('Removing between-unit overlapping spikes...')
 
-    spikes_to_remove = np.zeros((0,), dtype=int)
+    spikes_to_remove = np.zeros((0,), dtype='int')
 
     for idx1, unit_id1 in enumerate(sorted_unit_list):
 
