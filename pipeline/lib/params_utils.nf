@@ -7,6 +7,7 @@ def default_params() {
     params.ecephys_version = '1.0'
     params.csb_seed = 101
     params.ks_working_dir = '/tmp/kilosort_datatemp'
+    params.runtime_opts = ''
 
     return params
 }

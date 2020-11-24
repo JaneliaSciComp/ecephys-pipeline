@@ -54,6 +54,7 @@ if one exists, using the '--nv' flag.
 pipeline/pipeline.nf \
     -config pipeline/nextflow.config \
     -profile localdocker \
+    --runtime_opts "-u $(id -u):$(id -g) --runtime=nvidia" \
     --in /path/to/probes --config /path/to/configs --out /path/to/outputs
 ```
 
