@@ -1,4 +1,4 @@
-FROM  matlab-centos8:2020b
+FROM registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b
 
 USER root
 

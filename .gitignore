@@ -82,3 +82,7 @@ target/
 
 # macOS
 .DS_Store
+
+# Backup or workfiles files
+*~
+*.swp
