@@ -125,9 +125,7 @@ def run_kilosort(args):
     # make a copy of the channel map to the data directory
     # see above: destFullPath specifiee destination for chanMap.mat
     shutil.copy(destFullPath,
-                os.path.join(output_dir,
-                             os.path.basename(
-                                 args['ephys_params']['ap_band_file']),
+                os.path.join(os.path.dirname(output_dir),
                              'chanMap.mat'))
 
     if args['kilosort_helper_params']['ks_make_copy']:
