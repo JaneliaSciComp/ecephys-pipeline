@@ -72,6 +72,7 @@ pipeline/pipeline.nf \
     -config pipeline/nextflowl.config \
     -profile lsf \
     -with-tower 'http://nextflow.int.janelia.org/api' \
+    --cluster_opts "-P scicompsoft -q test" \
     --in /path/to/probes --config /path/to/step-configs --out /path/to/outputs
 ```
 This also uses the internal Janelia instance of Nextflow Tower.
