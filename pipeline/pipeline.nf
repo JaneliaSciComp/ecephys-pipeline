@@ -89,7 +89,7 @@ process kilosort {
     outputConfigFile = config_file(configDir, probeName, 'kilosort', 'output')
     """
     umask 000
-    mkdir -p ${ksWorkingDir}
+    mkdir -p ${ksWorkingDir}/${probeName}
     python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
         --input_json ${inputConfigFile} \
