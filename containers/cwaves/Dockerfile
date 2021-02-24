@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0 as builder
+FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.0 as builder
 
 WORKDIR /tmp
 

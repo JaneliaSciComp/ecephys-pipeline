@@ -5,39 +5,6 @@ include {
     write_config;
 } from '../lib/probe_utils'
 
-process kilosort_config {
-    container = params.kilosort_container
-    cpus { params.ks_config_cpus }
-
-    input:
-    tuple val(probe),
-          val(probe_file),
-          val(config_dir),
-          val(csb_seed),
-          val(ks_working_dir),
-          val(output_dir)
-
-    output:
-    tuple val(probe), val(probe_file)
-
-    script:
-    def pname = probe_name(probe)
-    def kilosort_input_config = global_config(config_dir, pname)
-    def pstr = probe_str(probe)
-    def kilosort_output_dir = "${output_dir}/${pname}/imec${pstr}_ks2"
-    """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.helpers.create_input_config \
-        ${probe_file} \
-        ${kilosort_input_config} \
-        ${kilosort_output_dir} \
-        --csb_seed ${csb_seed} \
-        --ks_working_path ${ks_working_dir}/${pname} \
-        --ks_copy_results
-    """
-}
-
 process kilosort {
     container = params.kilosort_container
     cpus { params.ks_cpus }
@@ -81,7 +48,7 @@ process kilosort {
 }
 
 process kilosort_post_processing {
-    container = params.kilosort_container
+    container = params.ecephys_modules_container
     cpus { params.ks_post_cpus }
 
     input:
