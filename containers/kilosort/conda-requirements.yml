@@ -1,0 +1,29 @@
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+
+dependencies:
+  - pip
+  - coverage
+  - sphinx
+  - pytest
+  - ruamel.yaml
+  - matplotlib
+  - scipy
+  - numpy
+  - pandas
+  - GitPython
+  - pillow
+  - xarray
+  - scikit-learn
+  - h5py
+  - urllib3
+  - requests
+  - pip:
+    - tox
+    - sphinx-gallery
+    - argschema
+    - xmljson
+    - bumpversion
+    - cookiecutter

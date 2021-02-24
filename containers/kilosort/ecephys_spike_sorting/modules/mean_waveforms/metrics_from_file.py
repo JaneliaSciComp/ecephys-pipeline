@@ -20,6 +20,9 @@ def metrics_from_file(mean_waveform_fullpath,
                       bit_volts, 
                       sample_rate, 
                       site_spacing, 
+                      w_inv,
+                      site_x,
+                      site_y,
                       params):
                      
     
@@ -36,7 +39,9 @@ def metrics_from_file(mean_waveform_fullpath,
     clusterIDs : all unique cluster ids
     cluster_quality : 'noise' or 'good'
     sample_rate : Hz
-    site_spacing : m
+    site_spacing : um (now unused)
+    w_inv : inverse of the whitening matrix used in KS2
+    site_x, site_y: x and y coordinates of all channels, in um
 
     Outputs:
     -------
@@ -81,9 +86,20 @@ def metrics_from_file(mean_waveform_fullpath,
     mean_waveforms = np.load(mean_waveform_fullpath)
     snr_array = np.load(snr_fullpath)
 
-
-    peak_channels = np.squeeze(channel_map[np.argmax(np.max(templates,1) - np.min(templates,1),1)])
+    channel_map = np.squeeze(channel_map)
     
+    nTemplate = templates.shape[0]
+    
+    # initialize peak_channels array
+    peak_channels = np.zeros([nTemplate,],'uint32')
+    # for each template (nt x nchan), multiply the the transpose (nchan x nt) by inverse of 
+    # the whitening matrix (nchan x nchan); get max and min along tthe time axis (1)
+    # to find the peak channel
+    for i in np.arange(0,nTemplate):
+        currT = templates[i,:].T
+        curr_unwh = np.matmul(w_inv, currT)
+        currdiff = np.max(curr_unwh,1) - np.min(curr_unwh,1)
+        peak_channels[i] = channel_map[np.argmax(currdiff)]
     
     for cluster_idx, cluster_id in enumerate(cluster_ids):
 
@@ -102,7 +118,7 @@ def metrics_from_file(mean_waveform_fullpath,
                                                                      upsampling_factor,
                                                                      spread_threshold,
                                                                      site_range,
-                                                                     site_spacing,                                                                     
+                                                                     site_x, site_y                                                                    
                                                                      )])
 
 

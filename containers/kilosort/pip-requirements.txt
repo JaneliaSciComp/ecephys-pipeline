@@ -1,6 +1,0 @@
-tox
-sphinx-gallery
-argschema
-xmljson
-bumpversion
-cookiecutter

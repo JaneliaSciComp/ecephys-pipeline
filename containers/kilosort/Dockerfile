@@ -9,21 +9,21 @@ RUN dnf install -y \
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 
-WORKDIR /tmp
+WORKDIR /tmp-install
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     -O miniconda-install.sh
-RUN bash miniconda-install.sh -b -p /miniconda
+RUN bash miniconda-install.sh -b -p /miniconda && \
+    rm miniconda-install.sh
 
-RUN rm miniconda-install.sh
-ADD conda-requirements.txt /tmp
-ADD pip-requirements.txt /tmp
+ADD conda-requirements.yml /tmp-install
 ENV PATH=/miniconda/bin:${PATH}
 
-RUN conda config --set always_yes yes
-RUN conda update -q conda && \
-    conda install python=3.8 && \
-    conda install --file conda-requirements.txt && \
-    pip install -r pip-requirements.txt
+RUN conda config --set always_yes yes && \
+    conda update -q conda && \
+    conda install python=3.8
+
+RUN conda env update -n base -f conda-requirements.yml && \
+    rm -f conda-requirements.yml
 
 WORKDIR /usr/local/MATLAB/extern/engines/python
 RUN python setup.py install
