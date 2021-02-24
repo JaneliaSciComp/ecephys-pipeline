@@ -10,19 +10,20 @@ import numpy as np
 
 from ...common.utils import read_probe_json, get_repo_commit_date_and_hash, rms
 
+
 def run_CatGT(args):
 
     print('ecephys spike sorting: CatGT helper module')
 
     catGTPath = args['catGT_helper_params']['catGTPath']
-    if (sys.platform.startswith,'win'):
+    if (sys.platform.startswith, 'win'):
         # build windows command line
         catGTexe_fullpath = catGTPath.replace('\\', '/') + "/runit.bat"
     elif (sys.platform.startwith, 'linux'):
         catGTexe_fullpath = catGTPath.replace('\\', '/') + "/runit.sh"
     else:
         print('unknown system, cannot run CatGt')
-   
+
     # common average referencing
     car_mode = args['catGT_helper_params']['car_mode']
     if car_mode == 'loccar':
@@ -33,11 +34,9 @@ def run_CatGT(args):
         car_str = ' -gbldmx'
     elif car_mode == 'None' or car_mode == 'none':
         car_str = ''
-        
 
-    
     cmd_parts = list()
-    
+
     cmd_parts.append(catGTexe_fullpath)
     cmd_parts.append('-dir=' + args['directories']['npx_directory'])
     cmd_parts.append('-run=' + args['catGT_helper_params']['run_name'])
@@ -47,28 +46,30 @@ def run_CatGT(args):
     cmd_parts.append(args['catGT_helper_params']['stream_string'])
     cmd_parts.append(car_str)
     cmd_parts.append(args['catGT_helper_params']['cmdStr'])
-    cmd_parts.append('-dest=' + args['directories']['extracted_data_directory'])
-    
+    cmd_parts.append('-dest=' + args['directories']
+                     ['extracted_data_directory'])
+
     # print('cmd_parts')
 
     catGT_cmd = ' '        # use space as the separator for the command parts
     catGT_cmd = catGT_cmd.join(cmd_parts)
-    
+
     print('CatGT command line:' + catGT_cmd)
-    
+
     start = time.time()
     subprocess.call(catGT_cmd)
 
     execution_time = time.time() - start
-    
-    # copy CatGT log file, which will be in the directory with the calling 
+
+    # copy CatGT log file, which will be in the directory with the calling
     # python scripte, to the destination directory
     logPath = os.getcwd()
     logName = 'CatGT.log'
-   
-         
-    catgt_runName = 'catgt_' + args['catGT_helper_params']['run_name'] + '_g' + args['catGT_helper_params']['gate_string']
-    
+
+    catgt_runName = 'catgt_' + \
+        args['catGT_helper_params']['run_name'] + '_g' + \
+        args['catGT_helper_params']['gate_string']
+
     # build name for log copy
     catgt_logName = catgt_runName
     if 'ap' in args['catGT_helper_params']['stream_string']:
@@ -77,31 +78,30 @@ def run_CatGT(args):
     if 'ni' in args['catGT_helper_params']['stream_string']:
         catgt_logName = catgt_logName + '_ni'
     catgt_logName = catgt_logName + '_CatGT.log'
-    
-    
-    catgt_runDir = os.path.join(args['directories']['extracted_data_directory'],catgt_runName)
-    shutil.copyfile(os.path.join(logPath,logName), \
-                    os.path.join(catgt_runDir,catgt_logName))
-    
 
-    print('total time: ' + str(np.around(execution_time,2)) + ' seconds')
-    
-    return {"execution_time" : execution_time} # output manifest
+    catgt_runDir = os.path.join(
+        args['directories']['extracted_data_directory'], catgt_runName)
+    shutil.copyfile(os.path.join(logPath, logName),
+                    os.path.join(catgt_runDir, catgt_logName))
+
+    print('total time: ' + str(np.around(execution_time, 2)) + ' seconds')
+
+    return {"execution_time": execution_time}  # output manifest
 
 
 def ParseProbeStr(probe_string):
-    
+
     # from a probe_string in a CatGT command line
-    # create a title for the log file which inludes all the 
+    # create a title for the log file which inludes all the
     # proceessed probes
-    
+
     str_list = probe_string.split(',')
     prb_title = ''
     for substr in str_list:
         if (substr.find(':') > 0):
             # split at colon
             subsplit = substr.split(':')
-            for i in range( int(subsplit[0]), int(subsplit[1]) + 1):
+            for i in range(int(subsplit[0]), int(subsplit[1]) + 1):
                 prb_title = prb_title + '_' + str(i)
         else:
             # just append this string
@@ -117,7 +117,7 @@ def main():
     """Main entry point:"""
     mod = ArgSchemaParser(schema_type=InputParameters,
                           output_schema_type=OutputParameters)
-    
+
     output = run_CatGT(mod.args)
 
     output.update({"input_parameters": mod.args})
