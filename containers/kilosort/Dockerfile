@@ -43,6 +43,5 @@ RUN git clone https://github.com/kwikteam/npy-matlab.git .
 
 WORKDIR /app/ecephys_spike_sorting
 COPY ecephys_spike_sorting ecephys_spike_sorting
-COPY matlab matlab
 
 ENV PYTHONPATH=/app/ecephys_spike_sorting:${PYTHONPATH}
