@@ -86,3 +86,7 @@ target/
 # Backup or workfiles files
 *~
 *.swp
+*.bak
+
+local
+.nextflow*

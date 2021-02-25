@@ -1,0 +1,9 @@
+[
+    {
+       "name": "SC024_092319_NP1.0_Midbrain",
+       "gateIndex": "0",
+       "triggers": "8,end",
+       "probes": "0,1",
+       "regions": [ "cortex", "medulla"]
+    }
+]

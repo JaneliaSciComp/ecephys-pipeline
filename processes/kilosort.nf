@@ -42,7 +42,7 @@ process kilosort {
     mkdir -p ${ks_working_dir}/${pname}
     python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
-        --input_json ${kilosort_input_config_file} \
+        --input_json ${kilosort_input_file} \
         --output_json ${kilosort_output_file}
     """
 }
