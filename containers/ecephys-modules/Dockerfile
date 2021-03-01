@@ -3,7 +3,8 @@ FROM centos:8
 RUN dnf install -y \
         wget \
         unzip \
-        git
+        git \
+        libX11
 
 WORKDIR /ecephys-install
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \

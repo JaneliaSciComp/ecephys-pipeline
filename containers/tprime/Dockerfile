@@ -9,6 +9,10 @@ RUN unzip tool.zip
 
 FROM ubuntu:16.04
 
+RUN apt-get update -y && \
+    apt-get install -y \
+        libx11-dev
+
 WORKDIR /tmp-install
 
 COPY --from=builder /ecephys-install/miniconda-install.sh .
