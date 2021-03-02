@@ -3,13 +3,21 @@ include {
     get_run_folder_name;
     get_probe_folder_name;
     get_probe_data_filename;
+    global_config;
 } from '../lib/probe_utils'
 
 include {
     create_probe_config;
 } from '../processes/probe-tools' addParams(params)
 
-workflow process_runs {
+include {
+    get_key_value_or_default_key
+} from '../lib/params_utils'
+
+/**
+* Process all probes from all given runs
+*/
+workflow process_probes_for_all_runs {
     take:
     data_dir
     results_dir
@@ -19,40 +27,77 @@ workflow process_runs {
     
     main:
     def probes_inputs = prepare_probes_input(data_dir, runs)
-    def probe_config = probes_inputs 
+    def probe_config = probes_inputs
     | map { probe_input ->
-        def run_name = probe_input[0]
-        def gate = probe_input[1]
-        def probe = probe_input[2]
-        def trigger = probe_input[4]
+        def probe_index = probe_input[0]
+        def run_name = probe_input[1]
+        def gate = probe_input[2]
+        def probe = probe_input[3]
+        def region = probe_input[4]
+        def trigger = probe_input[5]
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
-        def probe_data_file = get_probe_data_filename(
+        def probe_data_name = get_probe_data_filename(
             run_name,
             gate,
             probe,
             trigger,
             '.ap.bin'
         )
-        def probe_meta_file = get_probe_data_filename(
+        def probe_meta_name = get_probe_data_filename(
             run_name,
             gate,
             probe,
             trigger,
             '.ap.meta'
         )
-        [
+        def probe_data_file = "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_data_name}"
+        def probe_meta_file = "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_meta_name}"
+        def probe_config_file = global_config("${config_dir}/${run_folder_name}/${probe_folder_name}", probe_folder_name)
+        def probe_ks_th = get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')
+        def probe_ref_per_ms = get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')
+        def probe_ks_output_dir = "${results_dir}/imec_${probe}_ks2"
+        def probe_catgt_output_dir = "${results_dir}/${run_folder_name}/${probe_folder_name}"
+        def probe_stream_params
+        def probe_sync_extract_flags = "-SY=${probe},${params.probe_sync_ch_values}"
+        def probe_catgt_extract_string
+        if (params.ni_present && probe_index == 0) {
+            // if this is the first probe proceessed, process the ni stream with it
+            probe_stream_params = "'-ap -ni'"
+            probe_catgt_extract_string = "'${probe_sync_extract_flags} ${params.ni_extract_cmd_args}'"
+        } else {
+            probe_stream_params = '-ap'
+            probe_catgt_extract_string = "'${probe_sync_extract_flags}'"
+        }
+        def probe_catgt_cmd = "'${params.catgt_cmd_args}'"
+        def im_ex_list = ''
+        def ni_ex_list = "'${params.ni_extract_cmd_args}'"
+        def to_stream_sync_params = params.to_stream_sync_cmd_args
+        def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
+        def r = [
+            probe_data_file,
+            probe_meta_file,
+            probe_config_file,
             run_name,
-            run_folder_name,
-            probe_folder_name,
-            "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_data_file}",
-            results_dir,
-            config_dir,
-            working_dir,
-            'imec',
-            'ks2',
+            gate,
+            probe,
+            probe_ks_th,
+            probe_ref_per_ms,
+            probe_ks_output_dir,
+            probe_catgt_output_dir,
+            probe_stream_params,
+            probe_catgt_cmd,
+            probe_catgt_extract_string,
+            im_ex_list,
+            ni_ex_list,
+            to_stream_sync_params,
+            ni_stream_sync_params,
         ]
-    } | create_probe_config
+        log.debug "Probe config params: $r"
+        r
+    }
+    | create_probe_config
+
     emit:
     res = probe_config
 }
@@ -75,10 +120,13 @@ def prepare_probes_input(data_dir, runs) {
         }
         [ run_spec.probe_list, run_spec.probe_region_list]
             .transpose()
+            .withIndex()
             .collect {
-                def probe = it[0]
-                def region =  it[1]
+                def probe = it[0][0]
+                def region =  it[0][1]
+                def probe_index = it[1]
                 [
+                    probe_index,
                     run_spec.name, // run name
                     run_spec.gate, // gate
                     probe, // probe

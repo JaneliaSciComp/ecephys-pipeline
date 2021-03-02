@@ -12,7 +12,7 @@ def main(argv):
 
     parser.add_argument('--probe_data', help='Probe data file')
     parser.add_argument('--probe_meta', help='Probe metadata file')
-    parser.add_argument('--output_config', help='Output config file path')
+    parser.add_argument('--output_config_file', help='Output config file path')
     parser.add_argument('--kilosort_output_dir', help='Kilosort output directory')
     parser.add_argument('--ks_ver', default='2.0', help='Kilosort version')
     parser.add_argument('--ks_copy_results', action='store_true',
@@ -20,7 +20,7 @@ def main(argv):
     parser.add_argument('--ks_remove_dups', type=int, help='Kilosort remove duplicates')
     parser.add_argument('--ks_save_rez', type=int, help='Kilosort save res')
     parser.add_argument('--ks_copy_fproc', type=int, help='Kilosort copy fproc')
-    parser.add_argument('--ks_minfr_goodchannels', type=int, help='Kilosort min frame')
+    parser.add_argument('--ks_minfr_goodchannels', type=float, help='Kilosort min frame')
     parser.add_argument('--ks_whitening_radius_um', type=int)
     parser.add_argument('--ks_th')
     parser.add_argument('--ks_csb_seed', type=int, default=1, help='Run seed')
@@ -33,15 +33,15 @@ def main(argv):
     parser.add_argument('--catgt_car_mode')
     parser.add_argument('--catgt_loccar_min')
     parser.add_argument('--catgt_loccar_max')
-    parser.add_argument('--catgt_cm')
+    parser.add_argument('--catgt_cmd')
     parser.add_argument('--catgt_extract_string')
     parser.add_argument('--catgt_output_dir')
     parser.add_argument('--event_ex_param_str')
     parser.add_argument('--c_waves_snr_um')
     parser.add_argument('--ref_per_ms', type=float)
     parser.add_argument('--im_ex_list')
-    parser.add_argument('--ni_extract_string')
-    parser.add_argument('--sync_period', type=1.0)
+    parser.add_argument('--ni_ex_list')
+    parser.add_argument('--sync_period', type=float)
     parser.add_argument('--to_stream_sync_params')
     parser.add_argument('--ni_stream_sync_params')
 
@@ -50,7 +50,7 @@ def main(argv):
     npx_directory = os.path.dirname(args.probe_data)
 
     info = createInputJson(
-        args.output_config,
+        args.output_config_file,
         npx_directory=npx_directory, 
 	    continuous_file=args.probe_data,
         input_meta_path=args.probe_meta,
@@ -87,7 +87,7 @@ def main(argv):
         qm_isi_thresh=args.ref_per_ms/1000,
         # TPrime args
         tPrime_im_ex_list=args.im_ex_list,
-        tPrime_ni_ex_list=args.ni_extract_string,
+        tPrime_ni_ex_list=args.ni_ex_list,
         sync_period=args.sync_period,
         toStream_sync_params=args.to_stream_sync_params,
         niStream_sync_params=args.ni_stream_sync_params,

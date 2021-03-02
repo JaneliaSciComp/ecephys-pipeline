@@ -29,7 +29,7 @@ process_params = final_params +
         ecephys_modules_container: ecephys_modules_container_param(final_params)
     ]
 include {
-    process_runs;
+    process_probes_for_all_runs;
 } from './workflows/process_runs' addParams(process_params)
 
 data_dir = final_params.data_dir // probes dir
@@ -41,9 +41,9 @@ runs_file = final_params.runs
 steps = get_list_or_default(final_params, 'steps', [])
 
 workflow {
-
+    print "!!!! PROCESS PARAMS: ${process_params}"
     def runs = prepare_run_specs(read_json(file(runs_file)))
-    process_runs(
+    process_probes_for_all_runs(
         data_dir,
         results_dir,
         config_dir,

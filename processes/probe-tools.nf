@@ -14,43 +14,72 @@ process create_probe_config {
     cpus 1
 
     input:
-    tuple val(run_name),
-          val(run_folder_name),
-          val(probe_folder_name),
-          val(probe_file),
-          val(results_dir),
-          val(config_dir),
-          val(working_dir),
-          val(output_name_prefix), // such as 'imec'
-          val(output_name_suffix) // such as 'ks2'
+    tuple val(probe_data_file),
+          val(probe_meta_file),
+          val(probe_config_file),
+          val(run_name),
+          val(gate),
+          val(probe),
+          // region specific parameters
+          val(probe_ks_th),
+          val(probe_ref_per_ms),
+          // kilosort
+          val(probe_ks_output_dir),
+          // catgt
+          val(probe_catgt_output_dir),
+          val(probe_stream_params),
+          val(probe_catgt_cmd),
+          val(probe_catgt_extract_string),
+          // tprime
+          val(im_ex_list),
+          val(ni_ex_list),
+          val(to_stream_sync_params),
+          val(ni_stream_sync_params)
 
     output:
-    tuple val(run_folder_name),
-          val(probe_folder_name),
-          val(probe_file),
-          val(probe_config_dir),
-          val(probe_config_file),
-          val(probe_results_dir)
+    tuple val(probe_data_file), val(probe_config_file)
 
     script:
-    probe_config_dir = "${config_dir}/${run_folder_name}/${probe_folder_name}"
-    probe_config_file = global_config(probe_config_dir, probe_folder_name)
-    probe_results_dir = "${results_dir}/${run_folder_name}/${probe_folder_name}"
+    def probe_config_dir = file(probe_config_file).parent
     args_list = [
-        probe_file,
-        probe_config_file,
-        probe_results_dir,
-        "--probe_working_path ${working_dir}/${probe_folder_name}",
+        '--probe_data', probe_data_file,
+        '--probe_meta', probe_meta_file, 
+        '--output_config_file', probe_config_file,
+        '--kilosort_output_dir', probe_ks_output_dir,
+        '--ks_ver', params.ks_ver,
         (params.ks_copy_results ? '--ks_copy_results' : ''),
-        "--ks_ver ${params.ks_ver}",
-        "--ks_csb_seed ${params.ks_csb_seed}",
-        "--catgt_run_name ${run_name}",
+        '--ks_remove_dups', params.ks_remove_dups,
+        '--ks_save_rez', params.ks_save_rez,
+        '--ks_copy_fproc', params.ks_copy_fproc,
+        '--ks_minfr_goodchannels', params.ks_minfr_goodchannels,
+        '--ks_whitening_radius_um', params.ks_whitening_radius_um,
+        '--ks_th', probe_ks_th,
+        '--ks_csb_seed', params.ks_csb_seed,
+        '--ks_lt_seed', params.ks_lt_seed,
+        '--ks_template_radius_um', params.ks_template_radius_um,
+        '--catgt_run_name', run_name,
+        '--gate', gate,
+        '--probe', probe,
+        '--catgt_stream_params', probe_stream_params,
+        '--catgt_car_mode',  params.catgt_car_mode,
+        '--catgt_loccar_min', params.catgt_loccar_min,
+        '--catgt_loccar_max', params.catgt_loccar_max,
+        '--catgt_cmd', probe_catgt_cmd,
+        '--catgt_extract_string', probe_catgt_extract_string,
+        '--catgt_output_dir', probe_catgt_output_dir,
+        '--event_ex_param_str', params.event_ex_cmd_arg,
+        '--c_waves_snr_um', params.c_waves_snr_um,
+        '--ref_per_ms', probe_ref_per_ms,
+        (im_ex_list ? "--im_ex_list ${im_ex_list}" : ''),
+        (ni_ex_list ? "--ni_ex_list ${ni_ex_list}" : ''),
+        '--sync_period', params.sync_period,
+        (to_stream_sync_params ? "--to_stream_sync_params ${to_stream_sync_params}" : ''),
+        (ni_stream_sync_params ? "--ni_stream_sync_params ${ni_stream_sync_params}" : ''),
     ]
     args = args_list.join(' ')
     """
     umask 000
     mkdir -p ${probe_config_dir}
-    mkdir -p ${probe_results_dir}
     python -m ecephys_spike_sorting.helpers.create_input_config ${args}
     """
 }
