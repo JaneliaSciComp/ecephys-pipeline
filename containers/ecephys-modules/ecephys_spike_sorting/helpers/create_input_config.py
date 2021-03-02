@@ -6,9 +6,14 @@ from . import SpikeGLX_utils
 
 
 def main(argv):
-    parser = argparse.ArgumentParser(description='Create input json tool')
+    def hyphenated(arg):
+        # hyphenate the argument because argparse does not support single hyphenated values
+        if arg.startswith('-'):
+            return arg
+        else:
+            return '-' + arg
 
-    parser.add_argument('--run_name', help='Run name')
+    parser = argparse.ArgumentParser(description='Create input json tool', allow_abbrev=False)
 
     parser.add_argument('--probe_data', help='Probe data file')
     parser.add_argument('--probe_meta', help='Probe metadata file')
@@ -29,18 +34,18 @@ def main(argv):
     parser.add_argument('--catgt_run_name', help='CatGT run name')
     parser.add_argument('--gate')
     parser.add_argument('--probe')
-    parser.add_argument('--catgt_stream_params')
+    parser.add_argument('--catgt_stream_params', type=hyphenated)
     parser.add_argument('--catgt_car_mode')
-    parser.add_argument('--catgt_loccar_min')
-    parser.add_argument('--catgt_loccar_max')
+    parser.add_argument('--catgt_loccar_min', type=float)
+    parser.add_argument('--catgt_loccar_max', type=float)
     parser.add_argument('--catgt_cmd')
-    parser.add_argument('--catgt_extract_string')
+    parser.add_argument('--catgt_extract_string', type=hyphenated)
     parser.add_argument('--catgt_output_dir')
     parser.add_argument('--event_ex_param_str')
-    parser.add_argument('--c_waves_snr_um')
+    parser.add_argument('--c_waves_snr_um', type=float)
     parser.add_argument('--ref_per_ms', type=float)
-    parser.add_argument('--im_ex_list')
-    parser.add_argument('--ni_ex_list')
+    parser.add_argument('--im_ex_list', type=hyphenated)
+    parser.add_argument('--ni_ex_list', type=hyphenated)
     parser.add_argument('--sync_period', type=float)
     parser.add_argument('--to_stream_sync_params')
     parser.add_argument('--ni_stream_sync_params')
@@ -72,7 +77,7 @@ def main(argv):
         ks_templateRadius_um=args.ks_template_radius_um,
         # CatGT args
         extracted_data_directory=args.catgt_output_dir,
-        catGT_run_name=args.run_name,
+        catGT_run_name=args.catgt_run_name,
         gate_string=args.gate,
         probe_string=args.probe,
         catGT_stream_string=args.catgt_stream_params,

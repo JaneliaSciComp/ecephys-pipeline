@@ -54,19 +54,19 @@ workflow process_probes_for_all_runs {
         def probe_data_file = "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_data_name}"
         def probe_meta_file = "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_meta_name}"
         def probe_config_file = global_config("${config_dir}/${run_folder_name}/${probe_folder_name}", probe_folder_name)
-        def probe_ks_th = get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')
-        def probe_ref_per_ms = get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')
+        def probe_ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
+        def probe_ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
         def probe_ks_output_dir = "${results_dir}/imec_${probe}_ks2"
         def probe_catgt_output_dir = "${results_dir}/${run_folder_name}/${probe_folder_name}"
         def probe_stream_params
-        def probe_sync_extract_flags = "-SY=${probe},${params.probe_sync_ch_values}"
+        def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
         def probe_catgt_extract_string
         if (params.ni_present && probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
-            probe_stream_params = "'-ap -ni'"
+            probe_stream_params = "'ap -ni'" // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags} ${params.ni_extract_cmd_args}'"
         } else {
-            probe_stream_params = '-ap'
+            probe_stream_params = 'ap' // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags}'"
         }
         def probe_catgt_cmd = "'${params.catgt_cmd_args}'"
