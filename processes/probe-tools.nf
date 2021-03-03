@@ -1,6 +1,5 @@
 include {
     filter_config;
-    global_config;
     config_file;
 } from '../lib/probe_utils'
 
@@ -103,8 +102,7 @@ process run_cagt {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe),
-          val(run_module_flag)
+          val(probe)
           
     output:
     tuple val(probe_data_file),
@@ -114,9 +112,6 @@ process run_cagt {
           val(run_name),
           val(gate),
           val(probe)
-
-    when:
-    run_module_flag
 
     script:
     def config = read_json(probe_config_file)
@@ -149,8 +144,7 @@ process run_kilosort {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe),
-          val(run_module_flag)
+          val(probe)
 
     output:
     tuple val(probe_data_file),
@@ -160,9 +154,6 @@ process run_kilosort {
           val(run_name),
           val(gate),
           val(probe)
-
-    when:
-    run_module_flag
 
     script:
     def config = read_json(probe_config_file)
@@ -195,8 +186,7 @@ process run_kilosort_post_process {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe),
-          val(run_module_flag)
+          val(probe)
 
     output:
     tuple val(probe_data_file),
@@ -206,9 +196,6 @@ process run_kilosort_post_process {
           val(run_name),
           val(gate),
           val(probe)
-
-    when:
-    run_module_flag
 
     script:
     def config = read_json(probe_config_file)
@@ -229,47 +216,3 @@ process run_kilosort_post_process {
         --output_json ${module_output_file}
     """
 }
-
-
-// process run_module {
-//     container { module_container }
-//     cpus { module_cpus }
-//     label { module_gpu ? 'withGPU' : 'noGPU' }
-
-//     input:
-//     tuple val(probe_data_file),
-//           val(probe_config_file),
-//           val(run_folder_name),
-//           val(probe_folder_name),
-//           val(run_module_flag),
-//           val(module_name),
-//           val(module_container),
-//           val(module_config_attrs),
-//           val(module_cpus),
-//           val(module_gpu)
-          
-
-//     output:
-//     tuple val(probe_data_file),
-//           val(probe_config_file),
-//           val(run_folder_name),
-//           val(probe_folder_name)
-    
-//     when:
-//     run_module_flag
-
-//     script:
-//     def config = read_json(probe_config_file)
-//     def module_config = filter_config(config, module_config_attrs)
-//     def probe_config_dir = file(probe_config_file).parent
-//     def module_input_file = config_file(probe_config_dir, probe_folder_name, module_name, 'input')
-//     write_json(module_config, module_input_file)
-//     def module_output_file = config_file(probe_config_dir, probe_folder_name, module_name, 'output')
-//     """
-//     umask 000
-//     echo python \
-//         -m ecephys_spike_sorting.modules.${module_name} \
-//         --input_json ${module_input_file} \
-//         --output_json ${module_output_file}
-//     """
-// }

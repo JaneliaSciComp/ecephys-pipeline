@@ -51,7 +51,7 @@ probe_steps = get_list_or_default(
             final_params,
             'steps',
             [
-                // 'catGT_helper',
+                'catGT_helper',
                 'kilosort_helper',
                 'kilosort_postprocessing',
                 'noise_templates',
