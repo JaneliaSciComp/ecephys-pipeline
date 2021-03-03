@@ -8,10 +8,12 @@ include {
 
 include {
     create_probe_config;
+    run_cagt;
 } from '../processes/probe-tools' addParams(params)
 
 include {
-    get_key_value_or_default_key
+    get_key_value_or_default_key;
+    get_module_container;
 } from '../lib/params_utils'
 
 /**
@@ -24,10 +26,11 @@ workflow process_probes_for_all_runs {
     config_dir
     working_dir
     runs
+    probe_steps
     
     main:
     def probes_inputs = prepare_probes_input(data_dir, runs)
-    def probe_config = probes_inputs
+    def probe_config_output = probes_inputs
     | map { probe_input ->
         def probe_index = probe_input[0]
         def run_name = probe_input[1]
@@ -78,6 +81,8 @@ workflow process_probes_for_all_runs {
             probe_data_file,
             probe_meta_file,
             probe_config_file,
+            run_folder_name,
+            probe_folder_name,
             run_name,
             gate,
             probe,
@@ -98,8 +103,42 @@ workflow process_probes_for_all_runs {
     }
     | create_probe_config
 
+    def cagt_input = probe_config_output 
+    | map {
+        println "!!!!!! IT: $it"
+        def probe_step = 'catGT_helper'
+        def run_this_step = probe_steps.contains(probe_step)
+        def step_container = get_module_container(params, probe_step)
+        def step_attrs = get_key_value_or_default_key(params.config_attrs_by_module, probe_step, 'default_value')
+        def step_cpu = get_key_value_or_default_key(params.cpu_requirements_by_module, probe_step, 'default_value')
+        def step_gpu = get_key_value_or_default_key(params.gpu_requirements_by_module, probe_step, 'default_value')
+        println "!!!!!!! STEP $probe_step FOUND: $run_this_step, $step_container $step_attrs $step_cpu $step_gpu"
+        def r = it + [ run_this_step ]
+        println "!!!!!! R = $r"
+        r
+    }
+    def cagt_output = run_cagt(cagt_input)
+
+    // def ks_output = cagt_output 
+    // | map {
+    //     println "!!!!!! IT: $it"
+    //     def probe_step = 'kilosort_helper'
+    //     def run_this_step = probe_steps.contains(probe_step)
+    //     def step_container = get_module_container(params, probe_step)
+    //     def step_attrs = get_key_value_or_default_key(params.config_attrs_by_module, probe_step, 'default_value')
+    //     def step_cpu = get_key_value_or_default_key(params.cpu_requirements_by_module, probe_step, 'default_value')
+    //     def step_gpu = get_key_value_or_default_key(params.gpu_requirements_by_module, probe_step, 'default_value')
+    //     println "!!!!!!! STEP $probe_step FOUND: $run_this_step, $step_container $step_attrs $step_cpu $step_gpu"
+    //     it + [ run_this_step,
+    //         step_container,
+    //         step_attrs,
+    //         step_cpu,
+    //         step_gpu
+    //     ]
+    // } 
+
     emit:
-    res = probe_config
+    res = cagt_output
 }
 
 def prepare_probes_input(data_dir, runs) {
@@ -142,8 +181,6 @@ def get_probe_trials(data_dir, run_name, gate, probe) {
     def run_folder_name = "${run_name}_g${gate}"
     def probe_folder_name = "${run_folder_name}_imec${probe}"
     def probe_trials_dir = file("${data_dir}/${run_folder_name}/${probe_folder_name}")
-    println "!!! data dir $data_dir"
-    println "!!! dir $probe_trials_dir"
     def pfile_pattern = java.util.regex.Pattern.compile("${run_folder_name}_t(\\d+).imec${probe}.ap.bin")
     def trials = []
     probe_trials_dir.eachFileMatch(pfile_pattern) { f ->

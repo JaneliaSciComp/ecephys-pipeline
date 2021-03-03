@@ -1,7 +1,7 @@
 include {
-    probe_str;
-    probe_name;
+    filter_config;
     global_config;
+    config_file;
 } from '../lib/probe_utils'
 
 include {
@@ -17,6 +17,8 @@ process create_probe_config {
     tuple val(probe_data_file),
           val(probe_meta_file),
           val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
           val(run_name),
           val(gate),
           val(probe),
@@ -37,7 +39,10 @@ process create_probe_config {
           val(ni_stream_sync_params)
 
     output:
-    tuple val(probe_data_file), val(probe_config_file)
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name)
 
     script:
     def probe_config_dir = file(probe_config_file).parent
@@ -84,42 +89,85 @@ process create_probe_config {
     """
 }
 
-process run_module {
-    container { module_container }
-    cpus { module_cpus }
-    label { with_gpu ? 'withGPU' : 'noGPU' }
+process run_cagt {
+    container { params.catgt_container }
+    cpus 1
 
     input:
-    tuple val(probe), 
-          val(probe_file),
-          val(config_dir),
-          val(working_dir),
-          val(module_name),
-          val(module_container),
-          val(module_config_attrs),
-          val(module_cpus),
-          val(with_gpu)
-
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_module_flag)
+          
     output:
-    tuple val(probe),
-          val(probe_file),
-          val(module_input_file),
-          val(module_output_file)
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name)
+    
+    when:
+    run_module_flag
 
     script:
-    def pname = probe_name(probe)
-    def config_file = global_config(config_dir, pname)
-    def config = read_json(config_file)
-    def module_config = filter_config(config, module_config_attrs)
-    def module_input_file = config_file(config_dir, pname, module_name, 'input')
+    def config = read_json(probe_config_file)
+    println "!!!!!!!! CONFiG IS  $config"
+    def module_config = filter_config(config, [
+        'f1'
+        ]
+    )
+    def probe_config_dir = probe_config_file.parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'cagt', 'input')
     write_json(module_config, module_input_file)
-    module_output_file = config_file(config_dir, pname, module_name, 'output')
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'cagt', 'output')
     """
     umask 000
-    mkdir -p ${working_dir}/${pname}
-    python \
-        -m ecephys_spike_sorting.modules.${module_name} \
+    echo python \
+        -m ecephys_spike_sorting.modules.catGT_helper \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
     """
 }
+
+// process run_module {
+//     container { module_container }
+//     cpus { module_cpus }
+//     label { module_gpu ? 'withGPU' : 'noGPU' }
+
+//     input:
+//     tuple val(probe_data_file),
+//           val(probe_config_file),
+//           val(run_folder_name),
+//           val(probe_folder_name),
+//           val(run_module_flag),
+//           val(module_name),
+//           val(module_container),
+//           val(module_config_attrs),
+//           val(module_cpus),
+//           val(module_gpu)
+          
+
+//     output:
+//     tuple val(probe_data_file),
+//           val(probe_config_file),
+//           val(run_folder_name),
+//           val(probe_folder_name)
+    
+//     when:
+//     run_module_flag
+
+//     script:
+//     def config = read_json(probe_config_file)
+//     def module_config = filter_config(config, module_config_attrs)
+//     def probe_config_dir = file(probe_config_file).parent
+//     def module_input_file = config_file(probe_config_dir, probe_folder_name, module_name, 'input')
+//     write_json(module_config, module_input_file)
+//     def module_output_file = config_file(probe_config_dir, probe_folder_name, module_name, 'output')
+//     """
+//     umask 000
+//     echo python \
+//         -m ecephys_spike_sorting.modules.${module_name} \
+//         --input_json ${module_input_file} \
+//         --output_json ${module_output_file}
+//     """
+// }
