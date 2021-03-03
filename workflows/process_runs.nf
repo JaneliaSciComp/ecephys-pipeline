@@ -9,6 +9,7 @@ include {
 include {
     create_probe_config;
     run_cagt;
+    run_kilosort
 } from '../processes/probe-tools' addParams(params)
 
 include {
@@ -105,19 +106,21 @@ workflow process_probes_for_all_runs {
 
     def cagt_input = probe_config_output 
     | map {
-        println "!!!!!! IT: $it"
         def probe_step = 'catGT_helper'
         def run_this_step = probe_steps.contains(probe_step)
-        def step_container = get_module_container(params, probe_step)
-        def step_attrs = get_key_value_or_default_key(params.config_attrs_by_module, probe_step, 'default_value')
-        def step_cpu = get_key_value_or_default_key(params.cpu_requirements_by_module, probe_step, 'default_value')
-        def step_gpu = get_key_value_or_default_key(params.gpu_requirements_by_module, probe_step, 'default_value')
-        println "!!!!!!! STEP $probe_step FOUND: $run_this_step, $step_container $step_attrs $step_cpu $step_gpu"
-        def r = it + [ run_this_step ]
-        println "!!!!!! R = $r"
-        r
+        it + [ run_this_step ]
     }
     def cagt_output = run_cagt(cagt_input)
+
+    def ks_input = cagt_output 
+    | concat(probe_config_output)
+    | unique { "${it[0]}" }
+    | map {
+        def probe_step = 'kilosort_helper'
+        def run_this_step = probe_steps.contains(probe_step)
+        it + [ run_this_step ]
+    }
+    def ks_output = run_kilosort(ks_input)
 
     // def ks_output = cagt_output 
     // | map {

@@ -42,7 +42,10 @@ process create_probe_config {
     tuple val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
-          val(probe_folder_name)
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe)
 
     script:
     def probe_config_dir = file(probe_config_file).parent
@@ -98,14 +101,20 @@ process run_cagt {
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
           val(run_module_flag)
           
     output:
     tuple val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
-          val(probe_folder_name)
-    
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe)
+
     when:
     run_module_flag
 
@@ -128,6 +137,99 @@ process run_cagt {
         --output_json ${module_output_file}
     """
 }
+
+process run_kilosort {
+    container { params.kilosort_container }
+    cpus { params.ks_cpus }
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(run_module_flag)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe)
+
+    when:
+    run_module_flag
+
+    script:
+    def config = read_json(probe_config_file)
+    def module_config = filter_config(config, [
+        'kilosort_helper_params',
+        'directories',
+        'ephys_params',
+        'common_files'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.kilosort_helper \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+process run_kilosort_post_process {
+    container { params.kilosort_container }
+    cpus 1
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(run_module_flag)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe)
+
+    when:
+    run_module_flag
+
+    script:
+    def config = read_json(probe_config_file)
+    def module_config = filter_config(config, [
+        'ks_postprocessing_params',
+        'directories',
+        'ephys_params'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.kilosort_postprocessing \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+
 
 // process run_module {
 //     container { module_container }
