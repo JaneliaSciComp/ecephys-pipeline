@@ -91,7 +91,7 @@ process create_probe_config {
 
 process run_cagt {
     container { params.catgt_container }
-    cpus 1
+    cpus { params.catgt_cpus }
 
     input:
     tuple val(probe_data_file),
@@ -112,11 +112,11 @@ process run_cagt {
     script:
     def config = read_json(probe_config_file)
     def module_config = filter_config(config, [
-        'f1'
-        ]
-    )
-    def probe_config_dir = probe_config_file.parent
-    println "!!!!!!!! CONFiG DIR  $probe_config_dir"
+        'directories',
+        'catGT_helper_params',
+        'ephys_params'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
     def module_input_file = config_file(probe_config_dir, probe_folder_name, 'cagt', 'input')
     write_json(module_config, module_input_file)
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'cagt', 'output')
