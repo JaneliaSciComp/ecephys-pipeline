@@ -178,8 +178,10 @@ process run_kilosort {
     def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'input')
     write_json(module_config, module_input_file)
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'output')
+    def ks_working_dir = config.kilosort_helper_params.matlab_home_directory
     """
     umask 000
+    mkdir -p ks_working_dir
     python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
         --input_json ${module_input_file} \

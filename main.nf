@@ -55,11 +55,11 @@ probe_steps = get_list_or_default(
                 'catGT_helper',
                 'kilosort_helper',
                 'kilosort_postprocessing',
-                'noise_templates',
-                'psth_events',
-                'mean_waveforms',
-                'quality_metrics',
-                'tPrimme_helper',
+                // 'noise_templates',
+                // 'psth_events',
+                // 'mean_waveforms',
+                // 'quality_metrics',
+                // 'tPrimme_helper',
             ]
         )
 
