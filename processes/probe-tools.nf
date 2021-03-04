@@ -132,8 +132,10 @@ process run_catgt {
     def module_input_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'input')
     write_json(module_config, module_input_file)
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'output')
+    def ks_working_dir = config.directories.kilosort_output_tmp
     """
     umask 000
+    mkdir -p ${ks_working_dir}
     python \
         -m ecephys_spike_sorting.modules.catGT_helper \
         --input_json ${module_input_file} \

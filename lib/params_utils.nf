@@ -31,7 +31,7 @@ def default_params() {
         ks_csb_seed: 101,
         ks_lt_seed: 1,
         ks_copy_results: true,
-        ks_ver: '2.5',
+        ks_ver: '3.0',
         ks_remove_dups: 0,
         ks_save_rez: 1,
         ks_copy_fproc: 0,
