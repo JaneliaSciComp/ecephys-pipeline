@@ -2,7 +2,7 @@ FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.0 as builder
 
 WORKDIR /tmp
 RUN git clone https://github.com/cortex-lab/KiloSort.git kilosort1
-RUN git clone https://github.com/MouseLand/Kilosort.git kilosort2
+RUN git clone https://github.com/jenniferColonell/Kilosort2.git kilosort2
 RUN git clone https://github.com/kwikteam/npy-matlab.git npy-matlab
 
 FROM registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b
