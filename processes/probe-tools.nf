@@ -180,7 +180,7 @@ process run_kilosort {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
@@ -224,7 +224,7 @@ process run_kilosort_post_process {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_postprocessing', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.kilosort_postprocessing \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
@@ -268,7 +268,7 @@ process run_noise_templates {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'noise_templates', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.noise_templates \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
@@ -314,7 +314,7 @@ process run_mean_waveforms {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'mean_waveforms', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.mean_waveforms \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
@@ -358,7 +358,7 @@ process run_psth_events {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'psth_events', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.psth_events \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
@@ -404,7 +404,7 @@ process run_quality_metrics {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'quality_metrics', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.quality_metrics \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
@@ -439,7 +439,7 @@ process run_tprime {
     def module_output_file = config_file(run_config_dir, run_folder_name, 'tPrimme_helper', 'output')
     """
     umask 000
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.tPrimme_helper \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
