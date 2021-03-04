@@ -122,24 +122,18 @@ process run_catgt {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
-        'directories',
-        'catGT_helper_params',
-        'ephys_params'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'output')
-    def ks_working_dir = config.directories.kilosort_output_tmp
+    def code = create_code_block(
+        'catGT_helper',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'directories',
+            'catGT_helper_params',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    mkdir -p ${ks_working_dir}
-    python \
-        -m ecephys_spike_sorting.modules.catGT_helper \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -169,25 +163,19 @@ process run_kilosort {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
-        'kilosort_helper_params',
-        'directories',
-        'ephys_params',
-        'common_files'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'output')
-    def ks_working_dir = config.kilosort_helper_params.matlab_home_directory
+    def code = create_code_block(
+        'kilosort_helper',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'kilosort_helper_params',
+            'directories',
+            'ephys_params',
+            'common_files'
+        ]
+    )
     """
-    umask 000
-    mkdir -p "${ks_working_dir}"
-    python \
-        -m ecephys_spike_sorting.modules.kilosort_helper \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -216,22 +204,18 @@ process run_kilosort_post_process {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
-        'ks_postprocessing_params',
-        'directories',
-        'ephys_params'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_postprocessing', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_postprocessing', 'output')
+    def code = create_code_block(
+        'kilosort_postprocessing',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'ks_postprocessing_params',
+            'directories',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.modules.kilosort_postprocessing \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -456,4 +440,25 @@ def create_arg(arg_flag, arg_value) {
 
 def create_bool_arg(arg_flag, arg_value) {
     arg_value ? arg_flag : ''
+}
+
+def create_code_block(module_name,
+                      all_config_filename,
+                      module_config_folder_name,
+                      module_config_fields) {
+    def config_dir = file(all_config_filename).parent
+    def config = read_json(all_config_filename)
+    def module_config = filter_config(config, module_config_fields)
+    def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
+    def ks_working_dir = config.directories.kilosort_output_tmp
+    """
+    umask 000
+    mkdir -p ${ks_working_dir}
+    python \
+        -m ecephys_spike_sorting.modules.${module_name} \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
 }

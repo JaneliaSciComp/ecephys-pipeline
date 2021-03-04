@@ -20,7 +20,6 @@ include {
     ecephys_modules_container_param;
     kilosort_container_param;
     tprime_modules_container_param
-
 } from './lib/params_utils'
 
 include {
