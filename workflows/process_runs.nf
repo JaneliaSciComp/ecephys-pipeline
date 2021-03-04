@@ -15,6 +15,7 @@ include {
     run_mean_waveforms;
     run_psth_events;
     run_quality_metrics;
+    run_tprime;
 } from '../processes/probe-tools' addParams(params)
 
 include {
@@ -185,7 +186,7 @@ workflow process_tprime {
     triggers_input
 
     main:
-    def tprime_config_input = index_channel(run_folder_name_input)
+    def tprime_output = index_channel(run_folder_name_input)
     | join(index_channel(run_name_input))
     | join(index_channel(gate_input))
     | join(index_channel(probes_input))
@@ -238,9 +239,17 @@ workflow process_tprime {
         r
     }
     | create_probe_config
+    | map {
+        [
+            it[1], // run_config_file
+            it[2], // run_folder_name
+            it[4], // run_name
+        ]
+    }
+    | run_tprime
 
     emit:
-    res = tprime_config_input
+    res = tprime_output
 }
 
 def prepare_probes_input(data_dir, runs) {
