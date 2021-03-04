@@ -181,7 +181,7 @@ process run_kilosort {
     def ks_working_dir = config.kilosort_helper_params.matlab_home_directory
     """
     umask 000
-    mkdir -p ks_working_dir
+    mkdir -p "${ks_working_dir}"
     python \
         -m ecephys_spike_sorting.modules.kilosort_helper \
         --input_json ${module_input_file} \
