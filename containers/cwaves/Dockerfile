@@ -11,6 +11,7 @@ FROM ubuntu:16.04
 
 RUN apt-get update -y && \
     apt-get install -y \
+        git \
         libx11-dev
 
 WORKDIR /tmp-install

@@ -315,7 +315,6 @@ def createInputJson(output_file,
                 "loccar_inner": catGT_loccar_min_sites,
                 "loccar_outer": catGT_loccar_max_sites,
                 "cmdStr": catGT_cmd_string,
-                "extract_string": catGT_extract_string,
                 "catGTPath": catGTPath
             },
 

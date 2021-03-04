@@ -30,13 +30,12 @@ def calculate_mean_waveforms(args):
         clus_time_npy = os.path.join(args['directories']['kilosort_output_directory'], 'spike_times.npy' )
         clus_lbl_npy = os.path.join(args['directories']['kilosort_output_directory'], 'spike_clusters.npy' )
         dest, wavefile = os.path.split(args['mean_waveform_params']['mean_waveforms_file'])
-        
-        
+
         # path to the 'runit.bat' executable that calls C_Waves.
         # Essential in linux where C_Waves executable is only callable through runit
-        if (sys.platform.startswith,'win'):
+        if sys.platform.startswith('win'):
             exe_path = os.path.join(args['mean_waveform_params']['cWaves_path'], 'runit.bat')
-        elif (sys.platform.startwith, 'linux'):
+        elif sys.platform.startwith('linux'):
             exe_path = os.path.join(args['mean_waveform_params']['cWaves_path'], 'runit.sh')
         else:
             print('unknown system, cannot run C_Waves')

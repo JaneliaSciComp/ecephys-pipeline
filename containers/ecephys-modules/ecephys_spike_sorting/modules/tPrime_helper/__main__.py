@@ -205,16 +205,16 @@ def call_TPrime(args):
     print('output files')
     for op in out_list:
         print(op)
-        
+
     # path to the 'runit.bat' executable that calls TPrime.
     # Essential in linux where TPrime executable is only callable through runit
-    if (sys.platform.startswith,'win'):
+    if sys.platform.startswith('win'):
         exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit.bat')
-    elif (sys.platform.startwith, 'linux'):
+    elif sys.platform.startwith('linux'):
         exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit.sh')
     else:
         print('unknown system, cannot run TPrime')   
-        
+
     # Print out command for help with debugging
     tcmd = exe_path + ' -syncperiod=' + repr(sync_period) + \
         ' -tostream=' + toStream_path

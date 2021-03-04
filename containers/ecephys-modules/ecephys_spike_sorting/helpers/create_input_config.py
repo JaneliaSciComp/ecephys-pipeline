@@ -72,7 +72,7 @@ def main(argv):
     else:
         qm_isi_thresh = None
 
-    if args.kilosort_output_dir is None:
+    if args.kilosort_output_dir is not None:
         kilosort_output_directory = args.kilosort_output_dir
     else:
         kilosort_output_directory = ''
@@ -108,6 +108,7 @@ def main(argv):
         catGT_loccar_min_um=args.catgt_loccar_min,
         catGT_loccar_max_um=args.catgt_loccar_max,
         catGT_cmd_string=catGT_cmd_string,
+        catGT_extract_string='', # this is not needed
         # C_Waves args
         noise_template_use_rf=False,
         event_ex_param_str=args.event_ex_param_str,
