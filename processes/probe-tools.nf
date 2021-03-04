@@ -135,7 +135,6 @@ process run_catgt {
     """
     umask 000
     python \
-        -W ignore \
         -m ecephys_spike_sorting.modules.catGT_helper \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}

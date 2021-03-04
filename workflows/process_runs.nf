@@ -8,7 +8,7 @@ include {
 
 include {
     create_probe_config;
-    run_cagt;
+    run_catgt;
     run_kilosort;
     run_kilosort_post_process;
     run_noise_templates;
@@ -91,7 +91,7 @@ workflow process_probes_for_all_runs {
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
         def r = [
-            probe_data_dir,
+            data_dir,
             probe_data_file,
             probe_meta_file,
             probe_config_file,
@@ -119,15 +119,15 @@ workflow process_probes_for_all_runs {
     }
     | create_probe_config
 
-    def cagt_input = probe_config_output 
-    def cagt_output
+    def catgt_input = probe_config_output 
+    def catgt_output
     if (probe_steps.contains('catGT_helper')) {
-        cagt_output = cagt_input | run_cagt
+        catgt_output = catgt_input | run_catgt
     } else {
-        cagt_output = cagt_input
+        catgt_output = catgt_input
     }
 
-    def ks_input = cagt_output
+    def ks_input = catgt_output
     def ks_output
     if (probe_steps.contains('kilosort_helper')) {
         if (probe_steps.contains('kilosort_postprocessing')) {
