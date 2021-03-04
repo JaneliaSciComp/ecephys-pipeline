@@ -19,7 +19,7 @@ def run_CatGT(args):
     if sys.platform.startswith('win'):
         # build windows command line
         catGTexe_fullpath = catGTPath.replace('\\', '/') + "/runit.bat"
-    elif sys.platform.startwith('linux'):
+    elif sys.platform.startswith('linux'):
         catGTexe_fullpath = catGTPath.replace('\\', '/') + "/runit.sh"
     else:
         print('unknown system, cannot run CatGt')
@@ -49,15 +49,12 @@ def run_CatGT(args):
     cmd_parts.append('-dest=' + args['directories']
                      ['extracted_data_directory'])
 
-    # print('cmd_parts')
+    catGT_cmd = ' '.join(cmd_parts)
 
-    catGT_cmd = ' '        # use space as the separator for the command parts
-    catGT_cmd = catGT_cmd.join(cmd_parts)
-
-    print('CatGT command line:' + catGT_cmd)
+    print('CatGT command line:',  cmd_parts)
 
     start = time.time()
-    subprocess.call(catGT_cmd)
+    subprocess.call(cmd_parts)
 
     execution_time = time.time() - start
 

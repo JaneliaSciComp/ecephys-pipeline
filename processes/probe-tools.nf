@@ -97,7 +97,7 @@ process create_probe_config {
     """
 }
 
-process run_cagt {
+process run_catgt {
     container { params.catgt_container }
     cpus { params.catgt_cpus }
 
@@ -134,7 +134,8 @@ process run_cagt {
     def module_output_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'output')
     """
     umask 000
-    echo python \
+    python \
+        -W ignore \
         -m ecephys_spike_sorting.modules.catGT_helper \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
