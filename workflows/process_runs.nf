@@ -20,7 +20,6 @@ include {
 
 include {
     get_key_value_or_default_key;
-    get_module_container;
 } from '../lib/params_utils'
 
 include {
