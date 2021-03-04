@@ -20,6 +20,7 @@ def main(argv):
     parser.add_argument('--probe_meta', help='Probe metadata file')
     parser.add_argument('--output_config_file', help='Output config file path')
     parser.add_argument('--kilosort_output_dir', help='Kilosort output directory')
+    parser.add_argument('--ks_working_dir', default='/tmp/kilosort_datatemp', help='Kilosort working dir')
     parser.add_argument('--ks_ver', default='2.0', help='Kilosort version')
     parser.add_argument('--ks_copy_results', action='store_true',
                         help='Make a copy of the kilosort results for postprocessing')
@@ -83,6 +84,7 @@ def main(argv):
         spikeGLX_data=True,
         # KS args
 		kilosort_output_directory=kilosort_output_directory,
+        ks_working_dir=args.ks_working_dir,
         ks_ver=args.ks_ver,
         ks_make_copy=args.ks_copy_results,
         ks_remDup=args.ks_remove_dups,

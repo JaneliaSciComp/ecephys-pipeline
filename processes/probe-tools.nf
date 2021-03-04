@@ -28,6 +28,7 @@ process create_probe_config {
           val(probe_ref_per_ms),
           // kilosort
           val(probe_ks_output_dir),
+          val(probe_ks_working_dir),
           // catgt
           val(probe_catgt_output_dir),
           val(probe_stream_params),
@@ -57,6 +58,7 @@ process create_probe_config {
         create_arg('--probe_meta', probe_meta_file),
         create_arg('--output_config_file', probe_config_file),
         create_arg('--kilosort_output_dir', probe_ks_output_dir),
+        create_arg('--ks_working_dir', probe_ks_working_dir),
         create_arg('--ks_ver', params.ks_ver),
         create_bool_arg('--ks_copy_results', params.ks_copy_results),
         create_arg('--ks_remove_dups', params.ks_remove_dups),

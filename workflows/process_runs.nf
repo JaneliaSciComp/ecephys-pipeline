@@ -72,7 +72,8 @@ workflow process_probes_for_all_runs {
         def probe_config_file = global_config("${config_dir}/${run_folder_name}/${probe_folder_name}", probe_folder_name)
         def probe_ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def probe_ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
-        def probe_ks_output_dir = "${results_dir}/imec_${probe}_ks2"
+        def probe_ks_output_dir = "${results_dir}/${probe_folder_name}/imec_${probe}_ks2"
+        def probe_ks_working_dir = "${params.ks_working_dir}/${probe_folder_name}"
         def probe_catgt_output_dir = "${results_dir}/${run_folder_name}/${probe_folder_name}"
         def probe_stream_params
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
@@ -104,6 +105,7 @@ workflow process_probes_for_all_runs {
             probe_ks_th,
             probe_ref_per_ms,
             probe_ks_output_dir,
+            probe_ks_working_dir,
             probe_catgt_output_dir,
             probe_stream_params,
             probe_catgt_cmd,
@@ -226,6 +228,7 @@ workflow process_tprime {
             '',
             '', // probe_ref_per_ms
             run_data_dir, // ks_output_dir
+            params.ks_working_dir, // ks_working_dir
             run_data_dir,//  catgt_output_dir,
             '', // probe_stream_params
             '', // probe_catgt_cmd
