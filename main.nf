@@ -39,6 +39,7 @@ process_params = final_params +
     ]
 include {
     process_probes_for_all_runs;
+    process_tprime;
 } from './workflows/process_runs' addParams(process_params)
 
 data_dir = final_params.data_dir // probes dir
@@ -49,26 +50,48 @@ working_dir = get_value_or_default(final_params, 'working_dir', "${results_dir}/
 runs_file = final_params.runs
 probe_steps = get_list_or_default(
             final_params,
-            'steps',
+            'probe_steps',
             [
                 'catGT_helper',
                 'kilosort_helper',
                 'kilosort_postprocessing',
                 'noise_templates',
+                'psth_events',
                 'mean_waveforms',
-                'quality_metrics'
+                'quality_metrics',
+                'tPrimme_helper',
             ]
         )
 
-println "!!!!!!!!!!!! PROBE STEPS: $probe_steps"
+
+log.info """
+         Run $probe_steps
+         """
+
 workflow {
     def runs = prepare_run_specs(read_json(file(runs_file)))
-    process_probes_for_all_runs(
+    // process all probes
+    def probe_results = process_probes_for_all_runs(
         data_dir,
         results_dir,
         config_dir,
-        working_dir,
         runs,
-        probe_steps) | view
+        probe_steps)
+
+    if (probe_steps.contains('tPrimme_helper')) {
+        def tprime_inputs = probe_results
+        | groupTuple(by: [2,4,5]) // group by run_folder, run_name, gate
+
+        process_tprime(
+            data_dir,
+            results_dir,
+            config_dir,
+            tprime_inputs.map { it[2] }, // run folder
+            tprime_inputs.map { it[4] }, // run name
+            tprime_inputs.map { it[5] }, // gate name
+            tprime_inputs.map { it[6] }, // probes
+            tprime_inputs.map { it[7] }, // triggers
+        ) | view
+    }
 
 }

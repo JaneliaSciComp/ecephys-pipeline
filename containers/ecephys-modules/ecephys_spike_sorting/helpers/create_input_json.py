@@ -118,7 +118,7 @@ def createInputJson(output_file,
             print('SpikeGLX params read from meta')
             print('probe type: {:s}, sample_rate: {:.5f}, num_channels: {:d}, uVPerBit: {:.4f}'.format
                   (probe_type, sample_rate, num_channels, uVPerBit))
-        print('kilosort output directory: ' + kilosort_output_directory)
+        print('kilosort output directory: ', kilosort_output_directory)
 
     else:
         print('currently only supporting spikeGLX data')

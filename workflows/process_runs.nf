@@ -11,12 +11,20 @@ include {
     run_cagt;
     run_kilosort;
     run_kilosort_post_process;
+    run_noise_templates;
+    run_mean_waveforms;
+    run_psth_events;
+    run_quality_metrics;
 } from '../processes/probe-tools' addParams(params)
 
 include {
     get_key_value_or_default_key;
     get_module_container;
 } from '../lib/params_utils'
+
+include {
+    index_channel;
+} from '../lib/utils'
 
 /**
 * Process all probes from all given runs
@@ -26,7 +34,6 @@ workflow process_probes_for_all_runs {
     data_dir
     results_dir
     config_dir
-    working_dir
     runs
     probe_steps
     
@@ -39,25 +46,28 @@ workflow process_probes_for_all_runs {
         def gate = probe_input[2]
         def probe = probe_input[3]
         def region = probe_input[4]
-        def trigger = probe_input[5]
+        def first_trigger = probe_input[5]
+        def last_trigger = probe_input[6]
+        def triggers = "${first_trigger}:${last_trigger}"
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
         def probe_data_name = get_probe_data_filename(
             run_name,
             gate,
             probe,
-            trigger,
+            first_trigger,
             '.ap.bin'
         )
         def probe_meta_name = get_probe_data_filename(
             run_name,
             gate,
             probe,
-            trigger,
+            first_trigger,
             '.ap.meta'
         )
-        def probe_data_file = "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_data_name}"
-        def probe_meta_file = "${data_dir}/${run_folder_name}/${probe_folder_name}/${probe_meta_name}"
+        def probe_data_dir = "${data_dir}/${run_folder_name}/${probe_folder_name}"
+        def probe_data_file = "${probe_data_dir}/${probe_data_name}"
+        def probe_meta_file = "${probe_data_dir}/${probe_meta_name}"
         def probe_config_file = global_config("${config_dir}/${run_folder_name}/${probe_folder_name}", probe_folder_name)
         def probe_ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def probe_ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
@@ -69,7 +79,7 @@ workflow process_probes_for_all_runs {
         if (params.ni_present && probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
             probe_stream_params = "'ap -ni'" // this will be hyphenated by the config tool
-            probe_catgt_extract_string = "'${probe_sync_extract_flags} ${params.ni_extract_cmd_args}'"
+            probe_catgt_extract_string = "'${probe_sync_extract_flags} -${params.ni_extract_cmd_args}'"
         } else {
             probe_stream_params = 'ap' // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags}'"
@@ -80,6 +90,7 @@ workflow process_probes_for_all_runs {
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
         def r = [
+            probe_data_dir,
             probe_data_file,
             probe_meta_file,
             probe_config_file,
@@ -88,6 +99,7 @@ workflow process_probes_for_all_runs {
             run_name,
             gate,
             probe,
+            triggers,
             probe_ks_th,
             probe_ref_per_ms,
             probe_ks_output_dir,
@@ -106,15 +118,15 @@ workflow process_probes_for_all_runs {
     | create_probe_config
 
     def cagt_input = probe_config_output 
-    def cagt_output;
+    def cagt_output
     if (probe_steps.contains('catGT_helper')) {
-        cagt_output = run_cagt(cagt_input)
+        cagt_output = cagt_input | run_cagt
     } else {
         cagt_output = cagt_input
     }
 
     def ks_input = cagt_output
-    def ks_output;
+    def ks_output
     if (probe_steps.contains('kilosort_helper')) {
         if (probe_steps.contains('kilosort_postprocessing')) {
             ks_output = ks_input | run_kilosort | run_kilosort_post_process
@@ -125,9 +137,110 @@ workflow process_probes_for_all_runs {
         ks_output = ks_input
     }
 
+    def noise_templates_input = ks_output
+    def noise_templates_output
+    if (probe_steps.contains('noise_templates')) {
+        noise_templates_output = noise_templates_input | run_noise_templates
+    } else {
+        noise_templates_output = noise_templates_input
+    }
+
+    def psth_events_input = noise_templates_output
+    def psth_events_output
+    if (probe_steps.contains('psth_events')) {
+        psth_events_output = psth_events_input | run_psth_events
+    } else {
+        psth_events_output = psth_events_input
+    }
+
+    def mean_waveforms_input = psth_events_output
+    def mean_waveforms_output
+    if (probe_steps.contains('mean_waveforms')) {
+        mean_waveforms_output = mean_waveforms_input | run_mean_waveforms
+    } else {
+        mean_waveforms_output = psth_events_input
+    }
+
+    def quality_metrics_input = mean_waveforms_output
+    def quality_metrics_output
+    if (probe_steps.contains('quality_metrics')) {
+        quality_metrics_output = quality_metrics_input | run_quality_metrics
+    } else {
+        quality_metrics_output = psth_events_input
+    }
 
     emit:
-    res = cagt_output
+    res = quality_metrics_output
+}
+
+workflow process_tprime {
+    take:
+    data_dir
+    results_dir
+    config_dir
+    run_folder_name_input
+    run_name_input
+    gate_input
+    probes_input
+    triggers_input
+
+    main:
+    def tprime_config_input = index_channel(run_folder_name_input)
+    | join(index_channel(run_name_input))
+    | join(index_channel(gate_input))
+    | join(index_channel(probes_input))
+    | join(index_channel(triggers_input))
+    | map {
+        println "!!! $it"
+        def run_folder_name = it[1]
+        def run_name = it[2]
+        def gate = it[3]
+        def probes = it[4]
+        def triggers = it[5]
+
+        def probes_sync_ch_args = probes.withIndex()
+            .collect { prbIdxPair ->
+                def prb = prbIdxPair[0]
+                def index = prbIdxPair[1]
+                def dashPrefix = index == 0 ? '' : '-'
+                "${dashPrefix}SY=${prb},${params.probe_sync_ch_values}"
+            }
+            .join(' ')
+        def im_ex_list = "'${probes_sync_ch_args}'"
+        def ni_ex_list = "'${params.ni_extract_cmd_args}'"
+        def run_data_dir = "${data_dir}/${run_folder_name}"
+        def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
+
+        def r = [
+            run_data_dir,
+            '', // probe_data_file
+            '', // probe_meta_file
+            run_config_file,
+            run_folder_name,
+            '', // probe_folder_name
+            run_name,
+            gate,
+            '', // probe
+            triggers,
+            '',
+            '', // probe_ref_per_ms
+            run_data_dir, // ks_output_dir
+            run_data_dir,//  catgt_output_dir,
+            '', // probe_stream_params
+            '', // probe_catgt_cmd
+            '', // probe_catgt_extract_string
+            im_ex_list,
+            ni_ex_list, // ni_ex_list
+            '', // to_stream_sync_params
+            '', // ni_stream_sync_params
+        ]
+        log.debug "TPrime config params: $r"
+        r
+    }
+    | create_probe_config
+
+    emit:
+    res = tprime_config_input
 }
 
 def prepare_probes_input(data_dir, runs) {

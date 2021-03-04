@@ -15,6 +15,7 @@ def main(argv):
 
     parser = argparse.ArgumentParser(description='Create input json tool', allow_abbrev=False)
 
+    parser.add_argument('--npx_dir', help='Data directory')
     parser.add_argument('--probe_data', help='Probe data file')
     parser.add_argument('--probe_meta', help='Probe metadata file')
     parser.add_argument('--output_config_file', help='Output config file path')
@@ -38,7 +39,7 @@ def main(argv):
     parser.add_argument('--catgt_car_mode')
     parser.add_argument('--catgt_loccar_min', type=float)
     parser.add_argument('--catgt_loccar_max', type=float)
-    parser.add_argument('--catgt_cmd')
+    parser.add_argument('--catgt_cmd', type=hyphenated)
     parser.add_argument('--catgt_extract_string', type=hyphenated)
     parser.add_argument('--catgt_output_dir')
     parser.add_argument('--event_ex_param_str')
@@ -52,8 +53,28 @@ def main(argv):
 
     args = parser.parse_args()
 
-    npx_directory = os.path.dirname(args.probe_data)
+    npx_directory = args.npx_dir
+    if npx_directory is None and args.probe_data is not None:
+        npx_directory = os.path.dirname(args.probe_data)
 
+    if args.catgt_cmd and args.catgt_extract_string:
+        catGT_cmd_string=args.catgt_cmd + ' ' + args.catgt_extract_string
+    elif args.catgt_cmd:
+        catGT_cmd_string=args.catgt_cmd
+    elif args.catgt_extract_string:
+        catGT_cmd_string = args.catgt_extract_string
+    else:
+        catGT_cmd_string = None
+
+    if args.ref_per_ms is not None:
+        qm_isi_thresh = args.ref_per_ms/1000
+    else:
+        qm_isi_thresh = None
+
+    if args.kilosort_output_dir is None:
+        kilosort_output_directory = args.kilosort_output_dir
+    else:
+        kilosort_output_directory = ''
     info = createInputJson(
         args.output_config_file,
         npx_directory=npx_directory, 
@@ -61,7 +82,7 @@ def main(argv):
         input_meta_path=args.probe_meta,
         spikeGLX_data=True,
         # KS args
-		kilosort_output_directory=args.kilosort_output_dir,
+		kilosort_output_directory=kilosort_output_directory,
         ks_ver=args.ks_ver,
         ks_make_copy=args.ks_copy_results,
         ks_remDup=args.ks_remove_dups,
@@ -84,12 +105,12 @@ def main(argv):
         catGT_car_mode=args.catgt_car_mode,
         catGT_loccar_min_um=args.catgt_loccar_min,
         catGT_loccar_max_um=args.catgt_loccar_max,
-        catGT_cmd_string=args.catgt_cmd + ' ' + args.catgt_extract_string,
+        catGT_cmd_string=catGT_cmd_string,
         # C_Waves args
         noise_template_use_rf=False,
         event_ex_param_str=args.event_ex_param_str,
         c_Waves_snr_um=args.c_waves_snr_um,
-        qm_isi_thresh=args.ref_per_ms/1000,
+        qm_isi_thresh=qm_isi_thresh,
         # TPrime args
         tPrime_im_ex_list=args.im_ex_list,
         tPrime_ni_ex_list=args.ni_ex_list,

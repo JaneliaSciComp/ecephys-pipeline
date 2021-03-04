@@ -13,7 +13,8 @@ process create_probe_config {
     cpus 1
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_data_dir),
+          val(probe_data_file),
           val(probe_meta_file),
           val(probe_config_file),
           val(run_folder_name),
@@ -21,6 +22,7 @@ process create_probe_config {
           val(run_name),
           val(gate),
           val(probe),
+          val(triggers),
           // region specific parameters
           val(probe_ks_th),
           val(probe_ref_per_ms),
@@ -44,46 +46,48 @@ process create_probe_config {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
 
     script:
     def probe_config_dir = file(probe_config_file).parent
-    args_list = [
-        '--probe_data', probe_data_file,
-        '--probe_meta', probe_meta_file, 
-        '--output_config_file', probe_config_file,
-        '--kilosort_output_dir', probe_ks_output_dir,
-        '--ks_ver', params.ks_ver,
-        (params.ks_copy_results ? '--ks_copy_results' : ''),
-        '--ks_remove_dups', params.ks_remove_dups,
-        '--ks_save_rez', params.ks_save_rez,
-        '--ks_copy_fproc', params.ks_copy_fproc,
-        '--ks_minfr_goodchannels', params.ks_minfr_goodchannels,
-        '--ks_whitening_radius_um', params.ks_whitening_radius_um,
-        '--ks_th', probe_ks_th,
-        '--ks_csb_seed', params.ks_csb_seed,
-        '--ks_lt_seed', params.ks_lt_seed,
-        '--ks_template_radius_um', params.ks_template_radius_um,
-        '--catgt_run_name', run_name,
-        '--gate', gate,
-        '--probe', probe,
-        '--catgt_stream_params', probe_stream_params,
-        '--catgt_car_mode',  params.catgt_car_mode,
-        '--catgt_loccar_min', params.catgt_loccar_min,
-        '--catgt_loccar_max', params.catgt_loccar_max,
-        '--catgt_cmd', probe_catgt_cmd,
-        '--catgt_extract_string', probe_catgt_extract_string,
-        '--catgt_output_dir', probe_catgt_output_dir,
-        '--event_ex_param_str', params.event_ex_cmd_arg,
-        '--c_waves_snr_um', params.c_waves_snr_um,
-        '--ref_per_ms', probe_ref_per_ms,
-        (im_ex_list ? "--im_ex_list ${im_ex_list}" : ''),
-        (ni_ex_list ? "--ni_ex_list ${ni_ex_list}" : ''),
-        '--sync_period', params.sync_period,
-        (to_stream_sync_params ? "--to_stream_sync_params ${to_stream_sync_params}" : ''),
-        (ni_stream_sync_params ? "--ni_stream_sync_params ${ni_stream_sync_params}" : ''),
+    def args_list = [
+        create_arg('--npx_dir', probe_data_dir),
+        create_arg('--probe_data', probe_data_file),
+        create_arg('--probe_meta', probe_meta_file),
+        create_arg('--output_config_file', probe_config_file),
+        create_arg('--kilosort_output_dir', probe_ks_output_dir),
+        create_arg('--ks_ver', params.ks_ver),
+        create_bool_arg('--ks_copy_results', params.ks_copy_results),
+        create_arg('--ks_remove_dups', params.ks_remove_dups),
+        create_arg('--ks_save_rez', params.ks_save_rez),
+        create_arg('--ks_copy_fproc', params.ks_copy_fproc),
+        create_arg('--ks_minfr_goodchannels', params.ks_minfr_goodchannels),
+        create_arg('--ks_whitening_radius_um', params.ks_whitening_radius_um),
+        create_arg('--ks_th', probe_ks_th),
+        create_arg('--ks_csb_seed', params.ks_csb_seed),
+        create_arg('--ks_lt_seed', params.ks_lt_seed),
+        create_arg('--ks_template_radius_um', params.ks_template_radius_um),
+        create_arg('--catgt_run_name', run_name),
+        create_arg('--gate', gate),
+        create_arg('--probe', probe),
+        create_arg('--catgt_stream_params', probe_stream_params),
+        create_arg('--catgt_car_mode',  params.catgt_car_mode),
+        create_arg('--catgt_loccar_min', params.catgt_loccar_min),
+        create_arg('--catgt_loccar_max', params.catgt_loccar_max),
+        create_arg('--catgt_cmd', probe_catgt_cmd),
+        create_arg('--catgt_extract_string', probe_catgt_extract_string),
+        create_arg('--catgt_output_dir', probe_catgt_output_dir),
+        create_arg('--event_ex_param_str', params.event_ex_cmd_arg),
+        create_arg('--c_waves_snr_um', params.c_waves_snr_um),
+        create_arg('--ref_per_ms', probe_ref_per_ms),
+        create_arg('--im_ex_list', im_ex_list),
+        create_arg('--ni_ex_list', ni_ex_list),
+        create_arg('--sync_period', params.sync_period),
+        create_arg("--to_stream_sync_params", to_stream_sync_params),
+        create_arg("--ni_stream_sync_params", ni_stream_sync_params)
     ]
-    args = args_list.join(' ')
+    def args = args_list.join(' ')
     """
     umask 000
     mkdir -p ${probe_config_dir}
@@ -102,7 +106,8 @@ process run_cagt {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
           
     output:
     tuple val(probe_data_file),
@@ -111,7 +116,8 @@ process run_cagt {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
 
     script:
     def config = read_json(probe_config_file)
@@ -121,9 +127,9 @@ process run_cagt {
         'ephys_params'
     ])
     def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'cagt', 'input')
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'input')
     write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'cagt', 'output')
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'catGT_helper', 'output')
     """
     umask 000
     echo python \
@@ -136,6 +142,7 @@ process run_cagt {
 process run_kilosort {
     container { params.kilosort_container }
     cpus { params.ks_cpus }
+    label 'withGPU'
 
     input:
     tuple val(probe_data_file),
@@ -144,7 +151,8 @@ process run_kilosort {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
 
     output:
     tuple val(probe_data_file),
@@ -153,7 +161,8 @@ process run_kilosort {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
 
     script:
     def config = read_json(probe_config_file)
@@ -164,9 +173,9 @@ process run_kilosort {
         'common_files'
     ])
     def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'input')
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'input')
     write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'output')
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_helper', 'output')
     """
     umask 000
     echo python \
@@ -175,6 +184,7 @@ process run_kilosort {
         --output_json ${module_output_file}
     """
 }
+
 process run_kilosort_post_process {
     container { params.kilosort_container }
     cpus 1
@@ -186,7 +196,8 @@ process run_kilosort_post_process {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
 
     output:
     tuple val(probe_data_file),
@@ -195,7 +206,8 @@ process run_kilosort_post_process {
           val(probe_folder_name),
           val(run_name),
           val(gate),
-          val(probe)
+          val(probe),
+          val(triggers)
 
     script:
     def config = read_json(probe_config_file)
@@ -205,9 +217,9 @@ process run_kilosort_post_process {
         'ephys_params'
     ])
     def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'input')
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_postprocessing', 'input')
     write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort', 'output')
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'kilosort_postprocessing', 'output')
     """
     umask 000
     echo python \
@@ -215,4 +227,227 @@ process run_kilosort_post_process {
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
     """
+}
+
+process run_noise_templates {
+    container { params.ecephys_modules_container }
+    cpus { params.noise_cpus }
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    script:
+    def config = read_json(probe_config_file)
+    def module_config = filter_config(config, [
+        'noise_waveform_params',
+        'directories',
+        'ephys_params'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'noise_templates', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'noise_templates', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.noise_templates \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+
+process run_mean_waveforms {
+    container { params.cwaves_container }
+    cpus { params.waveforms_cpus }
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    script:
+    def config = read_json(probe_config_file)
+    def module_config = filter_config(config, [
+        'waveform_metrics',
+        'mean_waveform_params',
+        'cluster_metrics',
+        'directories',
+        'ephys_params'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'mean_waveforms', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'mean_waveforms', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.mean_waveforms \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+
+process run_psth_events {
+    container { params.ecephys_modules_container }
+    cpus { params.events_cpus }
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    script:
+    def config = read_json(probe_config_file)
+    def module_config = filter_config(config, [
+        'psth_events',
+        'directories',
+        'ephys_params'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'psth_events', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'psth_events', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.psth_events \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+
+process run_quality_metrics {
+    container { params.ecephys_modules_container }
+    cpus { params.metrics_cpus }
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    script:
+    def config = read_json(probe_config_file)
+    def module_config = filter_config(config, [
+        'quality_metrics_params',
+        'waveform_metrics',
+        'cluster_metrics',
+        'directories',
+        'ephys_params'
+    ])
+    def probe_config_dir = file(probe_config_file).parent
+    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'quality_metrics', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'quality_metrics', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.quality_metrics \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+
+process run_tprime {
+    container { params.tprime_container }
+    cpus { params.tprime_cpus }
+
+    input:
+    tuple val(run_config_file),
+          val(run_folder_name),
+          val(run_name)
+
+    output:
+    tuple val(run_config_file),
+          val(run_folder_name),
+          val(run_name)
+
+    script:
+    def config = read_json(run_config_file)
+    def module_config = filter_config(config, [
+        'tPrime_helper_params',
+        'catGT_helper_params',
+        'directories',
+        'ephys_params'
+    ])
+    def run_config_dir = file(run_config_file).parent
+    def module_input_file = config_file(run_config_dir, run_folder_name, 'tPrimme_helper', 'input')
+    write_json(module_config, module_input_file)
+    def module_output_file = config_file(run_config_dir, run_folder_name, 'tPrimme_helper', 'output')
+    """
+    umask 000
+    echo python \
+        -m ecephys_spike_sorting.modules.tPrimme_helper \
+        --input_json ${module_input_file} \
+        --output_json ${module_output_file}
+    """
+}
+
+def create_arg(arg_flag, arg_value) {
+    "${arg_value}" == '' ? ''  : "${arg_flag} ${arg_value}"
+}
+
+def create_bool_arg(arg_flag, arg_value) {
+    arg_value ? arg_flag : ''
 }
