@@ -190,7 +190,7 @@ def get_noise_channels(raw_data_file, num_channels, sample_rate, bit_volts, nois
     noise_delay = 5  # in seconds
     noise_interval = 10  # in seconds
 
-    raw_data = np.memmap(raw_data_file, dtype='int16', mode='r')
+    raw_data = np.memmap(raw_data_file, dtype='int16', mode='r') # inside the container this must be read/only
 
     num_samples = int(raw_data.size/num_channels)
 
