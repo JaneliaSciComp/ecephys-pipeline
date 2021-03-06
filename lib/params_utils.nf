@@ -21,14 +21,14 @@ def default_params() {
         ],
         ks_thresholds_by_region: [
             default_value: '[9, 9]',
-            cortex: '[9,9]',
-            medulla: '[9,9]',
-            thalamus: '[9,9]',
+            cortex: '[9, 9]',
+            medulla: '[9, 9]',
+            thalamus: '[9, 9]',
         ],
 
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
 
-        ks_csb_seed: 101,
+        ks_csb_seed: 1,
         ks_lt_seed: 1,
         ks_copy_results: true,
         ks_ver: '3.0',
