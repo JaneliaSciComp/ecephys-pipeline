@@ -7,7 +7,7 @@ from ...common.utils import printProgressBar
 def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates, 
                                  amplitudes, channel_map, channel_pos, templates, pc_features, 
                                  pc_feature_ind, template_features, cluster_amplitude, 
-                                 sample_rate, params, epochs = None):
+                                 sample_rate, params, epochs=None):
 
     """ Remove putative double-counted spikes from Kilosort outputs
 
@@ -65,10 +65,10 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
     peak_chan_idx = np.squeeze(np.argmax(np.max(templates,1) - np.min(templates,1),1))
 
     # to accomdate case where matlab writes out chan map as (1,nchan) instead of (nchan,1)
-    channel_map = np.squeeze(channel_map);
+    channel_map = np.squeeze(channel_map)
     peak_channels = np.squeeze(channel_map[peak_chan_idx])
     
-    num_clusters = peak_channels.size;
+    num_clusters = peak_channels.size
     
     order = np.argsort(peak_channels)
     
@@ -84,7 +84,7 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
 
     print('Removing within-unit overlapping spikes...')
 
-    spikes_to_remove = np.zeros((0,))
+    spikes_to_remove = np.zeros((0,), dtype='int')
 
     for idx1, unit_id1 in enumerate(sorted_unit_list):
 
@@ -109,7 +109,7 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
 
     print('Removing between-unit overlapping spikes...')
 
-    spikes_to_remove = np.zeros((0,))
+    spikes_to_remove = np.zeros((0,), dtype='int')
 
     for idx1, unit_id1 in enumerate(sorted_unit_list):
 
@@ -147,7 +147,7 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
                                                                          template_features, 
                                                                          np.unique(spikes_to_remove),
                                                                          include_pcs)
-#   build overlap summary 
+    # build overlap summary 
     overlap_summary = np.zeros((num_clusters, 5), dtype=int )
     for idx1, unit_id1 in enumerate(unit_list[order]):
         overlap_summary[idx1,0] = unit_id1
@@ -155,7 +155,7 @@ def remove_double_counted_spikes(spike_times, spike_clusters, spike_templates,
         overlap_summary[idx1,2] = overlap_matrix[idx1,idx1]
         overlap_summary[idx1,3] = np.sum(overlap_matrix[idx1,:]) - overlap_matrix[idx1,idx1]
         overlap_summary[idx1,4] = sorted_unit_list[np.argmax(overlap_matrix[idx1,:])]     
-#   sort by label
+    # sort by label
     new_order = np.argsort(overlap_summary[:,0])
     overlap_summary = overlap_summary[new_order,:]
 
@@ -221,36 +221,36 @@ def find_between_unit_overlap(spike_train1, spike_train2, amp1, amp2, overlap_wi
 
     order = np.argsort(spike_train)
     sorted_train = spike_train[order]
-#   trim off the first member of the array of cluster labels; means the later spike will be picked for any pair
+    # trim off the first member of the array of cluster labels; means the later spike will be picked for any pair
     sorted_cluster_ids = cluster_ids[order][1:]
 
-#   Note that when applying this method to spike trains from two different clusters, we are assuming that
-#   any pair within the overlap window will consist of a spike from each train. Therefor, only works if
-#   the "within_unit_overlap_window" is >= "between_unit_overlap_window".
+    # Note that when applying this method to spike trains from two different clusters, we are assuming that
+    # any pair within the overlap window will consist of a spike from each train. Therefor, only works if
+    # the "within_unit_overlap_window" is >= "between_unit_overlap_window".
     
     spikes_to_remove = np.diff(sorted_train) < overlap_window
 
     if deletionMode == 'deleteFirst':
-#   trim off the first member of the array of sorted inds; means the later spike will be picked for any pair
+        # trim off the first member of the array of sorted inds; means the later spike will be picked for any pair
         sorted_inds = original_inds[order][1:] 
         spikes_to_remove1 = sorted_inds[spikes_to_remove * (sorted_cluster_ids == 0)]
         spikes_to_remove2 = sorted_inds[spikes_to_remove * (sorted_cluster_ids == 1)]
     else:
-#    for first member of a pair, need sorted index array starting from 0; for late, start from 1
+        # for first member of a pair, need sorted index array starting from 0; for late, start from 1
         lateInd = original_inds[order][1:]
         earlyInd = original_inds[order][0:(len(original_inds)-1)]
         if ( amp1 < amp2 ):
-#       Remove spikes the cluster with lower amplitude; many duplicate cases are 
-#       fitting a tail on a large amplitude feature with a low amplitude spike
-#        if (len(spike_train1) < len(spike_train2)):
-#           Remove spikes from cluster with fewer spikes
-#           Still have the first member of sorted_cluster_ids; to get cases where label 0 is 2nd, add 1
+            # Remove spikes the cluster with lower amplitude; many duplicate cases are 
+            # fitting a tail on a large amplitude feature with a low amplitude spike
+            # if (len(spike_train1) < len(spike_train2)):
+            #    Remove spikes from cluster with fewer spikes
+            # Still have the first member of sorted_cluster_ids; to get cases where label 0 is 2nd, add 1
             late0 = lateInd[spikes_to_remove * (sorted_cluster_ids == 0)]
             early0 = earlyInd[spikes_to_remove * (sorted_cluster_ids == 1)]
             spikes_to_remove1 = np.concatenate((late0, early0))
             spikes_to_remove2 = np.array([], dtype=int)
         else:
-#           Still have the first member of sorted_cluster_ids; to get cases where label 0 is 2nd, add 1
+            # Still have the first member of sorted_cluster_ids; to get cases where label 0 is 2nd, add 1
             late1 = lateInd[spikes_to_remove * (sorted_cluster_ids == 1)]
             early1 = earlyInd[spikes_to_remove * (sorted_cluster_ids == 0)]
             spikes_to_remove2 = np.concatenate((late1, early1))
