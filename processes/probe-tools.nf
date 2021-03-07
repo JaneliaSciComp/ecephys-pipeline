@@ -140,6 +140,7 @@ process run_catgt {
 process run_kilosort {
     container { params.kilosort_container }
     cpus { params.ks_cpus }
+    accelerator 1
     label 'withGPU'
 
     input:
