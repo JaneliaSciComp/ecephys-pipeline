@@ -180,7 +180,7 @@ process run_kilosort {
 }
 
 process run_kilosort_post_process {
-    container { params.kilosort_container }
+    container { params.ecephys_modules_container }
     cpus 1
 
     input:
