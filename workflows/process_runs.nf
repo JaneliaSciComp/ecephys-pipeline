@@ -130,13 +130,17 @@ workflow process_probes_for_all_runs {
     def ks_input = catgt_output
     def ks_output
     if (probe_steps.contains('kilosort_helper')) {
-        if (probe_steps.contains('kilosort_postprocessing')) {
-            ks_output = ks_input | run_kilosort | run_kilosort_post_process
-        } else {
-            ks_output = ks_input | run_kilosort
-        }
+        ks_output = ks_input | run_kilosort
     } else {
         ks_output = ks_input
+    }
+
+    def ks_post_input = ks_output
+    def ks_post_output
+    if (probe_steps.contains('kilosort_postprocessing')) {
+        ks_post_output = ks_post_input | run_kilosort_post_process
+    } else {
+        ks_post_output = ks_post_input
     }
 
     def noise_templates_input = ks_output
