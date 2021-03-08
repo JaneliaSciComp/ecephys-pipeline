@@ -49,6 +49,7 @@ workflow process_probes_for_all_runs {
         def first_trigger = probe_input[5]
         def last_trigger = probe_input[6]
         def triggers = "${first_trigger}:${last_trigger}"
+        def probe_type = params.probe_type
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
         def probe_data_name = get_probe_data_filename(
@@ -101,6 +102,7 @@ workflow process_probes_for_all_runs {
             gate,
             probe,
             triggers,
+            probe_type,
             probe_ks_th,
             probe_ref_per_ms,
             probe_ks_output_dir,
@@ -214,6 +216,8 @@ workflow process_tprime {
             .join(' ')
         def im_ex_list = "'${probes_sync_ch_args}'"
         def ni_ex_list = "'${params.ni_extract_cmd_args}'"
+        def to_stream_sync_params = params.to_stream_sync_cmd_args
+        def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
         def run_data_dir = "${data_dir}/${run_folder_name}"
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
 
@@ -238,8 +242,8 @@ workflow process_tprime {
             '', // probe_catgt_extract_string
             im_ex_list,
             ni_ex_list, // ni_ex_list
-            '', // to_stream_sync_params
-            '', // ni_stream_sync_params
+            to_stream_sync_params,
+            ni_stream_sync_params,
         ]
         log.debug "TPrime config params: $r"
         r

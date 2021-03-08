@@ -34,8 +34,10 @@ def main(argv):
     parser.add_argument('--ks_lt_seed', type=int, default=1, help='Run seed')
     parser.add_argument('--ks_template_radius_um', type=int, default=1, help='Run seed')
     parser.add_argument('--catgt_run_name', help='CatGT run name')
-    parser.add_argument('--gate')
-    parser.add_argument('--probe')
+    parser.add_argument('--probe_type')
+    parser.add_argument('--gate_string')
+    parser.add_argument('--trigger_string')
+    parser.add_argument('--probe_string')
     parser.add_argument('--catgt_stream_params', type=hyphenated)
     parser.add_argument('--catgt_car_mode')
     parser.add_argument('--catgt_loccar_min', type=float)
@@ -101,8 +103,10 @@ def main(argv):
         # CatGT args
         extracted_data_directory=args.catgt_output_dir,
         catGT_run_name=args.catgt_run_name,
-        gate_string=args.gate,
-        probe_string=args.probe,
+        probe_type=args.probe_type,
+        gate_string=args.gate_string,
+        trigger_string=args.trigger_string,
+        probe_string=args.probe_string,
         catGT_stream_string=args.catgt_stream_params,
         catGT_car_mode=args.catgt_car_mode,
         catGT_loccar_min_um=args.catgt_loccar_min,

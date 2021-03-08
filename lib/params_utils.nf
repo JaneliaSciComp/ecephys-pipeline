@@ -26,6 +26,7 @@ def default_params() {
             thalamus: '[9, 9]',
         ],
 
+        probe_type: 'NP1',
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
 
         ks_csb_seed: 1,
