@@ -72,8 +72,7 @@ workflow process_probes_for_all_runs {
         def probe_config_file = global_config("${config_dir}/${run_folder_name}/${probe_folder_name}", probe_folder_name)
         def probe_ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def probe_ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
-        def run_results_dir = "${results_dir}/${run_folder_name}"
-        def probe_ks_output_dir = "${run_results_dir}/${probe_folder_name}/imec${probe}_ks2"
+        def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_ks2"
         def probe_ks_working_dir = "${params.ks_working_dir}/${probe_folder_name}"
         def probe_stream_params
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
@@ -107,7 +106,7 @@ workflow process_probes_for_all_runs {
             probe_ref_per_ms,
             probe_ks_output_dir,
             probe_ks_working_dir,
-            run_results_dir, //  catgt_output_dir
+            results_dir, //  catgt_output_dir
             probe_stream_params,
             probe_catgt_cmd,
             probe_catgt_extract_string,
@@ -217,7 +216,6 @@ workflow process_tprime {
         def ni_ex_list = "'${params.ni_extract_cmd_args}'"
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
-        def run_results_dir = "${results_dir}/${run_folder_name}"
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
 
         def r = [
@@ -234,9 +232,9 @@ workflow process_tprime {
             probe_type,
             '', // probe_ks_th
             '', // probe_ref_per_ms
-            run_results_dir, // ks_output_dir
+            results_dir, // ks_output_dir
             params.ks_working_dir, // ks_working_dir
-            run_results_dir, //  catgt_output_dir
+            results_dir, //  catgt_output_dir
             '', // probe_stream_params
             '', // probe_catgt_cmd
             '', // probe_catgt_extract_string

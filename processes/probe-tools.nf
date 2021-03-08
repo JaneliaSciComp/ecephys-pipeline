@@ -431,20 +431,25 @@ def create_code_block(module_name,
                       all_config_filename,
                       module_config_folder_name,
                       module_config_fields) {
-    def config_dir = file("${all_config_filename}").parent
-    def config = read_json("${all_config_filename}")
-    def module_config = filter_config(config, module_config_fields)
-    def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
-    def ks_working_dir = config.directories.kilosort_output_tmp
-    """
-    umask 000
-    mkdir -p ${ks_working_dir}
-    python \
-        -m ecephys_spike_sorting.modules.${module_name} \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
-    """
-    .stripIndent()
+    try {
+        def config_dir = file("${all_config_filename}").parent
+        def config = read_json("${all_config_filename}")
+        def module_config = filter_config(config, module_config_fields)
+        def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
+        write_json(module_config, module_input_file)
+        def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
+        def ks_working_dir = config.directories.kilosort_output_tmp
+        """
+        umask 000
+        mkdir -p ${ks_working_dir}
+        python \
+            -m ecephys_spike_sorting.modules.${module_name} \
+            --input_json ${module_input_file} \
+            --output_json ${module_output_file}
+        """
+        .stripIndent()
+    } catch (Throwable e) {
+        log.error "Problem creating module config for ${module_name} using ${all_config_filename}"
+        t.printStackTrace()
+    }
 }
