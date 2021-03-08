@@ -31,7 +31,7 @@ process create_probe_config {
           val(probe_ks_output_dir),
           val(probe_ks_working_dir),
           // catgt
-          val(probe_catgt_output_dir),
+          val(catgt_output_dir),
           val(probe_stream_params),
           val(probe_catgt_cmd),
           val(probe_catgt_extract_string),
@@ -82,7 +82,7 @@ process create_probe_config {
         create_arg('--catgt_loccar_max', params.catgt_loccar_max),
         create_arg('--catgt_cmd', probe_catgt_cmd),
         create_arg('--catgt_extract_string', probe_catgt_extract_string),
-        create_arg('--catgt_output_dir', probe_catgt_output_dir),
+        create_arg('--catgt_output_dir', catgt_output_dir),
         create_arg('--event_ex_param_str', params.event_ex_cmd_arg),
         create_arg('--c_waves_snr_um', params.c_waves_snr_um),
         create_arg('--ref_per_ms', probe_ref_per_ms),
