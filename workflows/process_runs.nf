@@ -221,7 +221,7 @@ workflow process_tprime {
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
 
         def r = [
-            run_data_dir,
+            data_dir,
             '', // probe_data_file
             '', // probe_meta_file
             run_config_file,
