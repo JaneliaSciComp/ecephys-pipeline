@@ -431,8 +431,8 @@ def create_code_block(module_name,
                       all_config_filename,
                       module_config_folder_name,
                       module_config_fields) {
-    def config_dir = file(all_config_filename).parent
-    def config = read_json(all_config_filename)
+    def config_dir = file("${all_config_filename}").parent
+    def config = read_json("${all_config_filename}")
     def module_config = filter_config(config, module_config_fields)
     def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
     write_json(module_config, module_input_file)
