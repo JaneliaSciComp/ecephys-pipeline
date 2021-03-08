@@ -408,7 +408,6 @@ process run_tprime {
         run_folder_name,
         [
             'tPrime_helper_params',
-            'catGT_helper_params',
             'directories',
             'ephys_params'
         ]
