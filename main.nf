@@ -58,7 +58,7 @@ probe_steps = get_list_or_default(
                 'psth_events',
                 'mean_waveforms',
                 'quality_metrics',
-                'tPrimme_helper',
+                'tPrime_helper',
             ]
         )
 
@@ -77,7 +77,7 @@ workflow {
         runs,
         probe_steps)
 
-    if (probe_steps.contains('tPrimme_helper')) {
+    if (probe_steps.contains('tPrime_helper')) {
         def tprime_inputs = probe_results
         | groupTuple(by: [2,4,5,7]) // group by run_folder, run_name, gate, triggers
 
