@@ -70,7 +70,9 @@ def call_TPrime(args):
         # -1 option to specify the last channel in the file 
         prb_dir = prb_dir_prefix + str(toStream_prb)
         match_str = run_name + '_tcat.imec' + str(toStream_prb) + '.ap.SY_*_6_*.txt'
-        file_list = os.listdir(os.path.join(run_directory,prb_dir))
+        print('Run directory:', run_directory)
+        print('Probe directory:', prb_dir_prefix, str(toStream_prb), prb_dir)
+        file_list = os.listdir(os.path.join(run_directory, prb_dir))
         flt_list = fnmatch.filter(file_list,match_str)
         if len(flt_list) != 1:
             print('No edge file or multiple files for toStream found\n' )
