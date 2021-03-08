@@ -273,7 +273,6 @@ def createInputJson(output_file,
             },
 
             "mean_waveform_params": {
-
                 "mean_waveforms_file": os.path.join(kilosort_output_directory, 'mean_waveforms.npy'),
                 "samples_per_spike": 82,
                 "pre_samples": 20,
@@ -319,6 +318,8 @@ def createInputJson(output_file,
             },
 
             "tPrime_helper_params": {
+                "run_name": catGT_run_name,
+                "gate_string": gate_string,
                 "tPrime_path": tPrime_path,
                 "im_ex_list": tPrime_im_ex_list,
                 "ni_ex_list": tPrime_ni_ex_list,
