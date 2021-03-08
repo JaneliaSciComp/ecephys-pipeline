@@ -245,22 +245,18 @@ process run_noise_templates {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
-        'noise_waveform_params',
-        'directories',
-        'ephys_params'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'noise_templates', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'noise_templates', 'output')
+    def code = create_code_block(
+        'noise_templates',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'noise_waveform_params',
+            'directories',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.modules.noise_templates \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -289,24 +285,20 @@ process run_mean_waveforms {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
-        'waveform_metrics',
-        'mean_waveform_params',
-        'cluster_metrics',
-        'directories',
-        'ephys_params'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'mean_waveforms', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'mean_waveforms', 'output')
+    def code = create_code_block(
+        'mean_waveforms',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'waveform_metrics',
+            'mean_waveform_params',
+            'cluster_metrics',
+            'directories',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.modules.mean_waveforms \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -335,22 +327,18 @@ process run_psth_events {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
+    def code = create_code_block(
         'psth_events',
-        'directories',
-        'ephys_params'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'psth_events', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'psth_events', 'output')
+        probe_config_file,
+        probe_folder_name,
+        [
+            'psth_events',
+            'directories',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.modules.psth_events \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -379,24 +367,20 @@ process run_quality_metrics {
           val(triggers)
 
     script:
-    def config = read_json(probe_config_file)
-    def module_config = filter_config(config, [
-        'quality_metrics_params',
-        'waveform_metrics',
-        'cluster_metrics',
-        'directories',
-        'ephys_params'
-    ])
-    def probe_config_dir = file(probe_config_file).parent
-    def module_input_file = config_file(probe_config_dir, probe_folder_name, 'quality_metrics', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(probe_config_dir, probe_folder_name, 'quality_metrics', 'output')
+    def code = create_code_block(
+        'quality_metrics',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'quality_metrics_params',
+            'waveform_metrics',
+            'cluster_metrics',
+            'directories',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.modules.quality_metrics \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
@@ -415,23 +399,19 @@ process run_tprime {
           val(run_name)
 
     script:
-    def config = read_json(run_config_file)
-    def module_config = filter_config(config, [
-        'tPrime_helper_params',
-        'catGT_helper_params',
-        'directories',
-        'ephys_params'
-    ])
-    def run_config_dir = file(run_config_file).parent
-    def module_input_file = config_file(run_config_dir, run_folder_name, 'tPrimme_helper', 'input')
-    write_json(module_config, module_input_file)
-    def module_output_file = config_file(run_config_dir, run_folder_name, 'tPrimme_helper', 'output')
+    def code = create_code_block(
+        'tPrime_helper',
+        run_config_file,
+        run_folder_name,
+        [
+            'tPrime_helper_params',
+            'catGT_helper_params',
+            'directories',
+            'ephys_params'
+        ]
+    )
     """
-    umask 000
-    python \
-        -m ecephys_spike_sorting.modules.tPrimme_helper \
-        --input_json ${module_input_file} \
-        --output_json ${module_output_file}
+    ${code}
     """
 }
 
