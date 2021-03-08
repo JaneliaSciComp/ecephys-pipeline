@@ -446,4 +446,5 @@ def create_code_block(module_name,
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
     """
+    .stripIndent()
 }
