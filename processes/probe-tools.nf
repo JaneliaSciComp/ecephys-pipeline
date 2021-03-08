@@ -442,7 +442,7 @@ def create_code_block(module_name,
     """
     umask 000
     mkdir -p ${ks_working_dir}
-    echo python \
+    python \
         -m ecephys_spike_sorting.modules.${module_name} \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}
