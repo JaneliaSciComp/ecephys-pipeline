@@ -419,7 +419,9 @@ process run_tprime {
 }
 
 def create_arg(arg_flag, arg_value) {
-    "${arg_value}" == '' ? ''  : "${arg_flag} ${arg_value}"
+    arg_value == null || "${arg_value}" == ''
+        ? ''
+        : "${arg_flag} ${arg_value}"
 }
 
 def create_bool_arg(arg_flag, arg_value) {
@@ -440,7 +442,7 @@ def create_code_block(module_name,
     """
     umask 000
     mkdir -p ${ks_working_dir}
-    python \
+    echo python \
         -m ecephys_spike_sorting.modules.${module_name} \
         --input_json ${module_input_file} \
         --output_json ${module_output_file}

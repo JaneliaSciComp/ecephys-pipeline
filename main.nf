@@ -54,11 +54,11 @@ probe_steps = get_list_or_default(
                 'catGT_helper',
                 'kilosort_helper',
                 'kilosort_postprocessing',
-                // 'noise_templates',
-                // 'psth_events',
-                // 'mean_waveforms',
-                // 'quality_metrics',
-                // 'tPrimme_helper',
+                'noise_templates',
+                'psth_events',
+                'mean_waveforms',
+                'quality_metrics',
+                'tPrimme_helper',
             ]
         )
 
@@ -79,7 +79,7 @@ workflow {
 
     if (probe_steps.contains('tPrimme_helper')) {
         def tprime_inputs = probe_results
-        | groupTuple(by: [2,4,5]) // group by run_folder, run_name, gate
+        | groupTuple(by: [2,4,5,7]) // group by run_folder, run_name, gate, triggers
 
         process_tprime(
             data_dir,

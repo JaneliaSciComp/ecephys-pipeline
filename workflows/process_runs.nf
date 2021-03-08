@@ -48,7 +48,7 @@ workflow process_probes_for_all_runs {
         def region = probe_input[4]
         def first_trigger = probe_input[5]
         def last_trigger = probe_input[6]
-        def triggers = "${first_trigger}:${last_trigger}"
+        def triggers = "${first_trigger},${last_trigger}"
         def probe_type = params.probe_type
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
@@ -199,13 +199,12 @@ workflow process_tprime {
     | join(index_channel(probes_input))
     | join(index_channel(triggers_input))
     | map {
-        println "!!! $it"
         def run_folder_name = it[1]
         def run_name = it[2]
         def gate = it[3]
         def probes = it[4]
         def triggers = it[5]
-
+        def probe_type = params.probe_type
         def probes_sync_ch_args = probes.withIndex()
             .collect { prbIdxPair ->
                 def prb = prbIdxPair[0]
@@ -232,7 +231,8 @@ workflow process_tprime {
             gate,
             '', // probe
             triggers,
-            '',
+            probe_type,
+            '', // probe_ks_th
             '', // probe_ref_per_ms
             run_data_dir, // ks_output_dir
             params.ks_working_dir, // ks_working_dir
