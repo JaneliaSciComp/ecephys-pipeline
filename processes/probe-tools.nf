@@ -448,7 +448,7 @@ def create_code_block(module_name,
             --output_json ${module_output_file}
         """
         .stripIndent()
-    } catch (Throwable e) {
+    } catch (Throwable t) {
         log.error "Problem creating module config for ${module_name} using ${all_config_filename}"
         t.printStackTrace()
     }
