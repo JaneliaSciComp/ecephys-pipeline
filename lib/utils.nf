@@ -3,14 +3,9 @@ def read_json(cf) {
     return jsonSlurper.parse(file(cf))
 }
 
-def read_json_file(cf) {
-    def jsonSlurper = new groovy.json.JsonSlurper()
-    return jsonSlurper.parse(cf)
-}
-
 def write_json(data, cf) {
     def json_str = groovy.json.JsonOutput.toJson(data)
-    json_beauty = groovy.json.JsonOutput.prettyPrint(json_str)
+    def json_beauty = groovy.json.JsonOutput.prettyPrint(json_str)
     cf.write(json_beauty)
 }
 
