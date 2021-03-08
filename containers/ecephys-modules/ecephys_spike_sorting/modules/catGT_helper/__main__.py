@@ -49,8 +49,6 @@ def run_CatGT(args):
     cmd_parts.append('-dest=' + args['directories']
                      ['extracted_data_directory'])
 
-    catGT_cmd = ' '.join(cmd_parts)
-
     print('CatGT command line:',  cmd_parts)
 
     start = time.time()

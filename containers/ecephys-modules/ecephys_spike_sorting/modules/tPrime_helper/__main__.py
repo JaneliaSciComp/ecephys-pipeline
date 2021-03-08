@@ -216,23 +216,20 @@ def call_TPrime(args):
         print('unknown system, cannot run TPrime')   
 
     # Print out command for help with debugging
-    tcmd = exe_path + ' -syncperiod=' + repr(sync_period) + \
-        ' -tostream=' + toStream_path
+    tcmd_parts = list()
+
+    tcmd_parts.append(exe_path)
+    tcmd_parts.append('-syncperiod=' + repr(sync_period))
+    tcmd_parts.append('-tostream=' + toStream_path)
 
     for i, fp in enumerate(from_list):
-        tcmd = tcmd + ' -fromstream=' + repr(i) + ',' + fp
+        tcmd_parts.append('-fromstream=' + repr(i) + ',' + fp)
 
     for i, ep in enumerate(events_list):
-        tcmd = tcmd + ' -events=' + repr(from_stream_index[i]) + ',' + ep + ',' + out_list[i]
-
-    # write out file to record the TPrime command for a record
-    bat_path = os.path.join(run_directory, run_name + '_TPrime_cmd.txt')
-    with open(bat_path, 'w') as batfile:
-        batfile.write(tcmd)
-
+        tcmd_parts.append('-events=' + repr(from_stream_index[i]) + ',' + ep + ',' + out_list[i])
         
     # make the TPrime call
-    subprocess.call(tcmd)
+    subprocess.call(tcmd_parts)
 
     # convert output files were text, convert to npy
     if not bNPY:
@@ -321,22 +318,19 @@ def call_TPrime_3A(args):
     exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit')
     sync_period = args['tPrime_helper_params']['sync_period']
 
-    tcmd = exe_path + ' -syncperiod=' + repr(sync_period) + \
-        ' -tostream=' + toStream_path
+    tcmd_parts = list()
+    tcmd_parts.append(exe_path)
+    tcmd_parts.append('-syncperiod=' + repr(sync_period))
+    tcmd_parts.append('-tostream=' + toStream_path)
 
     for i, fp in enumerate(from_list):
-        tcmd = tcmd + ' -fromstream=' + repr(i) + ',' + fp
+        tcmd_parts.append('-fromstream=' + repr(i) + ',' + fp)
 
     for i, ep in enumerate(events_list):
-        tcmd = tcmd + ' -events=' + repr(from_stream_index[i]) + ',' + ep + ',' + out_list[i]
-
-    # write out batch file to call TPrime
-    bat_path = os.path.join(toStream_parent, toStream_name + '_TPrime.bat')
-    with open(bat_path, 'w') as batfile:
-        batfile.write(tcmd)
+        tcmd_parts.append('-events=' + repr(from_stream_index[i]) + ',' + ep + ',' + out_list[i])
 
     # make the TPrime call
-    subprocess.call(tcmd)
+    subprocess.call(tcmd_parts)
 
     # convert output files to npy
     if not bNPY:
