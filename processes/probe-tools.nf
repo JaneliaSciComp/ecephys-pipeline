@@ -454,7 +454,7 @@ def create_code_block(module_name,
         """
         .stripIndent()
     } catch (Throwable t) {
-        log.error "Problem creating module config for ${module_name} using ${all_config_filename}"
-        t.printStackTrace()
+        log.error "Problem creating module config for ${module_name} using ${all_config_filename} : $t"
+        throw t
     }
 }
