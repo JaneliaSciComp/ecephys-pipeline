@@ -5,9 +5,6 @@ from ...common.schemas import EphysParams, Directories
 
 
 class tPrimeParams(DefaultSchema):
-    run_name = String(required=False,
-                      help='undecorated run name (no g or t indices')
-    gate_string = String(required=False, default='0', help='gate string')
     tPrime_path = InputDir(help='directory containing the TPrime executable.')
     sync_period = Float(default=1.0, help='Period of sync waveform (sec).')
     toStream_sync_params = String(required=False, default='SY=0,384,6,500', help='string of CatGT params used to extract to stream sync edges, e.g. SY=0,384,6,500')

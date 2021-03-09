@@ -44,25 +44,23 @@ def get_psth_events(args):
             ex_file_name = run_name + ex_name_str + '.txt'
             ex_path = os.path.join(run_fld, ex_file_name)
     else:
-        # 3B/NP1.0/NP2.0, assume run and probe folders  
-        prb_fld, bin_name = os.path.split(input_file)
-        run_fld, prb_fld_name = os.path.split(prb_fld)
-        parent_fld, run_fld_name = os.path.split(run_fld)
+        # 3B/NP1.0/NP2.0, assume run and probe folders
 
         # since these data have been through CatGT, the name of the run folder
-        # is: catGT_<run_name>
-        run_name = run_fld_name[6:]
-
+        catGT_dest = args['directories']['extracted_data_directory']
+        run_name = args['ephys_params']['run_name'] + '_g' + args['ephys_params']['gate_string']
+        run_dir_name = 'catgt_' + run_name
+        prb = str(prb_index)
+        prb_fld_name = run_name + '_imec' + prb
+        run_directory = os.path.join(catGT_dest, run_dir_name)
         if 'X' in extract_str:
             # nidq channel
             ex_file_name = run_name + '_tcat.nidq.' + ex_name_str + '.txt'
-            ex_path = os.path.join(run_fld, ex_file_name)
+            ex_path = os.path.join(run_directory, ex_file_name)
         else:
             # SY channel. could be on any probe, so get the probe string
-            prb = str(prb_index)
             ex_file_name = run_name + '_tcat.imec' + prb + '.' + ex_name_str + '.txt'
-            ex_prb_fld_name = run_name + '_imec' + prb
-            ex_path = os.path.join(run_fld, ex_prb_fld_name, ex_file_name)
+            ex_path = os.path.join(run_directory, prb_fld_name, ex_file_name)
 
     # the CatGT extracted edge files are a single column with </n>
     # event viewer needs .csv

@@ -32,11 +32,11 @@ def call_TPrime(args):
     
     # build paths to the input data for TPrime
     catGT_dest = args['directories']['extracted_data_directory']
-    run_name = args['tPrime_helper_params']['run_name'] + '_g' + args['tPrime_helper_params']['gate_string']
+    run_name = args['ephys_params']['run_name'] + '_g' + args['ephys_params']['gate_string']
     run_dir_name = 'catgt_' + run_name
     prb_dir_prefix = run_name + '_imec'
     
-    run_directory = os.path.join( catGT_dest, run_dir_name ) # extracted edge files for aux data reside in run directory
+    run_directory = os.path.join(catGT_dest, run_dir_name) # extracted edge files for aux data reside in run directory
 
     # build list of from streams
     #   all streams for which sync edges have been extracted
@@ -73,7 +73,7 @@ def call_TPrime(args):
         print('Run directory:', run_directory)
         print('Probe directory:', prb_dir_prefix, str(toStream_prb), prb_dir)
         file_list = os.listdir(os.path.join(run_directory, prb_dir))
-        flt_list = fnmatch.filter(file_list,match_str)
+        flt_list = fnmatch.filter(file_list, match_str)
         if len(flt_list) != 1:
             print('No edge file or multiple files for toStream found\n' )
             return              
