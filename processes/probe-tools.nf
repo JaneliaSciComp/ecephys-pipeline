@@ -440,12 +440,10 @@ def create_code_block(module_name,
         def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
         def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
         def ks_working_dir = config.directories.kilosort_output_tmp
+        module_input_file.write(json_module_config)
         """
         umask 000
         mkdir -p ${ks_working_dir}
-
-        # write json input config
-        printf '%s\n' '${json_module_config}' > ${module_input_file}
 
         # run module
         python \
