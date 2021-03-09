@@ -97,6 +97,7 @@ process create_probe_config {
     umask 000
     mkdir -p ${probe_config_dir}
     python -m ecephys_spike_sorting.helpers.create_input_config ${args}
+    /app/scripts/waitforpaths.sh ${probe_config_file}
     """
 }
 
@@ -454,7 +455,7 @@ def create_code_block(module_name,
         """
         .stripIndent()
     } catch (Throwable t) {
-        log.error "Problem creating module config for ${module_name} using ${all_config_filename} : $t"
+        log.error "Problem creating module config for ${module_name} using ${all_config_filename} : ${t.cause}"
         throw t
     }
 }

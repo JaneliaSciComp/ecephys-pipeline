@@ -27,5 +27,7 @@ RUN conda config --set always_yes yes && \
 
 COPY ecephys_spike_sorting /ecephys-install/ecephys_spike_sorting/
 COPY ecephys_spike_sorting /app/ecephys_spike_sorting/ecephys_spike_sorting/
+COPY scripts /ecephys-install/scripts
+COPY scripts /app/scripts
 
 ENV PYTHONPATH=/app/ecephys_spike_sorting:${PYTHONPATH}
