@@ -16,6 +16,7 @@ include {
     run_psth_events;
     run_quality_metrics;
     run_tprime;
+    wait_for_config;
 } from '../processes/probe-tools' addParams(params)
 
 include {
@@ -119,6 +120,7 @@ workflow process_probes_for_all_runs {
         r
     }
     | create_probe_config
+    | wait_for_config
 
     def catgt_input = probe_config_output 
     def catgt_output
@@ -247,6 +249,7 @@ workflow process_tprime {
         r
     }
     | create_probe_config
+    | wait_for_config
     | map {
         [
             it[1], // run_config_file

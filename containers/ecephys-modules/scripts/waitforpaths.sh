@@ -13,7 +13,7 @@ for f in ${filelist}; do
     echo "Checking for $f"
     SECONDS=0
 
-    while ! test -e "$f"; do
+    while [[ ! -s "$f" ]] ; do
         sleep $SLEEP_SECS
         if (( $SECONDS < $MAX_WAIT_SECS )); then
             echo "Waiting for $f"

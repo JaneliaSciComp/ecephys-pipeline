@@ -97,6 +97,35 @@ process create_probe_config {
     umask 000
     mkdir -p ${probe_config_dir}
     python -m ecephys_spike_sorting.helpers.create_input_config ${args}
+    """
+}
+
+process wait_for_config {
+    container { params.ecephys_modules_container }
+    executor 'Local'
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    script:
+    """
     /app/scripts/waitforpaths.sh ${probe_config_file}
     """
 }
