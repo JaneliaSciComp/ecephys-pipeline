@@ -445,7 +445,7 @@ def create_code_block(module_name,
         mkdir -p ${ks_working_dir}
 
         # write json input config
-        printf '%s' '${json_module_config}' > ${module_input_file}
+        printf '%s\n' '${json_module_config}' > ${module_input_file}
 
         # run module
         python \
