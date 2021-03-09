@@ -30,4 +30,6 @@ COPY ecephys_spike_sorting /app/ecephys_spike_sorting/ecephys_spike_sorting/
 COPY scripts /ecephys-install/scripts
 COPY scripts /app/scripts
 
+RUN chmod 555 /app/scripts/*.sh
+
 ENV PYTHONPATH=/app/ecephys_spike_sorting:${PYTHONPATH}
