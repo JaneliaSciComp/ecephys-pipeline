@@ -4,8 +4,8 @@
 # If any file takes longer than MAX_WAIT_SECS to appear, the script fails.
 #
 
-SLEEP_SECS="${SLEEP_SECS:-1}"
-MAX_WAIT_SECS="${MAX_WAIT_SECS:-30}"
+SLEEP_SECS="${SLEEP_SECS:-5}"
+MAX_WAIT_SECS="${MAX_WAIT_SECS:-120}"
 
 filelist=$@
 for f in ${filelist}; do
