@@ -21,5 +21,7 @@ for f in ${filelist}; do
             echo "Timed out after $SECONDS seconds while waiting for $f"
             exit 1
         fi
+        SECONDS=$((SECONDS + SLEEP_SECS))
     done
+    echo "FOUND $f after $SECONDS seconds"
 done

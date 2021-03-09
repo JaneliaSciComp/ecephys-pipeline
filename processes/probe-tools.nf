@@ -443,10 +443,10 @@ def create_code_block(module_name,
         """
         umask 000
         mkdir -p ${ks_working_dir}
+
         # write json input config
-        cat > ${module_input_file} <<EOF
-        ${json_module_config}
-        EOF
+        printf '%s' '${json_module_config}' > ${module_input_file}
+
         # run module
         python \
             -m ecephys_spike_sorting.modules.${module_name} \
