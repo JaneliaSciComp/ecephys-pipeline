@@ -5,7 +5,7 @@ include {
 
 include {
     read_json;
-    write_json;
+    to_json;
 } from '../lib/utils'
 
 process create_probe_config {
@@ -435,13 +435,18 @@ def create_code_block(module_name,
         def config_dir = file("${all_config_filename}").parent
         def config = read_json("${all_config_filename}")
         def module_config = filter_config(config, module_config_fields)
+        def json_module_config = to_json(module_config)
         def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
-        write_json(module_config, module_input_file)
         def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
         def ks_working_dir = config.directories.kilosort_output_tmp
         """
         umask 000
         mkdir -p ${ks_working_dir}
+        # write json input config
+        cat > ${module_input_file} <<EOF
+        ${json_module_config}
+        EOF
+        # run module
         python \
             -m ecephys_spike_sorting.modules.${module_name} \
             --input_json ${module_input_file} \

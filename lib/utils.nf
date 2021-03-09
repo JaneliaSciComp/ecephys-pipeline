@@ -3,10 +3,9 @@ def read_json(cf) {
     return jsonSlurper.parse(file(cf))
 }
 
-def write_json(data, cf) {
+def to_json(data) {
     def json_str = groovy.json.JsonOutput.toJson(data)
-    def json_beauty = groovy.json.JsonOutput.prettyPrint(json_str)
-    cf.write(json_beauty)
+    groovy.json.JsonOutput.prettyPrint(json_str)
 }
 
 def index_channel(c) {
