@@ -25,6 +25,7 @@ include {
 
 include {
     prepare_run_specs;
+    prepare_recording_specs;
 } from './lib/probe_utils'
 
 final_params = default_params() + params
@@ -49,7 +50,6 @@ results_dir = get_value_or_default(final_params, 'results_dir', data_dir)
 config_dir = get_value_or_default(final_params, 'config_dir', results_dir)
 working_dir = get_value_or_default(final_params, 'working_dir', "${results_dir}/tmp")
 
-runs_file = final_params.runs
 probe_steps = get_list_or_default(
             final_params,
             'probe_steps',
@@ -71,29 +71,40 @@ log.info """
          """
 
 workflow {
-    def runs = prepare_run_specs(read_json(file(runs_file)))
-    // process all probes
-    def probe_results = process_probes_for_all_runs(
-        data_dir,
-        results_dir,
-        config_dir,
-        runs,
-        probe_steps)
-
-    if (probe_steps.contains('tPrime_helper')) {
-        def tprime_inputs = probe_results
-        | groupTuple(by: [2,4,5,7]) // group by run_folder, run_name, gate, triggers
-
-        process_tprime(
+    
+    if (final_params.runs) {
+        // if the runs parameter is specified 
+        // read and proccess the run specs from the speccifed runs file
+        def runs = prepare_run_specs(read_json(file(final_params.runs)))
+        // process all probes
+        def probe_results = process_probes_for_all_runs(
             data_dir,
             results_dir,
             config_dir,
-            tprime_inputs.map { it[2] }, // run folder
-            tprime_inputs.map { it[4] }, // run name
-            tprime_inputs.map { it[5] }, // gate name
-            tprime_inputs.map { it[6] }, // probes
-            tprime_inputs.map { it[7] }, // triggers
-        ) | view
+            runs,
+            probe_steps)
+
+        if (probe_steps.contains('tPrime_helper')) {
+            def tprime_inputs = probe_results
+            | groupTuple(by: [2,4,5,7]) // group by run_folder, run_name, gate, triggers
+
+            process_tprime(
+                data_dir,
+                results_dir,
+                config_dir,
+                tprime_inputs.map { it[2] }, // run folder
+                tprime_inputs.map { it[4] }, // run name
+                tprime_inputs.map { it[5] }, // gate name
+                tprime_inputs.map { it[6] }, // probes
+                tprime_inputs.map { it[7] }, // triggers
+            ) | view
+        }
+    }
+
+    if (final_params.recordings) {
+        // if the recordings parameter is specified
+        // read and process the recording specs from the specified file
+        def recordings = prepare_recording_specs(read_json(file(final_params.recordings)))
     }
 
 }

@@ -12,6 +12,7 @@ def default_params() {
         results_dir: '',
         config_dir: '',
         runs: '',
+        recordings: '',
 
         ref_per_ms_by_region: [
             default_value: 2.0,

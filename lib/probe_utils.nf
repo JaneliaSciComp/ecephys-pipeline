@@ -86,6 +86,22 @@ def parse_triggers(tstr) {
     return [start, end]
 }
 
+// Each recording specify the full path to the binary and the region
+// [
+//    {
+//       "binaryLocation": "/test_data/SC011_022319_g0_tcat.imec3.ap.bin",
+//       "region": "default"
+//    }
+// ]
+def prepare_recording_specs(recording_specs) {
+    recording_specs.collect { recording_entry ->
+        [
+            recording_path: recording_entry.binaryLocation,
+            region: recording_entry.region,
+        ]
+    }
+}
+
 def get_run_folder_name(run_name, gate) {
     "${run_name}_g${gate}"
 }
