@@ -50,7 +50,6 @@ workflow process_all_recordings {
         def ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
 
-        println "!!!RECORDING BASE: $recording_basename"
         def r = [
             recording_dir,
             recording_bin_file,
@@ -98,8 +97,40 @@ workflow process_all_recordings {
         ks_post_output = ks_post_input
     }
 
+    def noise_templates_input = ks_output
+    def noise_templates_output
+    if (steps.contains('noise_templates')) {
+        noise_templates_output = noise_templates_input | run_noise_templates
+    } else {
+        noise_templates_output = noise_templates_input
+    }
+
+    def psth_events_input = noise_templates_output
+    def psth_events_output
+    if (steps.contains('psth_events')) {
+        psth_events_output = psth_events_input | run_psth_events
+    } else {
+        psth_events_output = psth_events_input
+    }
+
+    def mean_waveforms_input = psth_events_output
+    def mean_waveforms_output
+    if (steps.contains('mean_waveforms')) {
+        mean_waveforms_output = mean_waveforms_input | run_mean_waveforms
+    } else {
+        mean_waveforms_output = psth_events_input
+    }
+
+    def quality_metrics_input = mean_waveforms_output
+    def quality_metrics_output
+    if (steps.contains('quality_metrics')) {
+        quality_metrics_output = quality_metrics_input | run_quality_metrics
+    } else {
+        quality_metrics_output = psth_events_input
+    }
+
     emit:
-    done = config_output
+    res = quality_metrics_output
 }
 
 def prepare_recordings_inputs(recordings) {
