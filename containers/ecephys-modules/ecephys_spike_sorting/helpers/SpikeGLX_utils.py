@@ -53,6 +53,7 @@ def EphysParams(metaFullPath):
     # read metadata
     
     #first create Path object from string
+    print('Extract ephys params from:', metaFullPath)
     metaPath = Path(metaFullPath)
     meta = SGLXMeta.readMeta(metaPath)
     
