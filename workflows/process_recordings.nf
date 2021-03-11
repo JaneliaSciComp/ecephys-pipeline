@@ -50,13 +50,14 @@ workflow process_all_recordings {
         def ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
 
+        println "!!!RECORDING BASE: $recording_basename"
         def r = [
             recording_dir,
             recording_bin_file,
             recording_meta_file,
             recording_config_file,
             '', // run_folder_name,
-            "${recording_basename}_imec${probe}",
+            recording_basename,
             recording_basename,
             gate, // gate
             probe,
