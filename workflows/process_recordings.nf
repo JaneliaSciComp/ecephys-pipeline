@@ -1,5 +1,6 @@
 include {
     extract_basename;
+    extract_gate;
     extract_probe;
     global_config;
 } from '../lib/probe_utils'
@@ -42,6 +43,7 @@ workflow process_all_recordings {
         }
         def recording_basename = extract_basename(recording_name)
         def recording_config_file = global_config(config_dir, recording_basename)
+        def gate = extract_gate(recording_name)
         def probe = extract_probe(recording_name)
         def ks_output_dir = "${results_dir}/${recording_basename}/imec${probe}_ks2"
         def ks_working_dir = "${params.ks_working_dir}/${recording_basename}_imec${probe}_ks2"
@@ -56,7 +58,7 @@ workflow process_all_recordings {
             '', // run_folder_name,
             "${recording_basename}_imec${probe}",
             recording_basename,
-            '', // gate
+            gate, // gate
             probe,
             '', // triggers
             '', // probe_type

@@ -1,3 +1,12 @@
+def extract_gate(tcat_name) {
+    def gate_lookup = (tcat_name =~ /g(\d+)_tcat/)
+    if (gate_lookup.find()) {
+        gate_lookup[0][1]
+    } else {
+        ''
+    }
+}
+
 def extract_probe(tcat_name) {
     def tcat_index = tcat_name.indexOf('_tcat')
     def tcat_name_parts
