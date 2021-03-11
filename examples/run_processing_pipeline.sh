@@ -3,6 +3,7 @@
 ./main.nf \
     -profile localdocker \
     --runs examples/runs.json \
+    --ref_per_ms_by_region examples/refmsByRegion.json \
     --data_dir $PWD/../testData/SC_10trial \
     --config_dir $PWD/local/test/config \
     --results_dir $PWD/local/test/results \

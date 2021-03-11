@@ -91,10 +91,10 @@ def get_map_or_default(Map ps, String param, Map default_map) {
         value = ps[param]
     else
         value = null
-    if (value instanceOf Map) {
+    if (value instanceof Map) {
         return value
-    } else if (value instanceOf String) {
-        return read_json(file(json))
+    } else if (value instanceof String) {
+        return read_json(file(value))
     } else {
         return default_map
     }

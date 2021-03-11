@@ -1,0 +1,6 @@
+{
+    "default_value": 2.0,
+    "cortex": 2.0,
+    "medulla": 1.5,
+    "thalamus": 1.0
+}
