@@ -9,6 +9,10 @@ include {
     create_probe_config;
     run_kilosort;
     run_kilosort_post_process;
+    run_noise_templates;
+    run_mean_waveforms;
+    run_psth_events;
+    run_quality_metrics;
     wait_for_config;
 } from '../processes/probe-tools'
 
