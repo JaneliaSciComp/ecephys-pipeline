@@ -36,7 +36,7 @@ workflow process_probes_for_all_runs {
     results_dir
     config_dir
     runs
-    probe_steps
+    steps
     
     main:
     def probes_inputs = prepare_probes_inputs(data_dir, runs)
@@ -124,7 +124,7 @@ workflow process_probes_for_all_runs {
 
     def catgt_input = probe_config_output 
     def catgt_output
-    if (probe_steps.contains('catGT_helper')) {
+    if (steps.contains('catGT_helper')) {
         catgt_output = catgt_input | run_catgt
     } else {
         catgt_output = catgt_input
@@ -132,7 +132,7 @@ workflow process_probes_for_all_runs {
 
     def ks_input = catgt_output
     def ks_output
-    if (probe_steps.contains('kilosort_helper')) {
+    if (steps.contains('kilosort_helper')) {
         ks_output = ks_input | run_kilosort
     } else {
         ks_output = ks_input
@@ -140,7 +140,7 @@ workflow process_probes_for_all_runs {
 
     def ks_post_input = ks_output
     def ks_post_output
-    if (probe_steps.contains('kilosort_postprocessing')) {
+    if (steps.contains('kilosort_postprocessing')) {
         ks_post_output = ks_post_input | run_kilosort_post_process
     } else {
         ks_post_output = ks_post_input
@@ -148,7 +148,7 @@ workflow process_probes_for_all_runs {
 
     def noise_templates_input = ks_output
     def noise_templates_output
-    if (probe_steps.contains('noise_templates')) {
+    if (steps.contains('noise_templates')) {
         noise_templates_output = noise_templates_input | run_noise_templates
     } else {
         noise_templates_output = noise_templates_input
@@ -156,7 +156,7 @@ workflow process_probes_for_all_runs {
 
     def psth_events_input = noise_templates_output
     def psth_events_output
-    if (probe_steps.contains('psth_events')) {
+    if (steps.contains('psth_events')) {
         psth_events_output = psth_events_input | run_psth_events
     } else {
         psth_events_output = psth_events_input
@@ -164,7 +164,7 @@ workflow process_probes_for_all_runs {
 
     def mean_waveforms_input = psth_events_output
     def mean_waveforms_output
-    if (probe_steps.contains('mean_waveforms')) {
+    if (steps.contains('mean_waveforms')) {
         mean_waveforms_output = mean_waveforms_input | run_mean_waveforms
     } else {
         mean_waveforms_output = psth_events_input
@@ -172,7 +172,7 @@ workflow process_probes_for_all_runs {
 
     def quality_metrics_input = mean_waveforms_output
     def quality_metrics_output
-    if (probe_steps.contains('quality_metrics')) {
+    if (steps.contains('quality_metrics')) {
         quality_metrics_output = quality_metrics_input | run_quality_metrics
     } else {
         quality_metrics_output = psth_events_input
