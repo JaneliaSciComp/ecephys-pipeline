@@ -17,7 +17,7 @@ include {
     run_quality_metrics;
     run_tprime;
     wait_for_config;
-} from '../processes/probe-tools' addParams(params)
+} from '../processes/probe-tools'
 
 include {
     get_key_value_or_default_key;
@@ -39,7 +39,7 @@ workflow process_probes_for_all_runs {
     probe_steps
     
     main:
-    def probes_inputs = prepare_probes_input(data_dir, runs)
+    def probes_inputs = prepare_probes_inputs(data_dir, runs)
     def probe_config_output = probes_inputs
     | map { probe_input ->
         def probe_index = probe_input[0]
@@ -263,7 +263,7 @@ workflow process_tprime {
     res = tprime_output
 }
 
-def prepare_probes_input(data_dir, runs) {
+def prepare_probes_inputs(data_dir, runs) {
     Channel.fromList(runs)
     | filter { it.probe_list } // only run specs with probes
     | flatMap { run_spec ->

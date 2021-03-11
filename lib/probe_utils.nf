@@ -1,7 +1,13 @@
-def probe_str(probe) {
-    def probe_parts = probe.split("\\.")
-    if (probe_parts.size() > 1) {
-        def im_str = probe_parts[1]
+def extract_probe(tcat_name) {
+    def tcat_index = tcat_name.indexOf('_tcat')
+    def tcat_name_parts
+    if (tcat_index == -1) {
+        tcat_name_parts = tcat_name.split("\\.")
+    } else {
+        tcat_name_parts = tcat_name.substring(tcat_index).split("\\.")
+    }
+    if (tcat_name_parts.size() > 1) {
+        def im_str = tcat_name_parts[1]
         if (im_str.length() <= 4)
             return ''   // 3A data, no probe index
         else
@@ -10,13 +16,18 @@ def probe_str(probe) {
         return ''
 }
 
-def probe_name(probe) {
-    def probe_parts = probe.split("\\.")
-    if (probe_parts.size() > 1) {
-        probe_parts[0] + "_" + probe_parts[1]
-    } else {
-        probe
-    }
+/**
+* Extracts the recording name by dropping the .ap.{bin|meta} and _tcat
+*/
+def extract_basename(tcat_name) {
+    def tcat_name_parts = tcat_name.split('\\.')
+    tcat_name_parts
+        .findAll {
+            it != 'ap' && it != 'bin' && it != 'meta'
+        }
+        .collect {
+            it.replace('_tcat', '')
+        }.join('_')
 }
 
 def global_config(config_dir, pname) {

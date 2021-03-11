@@ -40,15 +40,6 @@ process_params = final_params +
         kilosort_container: kilosort_container_param(final_params),
         tprime_container: tprime_modules_container_param(final_params),
     ]
-include {
-    process_probes_for_all_runs;
-    process_tprime;
-} from './workflows/process_runs' addParams(process_params)
-
-data_dir = final_params.data_dir // probes dir
-results_dir = get_value_or_default(final_params, 'results_dir', data_dir)
-config_dir = get_value_or_default(final_params, 'config_dir', results_dir)
-working_dir = get_value_or_default(final_params, 'working_dir', "${results_dir}/tmp")
 
 probe_steps = get_list_or_default(
             final_params,
@@ -65,10 +56,32 @@ probe_steps = get_list_or_default(
             ]
         )
 
+recording_steps = get_list_or_default(
+            final_params,
+            'recording_steps',
+            [
+                'kilosort_helper',
+                'kilosort_postprocessing',
+                'noise_templates',
+                'psth_events',
+                'mean_waveforms',
+                'quality_metrics',
+            ]
+        )
 
-log.info """
-         Run $probe_steps
-         """
+include {
+    process_probes_for_all_runs;
+    process_tprime;
+} from './workflows/process_runs' addParams(process_params + create_ks_params(probe_steps))
+
+include {
+    process_all_recordings;
+} from './workflows/process_recordings' addParams(process_params+ create_ks_params(recording_steps))
+
+data_dir = final_params.data_dir // probes dir
+results_dir = get_value_or_default(final_params, 'results_dir', data_dir)
+config_dir = get_value_or_default(final_params, 'config_dir', results_dir)
+working_dir = get_value_or_default(final_params, 'working_dir', "${results_dir}/tmp")
 
 workflow {
     
@@ -105,6 +118,20 @@ workflow {
         // if the recordings parameter is specified
         // read and process the recording specs from the specified file
         def recordings = prepare_recording_specs(read_json(file(final_params.recordings)))
+        def recording_results = process_all_recordings(
+            results_dir,
+            config_dir,
+            recordings,
+            recording_steps)
+        
+        recording_results | view
     }
 
+}
+
+def create_ks_params(steps) {
+    [
+        ks_copy_results: steps.contains('kilosort_postprocessing') ||
+                         steps.contains('noise_templates'),
+    ]
 }
