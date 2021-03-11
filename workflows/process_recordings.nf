@@ -6,6 +6,8 @@ include {
 
 include {
     create_probe_config;
+    run_kilosort;
+    run_kilosort_post_process;
     wait_for_config;
 } from '../processes/probe-tools'
 
