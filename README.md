@@ -78,28 +78,39 @@ if one exists, using the '--nv' flag.
 ### Local execution
 ##### With Docker
 ```
-pipeline/pipeline.nf \
-    -config pipeline/nextflow.config \
+./main.nf \
     -profile localdocker \
-    --runtime_opts "-u $(id -u):$(id -g) --runtime=nvidia" \
-    --in /path/to/probes --config /path/to/configs --out /path/to/outputs
+    --runs examples/runs.json \
+    --ref_per_ms_by_region examples/refmsByRegion.json \
+    --data_dir /parentOf/runFolder \
+    --config_dir /output/configsDir \
+    --results_dir /output/resultsDir \
+    --ks_working_dir /tmp/ks_tmp \
+    --has_aux_data true
 ```
 
 ##### With Singularity
 ```
-pipeline/pipeline.nf \
-    -config pipeline/nextflow.config \
-    -profile localsingularity \
-    --in /path/to/probes --config /path/to/configs --out /path/to/outputs
+./main.nf \
+    --runs examples/runs.json \
+    --ref_per_ms_by_region examples/refmsByRegion.json \
+    --data_dir /parentOf/runFolder \
+    --config_dir /output/configsDir \
+    --results_dir /output/resultsDir \
+    --ks_working_dir /tmp/ks_tmp \
+    --has_aux_data true
 ```
 
 ### LSF execution on Janelia cluster
 ```
-pipeline/pipeline.nf \
-    -config pipeline/nextflowl.config \
+./main.nf \
     -profile lsf \
-    -with-tower 'http://nextflow.int.janelia.org/api' \
-    --cluster_opts "-P scicompsoft -q test" \
-    --in /path/to/probes --config /path/to/step-configs --out /path/to/outputs
+    --runs examples/runs.json \
+    --ref_per_ms_by_region examples/refmsByRegion.json \
+    --data_dir /parentOf/runFolder \
+    --config_dir /output/configsDir \
+    --results_dir /output/resultsDir \
+    --ks_working_dir /tmp/ks_tmp \
+    --has_aux_data true
 ```
 This also uses the internal Janelia instance of Nextflow Tower.
