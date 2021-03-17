@@ -21,10 +21,10 @@ def default_params() {
             thalamus: 1.0,
         ],
         ks_thresholds_by_region: [
-            default_value: '[9, 9]',
-            cortex: '[9, 9]',
-            medulla: '[9, 9]',
-            thalamus: '[9, 9]',
+            default_value: '[9,9]',
+            cortex: '[9,9]',
+            medulla: '[9,9]',
+            thalamus: '[9,9]',
         ],
 
         probe_type: 'NP1',
@@ -46,7 +46,7 @@ def default_params() {
         ni_extract_cmd_args: '-XA=0,1,3,500 -XA=1,3,3,0 -XD=4,1,50 -XD=4,2,1.7 -XD=4,3,5',
 
         catgt_car_mode: 'gbldmx', // must be 'None', 'gbldmx', or 'loccar'
-        catgt_cmd_args: 'prb_fld -out_prb_fld -aphipass=300 -gfix=0,0.10,0.02',
+        catgt_cmd_args: '-prb_fld -out_prb_fld -aphipass=300 -gfix=0,0.10,0.02',
         catgt_loccar_min: 40,
         catgt_loccar_max: 160,
 

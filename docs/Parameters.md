@@ -38,7 +38,7 @@ Note that the demo scripts set all these directories relative to the TMPDIR by d
 | --ks_template_radius_um |  163 | |
 | --ks_whitening_radius_um |  163 | |
 | --catgt_car_mode | `gbldmx` | |
-| --catgt_cmd_args | `"prb_fld -out_prb_fld -aphipass=300 -gfix=0,0.10,0.02"` | |
+| --catgt_cmd_args | `"-prb_fld -out_prb_fld -aphipass=300 -gfix=0,0.10,0.02"` | |
 | --catgt_loccar_min | 40 | |
 | --catgt_loccar_max | 160 | |
 | --ni_present | true | NI data is available |
