@@ -20,6 +20,7 @@ include {
 } from '../processes/probe-tools'
 
 include {
+    get_hyphenated_value_param;
     get_key_value_or_default_key;
 } from '../lib/params_utils'
 
@@ -78,17 +79,19 @@ workflow process_probes_for_all_runs {
         def probe_stream_params
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
         def probe_catgt_extract_string
+        def ni_extract_cmd_args = get_hyphenated_value_param(params, 'ni_extract_cmd_args')
         if (params.ni_present && probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
             probe_stream_params = "'ap -ni'" // this will be hyphenated by the config tool
-            probe_catgt_extract_string = "'${probe_sync_extract_flags} -${params.ni_extract_cmd_args}'"
+            probe_catgt_extract_string = "'${probe_sync_extract_flags} ${ni_extract_cmd_args}'"
         } else {
             probe_stream_params = 'ap' // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags}'"
         }
-        def probe_catgt_cmd = "'${params.catgt_cmd_args}'"
+        def catgt_cmd_args = get_hyphenated_value_param(params, 'catgt_cmd_args')
+        def probe_catgt_cmd = "'${catgt_cmd_args}'"
         def im_ex_list = ''
-        def ni_ex_list = "'${params.ni_extract_cmd_args}'"
+        def ni_ex_list = "'${ni_extract_cmd_args}'"
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
         def r = [

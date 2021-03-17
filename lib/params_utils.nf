@@ -101,6 +101,15 @@ def get_map_or_default(Map ps, String param, Map default_map) {
     }
 }
 
+def get_hyphenated_value_param(Map ps, String param) {
+    def value = ps[param]
+    if (value && value[0] != '-') {
+        "-${value}"
+    } else {
+        value
+    }
+}
+
 def catgt_modules_container_param(Map ps) {
     def catgt_container = ps.catgt_container
     if (!catgt_container)

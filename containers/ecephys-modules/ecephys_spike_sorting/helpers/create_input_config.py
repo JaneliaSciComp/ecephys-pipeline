@@ -8,7 +8,7 @@ from . import SpikeGLX_utils
 def main(argv):
     def hyphenated(arg):
         # hyphenate the argument because argparse does not support single hyphenated values
-        if arg.startswith('-'):
+        if arg == '' or arg is None or arg.startswith('-'):
             return arg
         else:
             return '-' + arg
