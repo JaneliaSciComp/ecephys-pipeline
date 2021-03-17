@@ -24,6 +24,7 @@ Note that the demo scripts set all these directories relative to the TMPDIR by d
 | --results_dir | `data_dir` value | Path to the directory containing pipeline outputs. |
 | --config_dir | `results_dir` value | Path where json config files for different steps are generated.|  
 | --runs | | JSON file containing runs specs to be processed. |
+| --container_repo | `"registry.int.janelia.org/janeliascicomp"` | Containers registry |
 | --probe_steps | `"catGT_helper, kilosort_helper, kilosort_postprocessing, noise_templates, psth_events,  mean_waveforms, quality_metrics, tPrime_helper"` | Comma separated list of steps to run for each probe|
 | --runtime_opts | | Runtime options for Singularity must include mounts for any directory paths you are using. You can also pass the --nv flag here to make use of NVIDIA GPU resources. For example, `--nv -B /your/data/dir -B /your/output/dir` |
 | --probe_type | `NP1` | |
