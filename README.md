@@ -19,98 +19,98 @@ github repos from [Allen Institute](https://github.com/AllenInstitute/ecephys_sp
 and [Jennifer Colonell](https://github.com/jenniferColonell/ecephys_spike_sorting). Here we will
 focus mostly on the nextflow pipeline implementation. 
 
-In order to run the pipeline you must first create a Docker container
-which must contain a full matlab installation. The reason for needing
-a full matlab installation is because kilosort currently requires matlab python
-engine so it cannot be precompiled into an executable. To build a full matlab container
-image you can follow the instructions from Mathworks presented [here](https://github.com/mathworks-ref-arch/matlab-dockerfile).
-Mathworks' instructions are for building a docker image based on ubuntu:18 but if
-you prefer Centos 8 distribution we have a docker recipe based on Centos 8 in the
-matlab-dockerfile-centos8 folder.
-Once you download the full matlab and prepared matlab_installer_input.txt, create the matlab container followed by
-creating the ecephys container:
-```
-docker build \
-    -t matlab-centos8:2020b \
-    -t registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b \
-    --build-arg LICENSE_SERVER=27000@e05u04.int.janelia.org \
-    containers/matlab-dockerfile-centos8
+## Quick Start
 
-docker build \
-    -t registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0 \
-    -t ecephys-modules:1.0 \
-    containers/ecephys-modules
+The only software requirements for running this pipeline are [Nextflow](https://www.nextflow.io) (version 20.10.0 or greater) and [Singularity](https://sylabs.io) (version 3.5 or greater). If you are running in an HPC cluster, ask your system administrator to install Singularity on all the cluster nodes.
 
-docker build \
-    -t registry.int.janelia.org/janeliascicomp/catgt:1.0 \
-    -t catgt:1.0 \
-    containers/catgt
-
-docker build \
-    -t registry.int.janelia.org/janeliascicomp/cwaves:1.0 \
-    -t cwaves:1.0 \
-    containers/cwaves
-
-docker build \
-    -t registry.int.janelia.org/janeliascicomp/tprime:1.0 \
-    -t tprime:1.0 \
-    containers/tprime
-
-docker build \
-    -t registry.int.janelia.org/janeliascicomp/kilosort:1.0 \
-    -t kilosort:1.0 \
-    containers/kilosort
+To [install Nextflow](https://www.nextflow.io/docs/latest/getstarted.html):
 
 ```
-
-## Usage
-
-You must have [Nextflow](https://www.nextflow.io) and 
-[Docker](https://www.docker.com/products/container-runtime) or 
-[Singularity](https://sylabs.io) installed before running the pipeline.
-
-Also because kilosort2 requires a GPU, if you run the pipeline using docker,
-make sure you install nvidia container runtime as described 
-[here](https://github.com/NVIDIA/nvidia-container-runtime). With singularity
-this is not necessary because singularity provides access to the GPU,
-if one exists, using the '--nv' flag.
-
-### Local execution
-##### With Docker
-```
-./main.nf \
-    -profile localdocker \
-    --runs examples/runs.json \
-    --ref_per_ms_by_region examples/refmsByRegion.json \
-    --data_dir /parentOf/runFolder \
-    --config_dir /output/configsDir \
-    --results_dir /output/resultsDir \
-    --ks_working_dir /tmp/ks_tmp \
-    --has_aux_data true
+    curl -s https://get.nextflow.io | bash 
 ```
 
-##### With Singularity
+To [install Singularity](https://sylabs.io/guides/3.7/admin-guide/installation.html) on CentOS Linux:
+
 ```
-./main.nf \
-    --runs examples/runs.json \
-    --ref_per_ms_by_region examples/refmsByRegion.json \
-    --data_dir /parentOf/runFolder \
-    --config_dir /output/configsDir \
-    --results_dir /output/resultsDir \
-    --ks_working_dir /tmp/ks_tmp \
-    --has_aux_data true
+    sudo yum install singularity
 ```
 
-### LSF execution on Janelia cluster
+Clone the ecephys-pipeline repository:
 ```
-./main.nf \
-    -profile lsf \
-    --runs examples/runs.json \
-    --ref_per_ms_by_region examples/refmsByRegion.json \
-    --data_dir /parentOf/runFolder \
-    --config_dir /output/configsDir \
-    --results_dir /output/resultsDir \
-    --ks_working_dir /tmp/ks_tmp \
-    --has_aux_data true
+    git clone https://github.com/JaneliaSciComp/ecephys-pipeline.git
 ```
-This also uses the internal Janelia instance of Nextflow Tower.
+
+The pipeline reads the runs specs from a JSON file so before running the pipeline you may have to create the runs spec JSON file that looks like this:
+```
+[
+    {
+        "name": "SC024_092319_NP1.0_Midbrain",
+        "gateIndex": "0",
+        "triggers": "start,end",
+        "probes": "0,1",
+        "regions": [ "cortex", "medulla"]
+    }
+]
+```
+
+You can now launch the pipeline using:
+```
+    ./main.nf [arguments]
+```
+
+## Pipeline Overview
+
+This pipeline is containerized and portable across the various platforms supported by [Nextflow](https://www.nextflow.io). So far it has been tested on a standalone Linnux workstation and the Janelia compute cluster (IBM Platform LSF).
+
+The pipeline includes the following modules:
+* **catGT_helper** - run CatGT preprocessor
+* **kilosort_helper** - run spike sorting
+* **kilosort_postprocessing** - cleanup Kilosort outputs
+* **noise_templates** - identify noise units
+* **psth_events** - extract events for the psth plots
+* **mean_waveforms** - extract mean waveforms and compute waveform metrics from raw data, given spike times and cluster IDs.
+* **quality_metrics** - compute quality metrics for sorted units
+* **tPrime_helper** - map times from one SpikeGLX stream to another
+
+## Required Parameters
+
+The following parameters are required to run the full pipeline. See the [parameter documentation](docs/Parameters.md) for a complete list of all possible options.
+
+| Argument   | Description                                                                           |
+|------------|---------------------------------------------------------------------------------------|
+| --data_dir | Path to the directory containing SGLX runs. | 
+| --results_dir | Path to the directory containing pipeline outputs. If not specified it defaults to the `data_dir` |
+| --config_dir | Path where json config files for different steps are generated. If not specified it defaults to `results_dir` |  
+| --runs | JSON file containing runs specs to be processed. |
+
+
+## Pipeline execution
+
+Nextflow supports many different execution engines for portability across platforms and schedulers. We have tested the pipeline using local execution and using the cluster at Janelia Research Campus (running IBM Platform LSF). 
+
+To run this pipeline on a cluster, all input and output paths must be mounted and accessible on all the cluster nodes. 
+
+### Run the pipeline locally
+
+To run the pipeline locally, you can use the standard profile:
+
+    ./main.nf [arguments]
+
+### Run the pipeline on IBM Platform LSF 
+
+This example also sets the project flag to demonstrate how to set LSF options.
+
+    ./main.nf -profile lsf --lsf_opts "-P harris" [arguments]
+
+Concrete examples for running the pipeline are provided in the `examples` folder
+
+## User Manual
+
+Further detailed documentation is available here:
+
+* [Pipeline Parameters](docs/Parameters.md) 
+* [Development](docs/Development.md)
+
+## License
+
+This software is made available under [Janelia's Open Source Software](https://www.janelia.org/open-science/software-licensing) policy which uses the BSD 3-Clause License and under the [Allen Institute Software License](LICENSE.txt). 

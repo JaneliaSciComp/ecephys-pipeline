@@ -80,7 +80,6 @@ include {
 data_dir = final_params.data_dir // probes dir
 results_dir = get_value_or_default(final_params, 'results_dir', data_dir)
 config_dir = get_value_or_default(final_params, 'config_dir', results_dir)
-working_dir = get_value_or_default(final_params, 'working_dir', "${results_dir}/tmp")
 
 workflow {
     
