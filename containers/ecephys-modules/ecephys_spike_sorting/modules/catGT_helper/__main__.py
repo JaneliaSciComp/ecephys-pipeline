@@ -24,17 +24,6 @@ def run_CatGT(args):
     else:
         print('unknown system, cannot run CatGt')
 
-    # common average referencing
-    car_mode = args['catGT_helper_params']['car_mode']
-    if car_mode == 'loccar':
-        inner_site = args['catGT_helper_params']['loccar_inner']
-        outer_site = args['catGT_helper_params']['loccar_outer']
-        car_str = ' -loccar=' + repr(inner_site) + ',' + repr(outer_site)
-    elif car_mode == 'gbldmx':
-        car_str = ' -gbldmx'
-    elif car_mode == 'None' or car_mode == 'none':
-        car_str = ''
-
     cmd_parts = list()
 
     cmd_parts.append(catGTexe_fullpath)
@@ -44,7 +33,14 @@ def run_CatGT(args):
     cmd_parts.append('-t=' + args['catGT_helper_params']['trigger_string'])
     cmd_parts.append('-prb=' + args['catGT_helper_params']['probe_string'])
     cmd_parts.append(args['catGT_helper_params']['stream_string'])
-    cmd_parts.append(car_str)
+    # common average referencing
+    car_mode = args['catGT_helper_params']['car_mode']
+    if car_mode == 'loccar':
+        inner_site = args['catGT_helper_params']['loccar_inner']
+        outer_site = args['catGT_helper_params']['loccar_outer']
+        cmd_parts.append('-loccar=' + repr(inner_site) + ',' + repr(outer_site))
+    elif car_mode == 'gbldmx':
+        cmd_parts.append('-gbldmx')
     cmd_parts.append(args['catGT_helper_params']['cmdStr'])
     cmd_parts.append('-dest=' + args['directories']
                      ['extracted_data_directory'])
