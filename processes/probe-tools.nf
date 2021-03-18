@@ -9,7 +9,7 @@ include {
 } from '../lib/utils'
 
 process create_probe_config {
-    container = params.ecephys_modules_container
+    container { params.ecephys_modules_container }
     cpus 1
 
     input:
@@ -94,8 +94,10 @@ process create_probe_config {
     ]
     def args = args_list.join(' ')
     """
-    umask 000
+    echo "Create ${probe_config_dir} for ${probe_config_file}"
+    umask 002
     mkdir -p ${probe_config_dir}
+    ls ${probe_config_dir.parent}
     python -m ecephys_spike_sorting.helpers.create_input_config ${args}
     """
 }
@@ -474,6 +476,7 @@ def create_code_block(module_name,
         umask 000
         mkdir -p ${ks_working_dir}
 
+        umask 002
         # run module
         python \
             -m ecephys_spike_sorting.modules.${module_name} \
