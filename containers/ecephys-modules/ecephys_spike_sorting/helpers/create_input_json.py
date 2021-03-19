@@ -72,7 +72,7 @@ def createInputJson(output_file,
 
     # hard coded paths to code on your computer and system
     ecephys_directory = '/app/ecephys_spike_sorting/ecephys_spike_sorting'
-    kilosort_repository = '/app/kilosort2'
+    kilosort_repository = '/app/kilosort-{}'.format(ks_ver)
     npy_matlab_repository = '/app/npy-matlab'
     catGTPath = '/app/CatGT'
     tPrime_path = '/app/TPrime'

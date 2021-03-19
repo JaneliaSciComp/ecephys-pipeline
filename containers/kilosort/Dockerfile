@@ -1,8 +1,28 @@
 FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.0 as builder
 
 WORKDIR /tmp
-RUN git clone https://github.com/cortex-lab/KiloSort.git kilosort1
-RUN git clone https://github.com/jenniferColonell/Kilosort2.git kilosort2
+RUN mkdir kilosort-1.0 && \
+    cd kilosort-1.0 && \
+    git clone https://github.com/cortex-lab/KiloSort.git . && \
+    cd ..
+
+RUN mkdir kilosort-2.0 && \
+    cd kilosort-2.0 && \
+    git clone https://github.com/jenniferColonell/Kilosort2.git . && \
+    git checkout -b 2.0 1a030bf && \
+    cd ..
+
+RUN mkdir kilosort-2.5 && \
+    cd kilosort-2.5 && \
+    git clone https://github.com/jenniferColonell/Kilosort2.git . && \
+    git checkout -b 2.5 c31df11 && \
+    cd ..
+
+RUN mkdir kilosort-3.0 && \
+    cd kilosort-3.0 && \
+    git clone https://github.com/jenniferColonell/Kilosort2.git . && \
+    cd ..
+
 RUN git clone https://github.com/kwikteam/npy-matlab.git npy-matlab
 
 FROM registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b
@@ -33,13 +53,19 @@ WORKDIR /usr/local/MATLAB/extern/engines/python
 RUN python setup.py install
 
 WORKDIR /app
-COPY --from=builder /tmp/kilosort1 kilosort
-COPY --from=builder /tmp/kilosort2 kilosort2
+COPY --from=builder /tmp/kilosort-1.0 kilosort-1.0
+COPY --from=builder /tmp/kilosort-2.0 kilosort-2.0
+COPY --from=builder /tmp/kilosort-2.5 kilosort-2.5
+COPY --from=builder /tmp/kilosort-3.0 kilosort-3.0
 COPY --from=builder /tmp/npy-matlab npy-matlab
 
-RUN cd /app/kilosort/CUDA && \
+RUN cd /app/kilosort-1.0/CUDA && \
     matlab -sd . -batch mexGPUall && \
-    cd /app/kilosort2/CUDA && \
+    cd /app/kilosort-2.0/CUDA && \
+    matlab -sd . -batch mexGPUall && \
+    cd /app/kilosort-2.5/CUDA && \
+    matlab -sd . -batch mexGPUall && \
+    cd /app/kilosort-3.0/CUDA && \
     matlab -sd . -batch mexGPUall
 
 WORKDIR /app/ecephys_spike_sorting
