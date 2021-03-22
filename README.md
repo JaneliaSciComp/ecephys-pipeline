@@ -28,6 +28,7 @@ To [install Nextflow](https://www.nextflow.io/docs/latest/getstarted.html):
 ```
     curl -s https://get.nextflow.io | bash 
 ```
+Then add the next install directory to your PATH environment variable.
 
 To [install Singularity](https://sylabs.io/guides/3.7/admin-guide/installation.html) on CentOS Linux:
 
@@ -100,9 +101,19 @@ To run the pipeline locally, you can use the standard profile:
 
 This example also sets the project flag to demonstrate how to set LSF options.
 
-    ./main.nf -profile lsf --lsf_opts "-P harris" [arguments]
+    ./main.nf -profile lsf --lsf_opts "-P <lsf_project_code>" [arguments]
 
 Concrete examples for running the pipeline are provided in the `examples` folder
+
+On the Janalia's LSF cluster the best way to run the pipeline, would be to run the main.nf either in an interactive job or by simply submitting `main.nf` to the cluster. The reason for this is that nextflow must run on a submit host in order to be able to submit jobs and sommetimes this may be a long running process. 
+
+To start an interactive job check [Janelia Wiki Page](https://wiki.int.janelia.org/wiki/display/ScientificComputing/Janelia+Compute+Cluster#JaneliaComputeCluster-ExampleInteractivejobcommands). Once the job is running the rest of the processing is as if you were running nextflow on any linux server or workstation. Keep in mind that if you want to run the pipeline on the node where the interactive node is running you need access to the GPU. 
+
+To submit the nextflow job to the cluster the command is:
+```
+bsub -n 1 -o job.out -e job.err nextflow -P <lsf_project_code> run main.nf -profile lsf -- lsf_opts "-P <lsf_project_code>" [arguments]
+```
+
 
 ## User Manual
 
