@@ -8,17 +8,24 @@ RESULTS_DIR=${OUTPUT_DIR}/results
 RUNS_SPECS_FILE=examples/runs.json
 KS_TH_BY_REGION_FILE=examples/ks3ThByRegion.json
 REF_MS_BY_REGION_FILE=examples/refmsByRegion.json
+PROFILE=lsf
 # LSF_PROJECT_CODE set it to the output of `lsfgroup yourusername`
-LSF_PROJECT_CODE=harris
+LSF_PROJECT_CODE=
 # SINGULARITY_RUNTIME_OPTS - typically it contains volumes that must be mounted inside the container
 # if DATA_DIR and OUTPUT_DIR have a common parent only mount the parent
-SINGULARITY_RUNTIME_OPTS="--nv -B ${DATA_DIR}"
+SINGULARITY_RUNTIME_OPTS="-B ${DATA_DIR}"
 
 # TOWER_ACCCESS_TOKEN is available after login to http://nextflow.int.janelia.org under "Your tokens" menu
 export TOWER_ACCESS_TOKEN=072f8fd02196a0b75f378ef237549c6822c221da
 
+if [[ "$PROFILE" == "lsf"]] ; then
+    PROFILE_ARG="-profile lsf"
+else
+    PROFILE_ARG=
+fi
+
 ./main.nf \
-    -profile lsf \
+    ${PROFILE_ARG} \
     -with-tower "http://nextflow.int.janelia.org/api" \
     --runtime_opts "${SINGULARITY_RUNTIME_OPTS}" \
     --lsf_opts "-P ${LSF_PROJECT_CODE}" \

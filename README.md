@@ -73,7 +73,7 @@ The pipeline includes the following modules:
 * **quality_metrics** - compute quality metrics for sorted units
 * **tPrime_helper** - map times from one SpikeGLX stream to another
 
-## Required Parameters
+## SGLX Runs Required Parameters
 
 The following parameters are required to run the full pipeline. See the [parameter documentation](docs/Parameters.md) for a complete list of all possible options.
 
@@ -83,7 +83,17 @@ The following parameters are required to run the full pipeline. See the [paramet
 | --results_dir | Path to the directory containing pipeline outputs. If not specified it defaults to the `data_dir` |
 | --config_dir | Path where json config files for different steps are generated. If not specified it defaults to `results_dir` |  
 | --runs | JSON file containing runs specs to be processed. |
+| --probe_steps | Comma separated list of steps to be  run for each probe |
 
+
+## SGLX Recordings Pipeline
+
+The recordings pipeline is very similar to the runs pipeline the only difference is that the `--runs` parameter is replaced with the `--recordings` parameter and the steps for each recording are defined by `--recording_steps` argument. Also for the recordings pipeline `--data_dir` is not used since each recording spec has the full path to the binary recording file.
+
+| Argument   | Description                                                                           |
+|------------|---------------------------------------------------------------------------------------|
+| --recordings | JSON file containing recording specs |
+| --recording_steps| Comma separated list of pipeline steps |
 
 ## Pipeline execution
 
@@ -114,6 +124,7 @@ To submit the nextflow job to the cluster the command is:
 bsub -n 1 -o job.out -e job.err nextflow -P <lsf_project_code> run main.nf -profile lsf -- lsf_opts "-P <lsf_project_code>" [arguments]
 ```
 
+Usage examples are available in the [examples](examples) directory.
 
 ## User Manual
 

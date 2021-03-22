@@ -6,9 +6,7 @@ The pipeline supports many types of parameters for customization to your compute
 
 You can export variables into your environment before calling the pipeline, or set them on the same line like this:
 
-    TMPDIR=/opt/tmp ./examples/demo_small.sh /opt/demo_small
-
-Note that the demo scripts set all these directories relative to the TMPDIR by default, so setting TMPDIR sets everything else to the same location.
+    TMPDIR=/opt/tmp ./examples/runs_processing_pipelinne.sh
 
 | Variable   | Default | Description                                                                           |
 |------------|---------|---------------------------------------------------------------------------------------|
@@ -16,10 +14,21 @@ Note that the demo scripts set all these directories relative to the TMPDIR by d
 | SINGULARITY_TMPDIR | /tmp | Directory where Docker images are downlaoded and converted to Singularity Image Format. Needs to be large enough to accomodate several GB, so moving it out of /tmp is sometimes necessary. |
 | SINGULARITY_CACHEDIR | $HOME/.singularity_cache | Directory where Singularity images are cached. This needs to be accessible from all nodes. |
 
+## Using the Nextflow tower
+
+To use the nextflow tower in your preferred browser go to the URL of the desired Nextflow tower instance, e.g., "http://nextflow.int.janelia.org". If you are not signed in yet you should see the "Sign In" button on the page. The sign in does not require any password. It only requires an email, and once you login you will get an email with a link to the authenticated page. Then when you get to the authenticated page from your email, expand the menus under the user's picture or picture placeholder and click on the "Your tokens" link. Go to that page, take the active token and set TOWER_ACCESS_TOKEN environment variable in your script or in your shell like below:
+```
+export TOKEN_ACCESS_TOKEN=1234343434343434343434343
+```
+where 1234343434343434343434343 is the value from the "Your tokens" page.
+
+
 ## Global Parameters
 
 | Argument   | Default | Description                                                                           |
 |------------|---------|---------------------------------------------------------------------------------------|
+| -profile | standard | If set to lsf it will run all tasks on the LSF grid defined in the current environment |
+| -with-tower | | Uses the nextflow tower at the specified URL. See [Using the Nextflow tower](#using-the-nextflow-tower) |
 | --data_dir | | Path to the directory containing SGLX runs. | 
 | --results_dir | `data_dir` value | Path to the directory containing pipeline outputs. |
 | --config_dir | `results_dir` value | Path where json config files for different steps are generated.|  
