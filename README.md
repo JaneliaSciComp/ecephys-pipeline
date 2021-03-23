@@ -95,6 +95,20 @@ The recordings pipeline is very similar to the runs pipeline the only difference
 | --recordings | JSON file containing recording specs |
 | --recording_steps| Comma separated list of pipeline steps |
 
+The recordings specs JSON file looks like this:
+```
+[
+    {
+        "binaryLocation": "/probes1/SC011_022319_g0_tcat.imec3.ap.bin",
+        "region": "default"
+    },
+    {
+        "binaryLocation": "/probes2/SC011_022320_g0_tcat.imec3.ap.bin",
+        "region": "default"
+    }
+]
+```
+
 ## Pipeline execution
 
 Nextflow supports many different execution engines for portability across platforms and schedulers. We have tested the pipeline using local execution and using the cluster at Janelia Research Campus (running IBM Platform LSF). 
