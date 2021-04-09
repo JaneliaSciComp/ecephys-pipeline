@@ -27,6 +27,9 @@ def default_params() {
             thalamus: '[9,9]',
         ],
 
+        wait_for_config_sleep_secs: 2,
+        wait_for_config_max_secs: 120,
+
         probe_type: 'NP1',
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
 

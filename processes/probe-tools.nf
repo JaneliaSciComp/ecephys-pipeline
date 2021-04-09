@@ -128,7 +128,7 @@ process wait_for_config {
 
     script:
     """
-    SLEEP_SECS=5 MAX_WAIT_SECS=120 /app/scripts/waitforpaths.sh ${probe_config_file}
+    SLEEP_SECS=${params.wait_for_config_sleep_secs} MAX_WAIT_SECS=${params.wait_for_config_max_secs} /app/scripts/waitforpaths.sh ${probe_config_file}
     """
 }
 
