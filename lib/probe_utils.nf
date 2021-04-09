@@ -21,8 +21,9 @@ def extract_probe(tcat_name) {
             return ''   // 3A data, no probe index
         else
             return im_str.substring(4)
-    } else
+    } else {
         return ''
+    }
 }
 
 /**

@@ -335,32 +335,27 @@ def calculate_pc_metrics(spike_clusters,
                     all_pcs = np.concatenate((all_pcs, pcs),0)
                     all_labels = np.concatenate((all_labels, labels),0)
                 
-            all_pcs = np.reshape(all_pcs, (all_pcs.shape[0], pc_features.shape[1]*channels_to_use.size))
-            
-            num_pcs = all_pcs.shape[0];
-#            num_pcs_str = 'cluster_id: ' + repr(cluster_id) + '; num pcs: ' + repr(num_pcs)
-#            print(num_pcs_str)
-        
+            all_pcs = np.reshape(all_pcs, (all_pcs.shape[0], pc_features.shape[1]*channels_to_use.size))            
+            num_pcs = all_pcs.shape[0]
+            pcs_for_this_unit = all_pcs[all_labels == cluster_id,:].shape[0]
+            pcs_for_other_units = all_pcs[all_labels != cluster_id, :].shape[0]
         else:
             # no near neighbor units to compare
             num_pcs = 0
-        
+            pcs_for_this_unit = 0
+            pcs_for_other_units = 0
 
-        if num_pcs > 10:
-
+        if num_pcs > 10 and pcs_for_this_unit > 5 and pcs_for_other_units > 5:
             isolation_distances[cluster_id], l_ratios[cluster_id] = mahalanobis_metrics(all_pcs, all_labels, cluster_id)
 
             d_primes[cluster_id] = lda_metrics(all_pcs, all_labels, cluster_id)
 
             nn_hit_rates[cluster_id], nn_miss_rates[cluster_id] = nearest_neighbors_metrics(all_pcs, all_labels, cluster_id, max_spikes_for_nn, n_neighbors)
-
         else:
-
             isolation_distances[cluster_id] = np.nan
             d_primes[cluster_id] = np.nan
             nn_hit_rates[cluster_id] = np.nan
             nn_miss_rates[cluster_id] = np.nan
-
 
     return isolation_distances, l_ratios, d_primes, nn_hit_rates, nn_miss_rates 
 
@@ -643,11 +638,7 @@ def mahalanobis_metrics(all_pcs, all_labels, this_unit_id):
     mahalanobis_other = np.sort(cdist(mean_value,
                        pcs_for_other_units,
                        'mahalanobis', VI = VI)[0])
-    
-##    mahalanobis_self = np.sort(cdist(mean_value,
-#                             pcs_for_this_unit,
-#                             'mahalanobis', VI = VI)[0])
-    
+
     n = np.min([pcs_for_this_unit.shape[0], pcs_for_other_units.shape[0]]) # number of spikes
 
     if n >= 2:
