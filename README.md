@@ -144,7 +144,8 @@ Usage examples are available in the [examples](examples) directory.
 
 Further detailed documentation is available here:
 
-* [Pipeline Parameters](docs/Parameters.md) 
+* [Pipeline Parameters](docs/Parameters.md)
+* [Running on Windows](docs/RunningOnWindows.md)
 * [Development](docs/Development.md)
 
 ## License
