@@ -143,13 +143,17 @@ def createInputJson(output_file,
     nrows = np.sqrt((np.square(ks_whiteningRadius_um) -
                      np.square(hpitch.get(probe_type))))/vpitch.get(probe_type)
     ks_whiteningRange = int(round(2*nrows*nColumn.get(probe_type)))
+    if ks_whiteningRange > 384:
+        ks_whiteningRange = 384
 
     # nNeighbors is the number of sites kilosort includes in a template.
     # Calculate the number of sites within that radisu.
     nrows = np.sqrt((np.square(ks_templateRadius_um) -
                      np.square(hpitch.get(probe_type))))/vpitch.get(probe_type)
     ks_nNeighbors = int(round(2*nrows*nColumn.get(probe_type)))
-    # print('ks_nNeighbors: ' + repr(ks_nNeighbors))
+    if ks_nNeighbors > 64:
+        ks_nNeighbors = 64  # max allowed in CUDA
+    print('ks_nNeighbors: ' + repr(ks_nNeighbors))
 
     c_waves_radius_sites = int(round(c_Waves_snr_um/vpitch.get(probe_type)))
     # Create string designating temporary output file for KS2 (gets inserted into KS2 config.m file)
@@ -184,8 +188,8 @@ def createInputJson(output_file,
                 "run_name": catGT_run_name,
                 "gate_string": gate_string,
                 "ap_band_file": continuous_file,
-                "lfp_band_file": os.path.join(extracted_data_directory, 'continuous', 'Neuropix-' + acq_system + '-100.1', 'continuous.dat'),
-                "reorder_lfp_channels": True,
+                "lfp_band_file": continuous_file.replace('.ap.bin', '.lf.bin'),
+                "reorder_lfp_channels": False,
                 "cluster_group_file_name": 'cluster_group.tsv'
             },
 
@@ -227,6 +231,9 @@ def createInputJson(output_file,
             },
 
             "ks_postprocessing_params": {
+                "align_avg_waveform" : False,
+                "remove_duplicates" : True,
+                "cWaves_path" : cWaves_path,
                 # as implemented, "within_unit_overlap window" must be >= "between unit overlap window"
                 "within_unit_overlap_window": 0.000333,
                 "between_unit_overlap_window": 0.000333,
@@ -260,9 +267,9 @@ def createInputJson(output_file,
                 "diff_thresh": -0.06,
                 "freq_range": [0, 10],
                 "max_freq": 150,
-                "channel_range": [374, 384],
+                "saline_range_um": [3700, 3800],
                 "n_passes": 10,
-                "air_gap": 25,
+                "air_gap_um": 1000,
                 "time_interval": 5,
                 "skip_s_per_pass": 10,
                 "start_time": 10
@@ -295,6 +302,7 @@ def createInputJson(output_file,
             "quality_metrics_params": {
                 "isi_threshold": qm_isi_thresh,
                 "min_isi": 0.000166,
+                "tbin_sec" : 0.001,
                 "max_radius_um": 68,
                 "max_spikes_for_unit": 500,
                 "max_spikes_for_nn": 10000,
@@ -302,7 +310,7 @@ def createInputJson(output_file,
                 'n_silhouette': 10000,
                 "drift_metrics_interval_s": 51,
                 "drift_metrics_min_spikes_per_interval": 10,
-                "include_pcs": include_pcs
+                "include_pcs": include_pcs # should this be set to True or be based on ks_ver?
             },
 
             "catGT_helper_params": {

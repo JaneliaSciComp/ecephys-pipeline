@@ -13,7 +13,7 @@ The output is set by the outType parameter:
                   0 for text coordinate file; 
                   1 for Kilosort or Kilosort2 channel map file;
                   2 for strings to paste into JRClust .prm file 
-                
+
 
 
 @author: Jennifer Colonell, Janelia Research Campus
