@@ -18,12 +18,15 @@ class EphysParams(DefaultSchema):
     vertical_site_spacing = Float(required=False, default=20e-6,
                                   help='Vertical site spacing in meters')
     probe_type = String(required=False, default='NP1', help='3A, 3B2, NP1')
+    # putting the run_name and gate_string in the common ephys params
+    # so that they could be accessible to other modules,
+    # but unlike the catGT module here they are not mandatory
     run_name = String(required=False, allow_none=True,
                       help='undecorated run name (no g or t indices')
     gate_string = String(required=False, default='0', help='gate string')
     lfp_band_file = String(required=False,
                            help='Location of LFP band binary file')
-    ap_band_file = String(required=False, allow_none=True,
+    ap_band_file = String(required=False,
                           help='Location of AP band binary file')
     reorder_lfp_channels = Bool(required=False, default=True,
                                 help='Should we fix the ordering of LFP channels (necessary for 3a probes following extract_from_npx modules)')

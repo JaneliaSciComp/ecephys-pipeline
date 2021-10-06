@@ -1,4 +1,4 @@
-from argschema import ArgSchema, ArgSchemaParser 
+from argschema import ArgSchema, ArgSchemaParser
 from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, String, Float, Dict, Int, List, Boolean
 from ...common.schemas import EphysParams, Directories
@@ -15,18 +15,19 @@ class tPrimeParams(DefaultSchema):
     toStream_path_3A = String(required=False, help='full path to toStream edges file')
     fromStream_list_3A = List(String, required=False, help='list of full paths to fromStream edges files')
 
+
 class InputParameters(ArgSchema):
     tPrime_helper_params = Nested(tPrimeParams)
     directories = Nested(Directories)
     ephys_params = Nested(EphysParams)
 
-class OutputSchema(DefaultSchema): 
-    input_parameters = Nested(InputParameters, 
-                              description=("Input parameters the module " 
-                                           "was run with"), 
-                              required=True) 
- 
-class OutputParameters(OutputSchema): 
 
+class OutputSchema(DefaultSchema):
+    input_parameters = Nested(InputParameters,
+                              description=("Input parameters the module "
+                                           "was run with"),
+                              required=True)
+
+
+class OutputParameters(OutputSchema):
     execution_time = Float()
-    

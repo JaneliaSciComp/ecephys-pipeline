@@ -1,22 +1,20 @@
+import matlab.engine   # on some systems, the matlab engine must be loaded first
+
 from argschema import ArgSchemaParser
 import os
-import logging
-import subprocess
 import time
 import shutil
 
 import numpy as np
 
-import matlab.engine
 
 from pathlib import Path
 
 from scipy.signal import butter, filtfilt, medfilt
 
 from . import matlab_file_generator
-from .SGLXMetaToCoords import MetaToCoords
-from ...common.utils import read_probe_json, get_repo_commit_date_and_hash, rms, getSortResults
-
+from ...common.SGLXMetaToCoords import MetaToCoords
+from ...common.utils import read_probe_json, get_repo_commit_date_and_hash, rms
 
 def run_kilosort(args):
 
@@ -39,24 +37,24 @@ def run_kilosort(args):
                               args['ephys_params']['bit_volts'])
 
     if args['kilosort_helper_params']['spikeGLX_data']:
-        # SpikeGLX data, will build KS chanMap based on the metadata file plus
-        # exclusion of noise channels found in get_noise_channels
-        # metadata file must be in the same directory as the ap_band_file
-        # resulting chanmap is copied to the matlab home directory, and will
-        # overwrite any existing 'chanMap.mat'
-        metaName, binExt = os.path.splitext(
-            args['ephys_params']['ap_band_file'])
-        metaFullPath = Path(metaName + '.meta')
+       # SpikeGLX data, will build KS chanMap based on the metadata file plus 
+       # exclusion of noise channels found in get_noise_channels
+       # metadata file must be in the same directory as the ap_band_file
+       # resulting chanmap is copied to the matlab home directory, and will 
+       # overwrite any existing 'chanMap.mat'
+       metaName, binExt = os.path.splitext(
+           args['ephys_params']['ap_band_file'])
+       metaFullPath = Path(metaName + '.meta')
 
-        destFullPath = os.path.join(
-            args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
-        MaskChannels = np.where(mask == False)[0]
-        MetaToCoords(metaFullPath=metaFullPath, outType=1,
-                     badChan=MaskChannels, destFullPath=destFullPath)
-        # end of SpikeGLX block
+       destFullPath = os.path.join(
+           args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
+       MaskChannels = np.where(mask == False)[0]      
+       MetaToCoords(metaFullPath=metaFullPath, outType=1,
+                    badChan=MaskChannels, destFullPath=destFullPath)
+       # end of SpikeGLX block
 
     else:
-        # Open Ephys data, specifically finding the tissue surface and creating a chanMap to
+        # Open Ephys data, specifically finding the tissue surface and creating a chanMap to 
         # exclude those channels. Assumes 3A/NP1.0 site geometry, all sites in bank 0.
         _, offset, scaling, surface_channel, air_channel = read_probe_json(
             args['common_files']['probe_json'])
@@ -70,9 +68,9 @@ def run_kilosort(args):
                                              EndChan=top_channel,
                                              probe_type=args['ephys_params']['probe_type'],
                                              MaskChannels=np.where(mask == False)[0])
-        # end of Open Ephys block
+        # end of Open Ephys block    
 
-    # copy the master fle to the same directory that contains the channel map and config file
+        # copy the master fle to the same directory that contains the channel map and config file
 
     shutil.copyfile(os.path.join(args['directories']['ecephys_directory'], 'modules', 'kilosort_helper', 'main_kilosort_multiversion.m'),
                     os.path.join(args['kilosort_helper_params']['matlab_home_directory'], 'main_kilosort_multiversion.m'))
@@ -84,10 +82,10 @@ def run_kilosort(args):
                                                 args['ephys_params']['ap_band_file']),
                                             args['kilosort_helper_params']['kilosort_params'])
     elif args['kilosort_helper_params']['kilosort_version'] == 2:
-        matlab_file_generator.create_config2(args['kilosort_helper_params']['matlab_home_directory'],
-                                             output_dir_forward_slash,
+        matlab_file_generator.create_config2(args['kilosort_helper_params']['matlab_home_directory'], 
+                                             output_dir_forward_slash, 
                                              input_file_forward_slash,
-                                             args['ephys_params'],
+                                             args['ephys_params'], 
                                              args['kilosort_helper_params']['kilosort2_params'])
     else:
         print('unknown kilosort version')
@@ -104,7 +102,7 @@ def run_kilosort(args):
     home_dir = args['kilosort_helper_params']['matlab_home_directory'].replace(
         '\\', '/')
 
-    if args['kilosort_helper_params']['kilosort_version'] == 1:
+    if args['kilosort_helper_params']['kilosort_version'] == 1:    
         eng.addpath(eng.genpath(KS_dir))
         eng.addpath(eng.genpath(NPY_dir))
         eng.addpath(home_dir)
@@ -112,7 +110,7 @@ def run_kilosort(args):
     else:
         eng.addpath(eng.genpath(KS_dir))
         eng.addpath(eng.genpath(NPY_dir))
-        eng.addpath(home_dir)
+        eng.addpath(home_dir)      
         eng.main_kilosort_multiversion(args['kilosort_helper_params']['kilosort2_params']['KSver'],
                                        args['kilosort_helper_params']['kilosort2_params']['remDup'],
                                        args['kilosort_helper_params']['kilosort2_params']['finalSplits'],
@@ -125,12 +123,12 @@ def run_kilosort(args):
     # set to relative path to the original input binary; set the number of channels
     # to number of channels in the input
     #    if the user has rquested a copy of the processed temp_wh, copy that file
-    # to the input directory and set dat_path to point to it. Set the number of
+    # to the input directory and set dat_path to point to it. Set the number of 
     # channls in the processed file
     dat_dir, dat_name = os.path.split(input_file)
-
+    
     copy_fproc = args['kilosort_helper_params']['kilosort2_params']['copy_fproc']
-
+  
     if copy_fproc:
         fproc_path_str = args['kilosort_helper_params']['kilosort2_params']['fproc']
         # trim quotes off string sent to matlab
@@ -148,13 +146,13 @@ def run_kilosort(args):
     else:
         chan_phy_binary = args['ephys_params']['num_channels']
         fix_phy_params(output_dir, dat_dir, dat_name,
-                       chan_phy_binary, args['ephys_params']['sample_rate'])
+                       chan_phy_binary, args['ephys_params']['sample_rate'])                
 
     # make a copy of the channel map to the data directory
     # named according to the binary and meta file
     # alredy have path to chanMap = destFullPath
     cm_save_name = metaName + '_chanMap.mat'
-    shutil.copy(destFullPath, os.path.join(output_dir, cm_save_name))
+    shutil.copy(destFullPath, os.path.join(dat_dir, cm_save_name))
 
     if args['kilosort_helper_params']['ks_make_copy']:
         # get the kilsort output directory name
@@ -171,12 +169,13 @@ def run_kilosort(args):
 
     print('kilsort run time: ' + str(np.around(execution_time, 2)) + ' seconds')
     print()
-
-    # get nTot and nTemplate from phy output; write out table of clusters
-    # which will be used by C_waves
-
-    nTemplate, nTot = getSortResults(output_dir)
-
+    
+    # Don't call getSortResults until after any postprocessing
+    # but get useful characteristics of ksort output right now
+    spkTemplate = np.load(os.path.join(output_dir, 'spike_templates.npy'))
+    nTemplate = np.unique(spkTemplate).size
+    nTot = spkTemplate.size
+       
     return {"execution_time": execution_time,
             "kilosort_commit_date": commit_date,
             "kilosort_commit_hash": commit_time,
@@ -184,33 +183,32 @@ def run_kilosort(args):
             "nTemplate": nTemplate,
             "nTot": nTot}  # output manifest
 
-
 def get_noise_channels(raw_data_file, num_channels, sample_rate, bit_volts, noise_threshold=20):
 
     noise_delay = 5  # in seconds
     noise_interval = 10  # in seconds
 
     raw_data = np.memmap(raw_data_file, dtype='int16', mode='r') # inside the container this must be read/only
-
+    
     num_samples = int(raw_data.size/num_channels)
-
+      
     data = np.reshape(raw_data, (num_samples, num_channels))
-
+   
     start_index = int(noise_delay * sample_rate)
     end_index = int((noise_delay + noise_interval) * sample_rate)
-
+    
     if end_index > num_samples:
         print('noise interval larger than total number of samples')
         end_index = num_samples
-
+        
     uplim = 10000/(sample_rate/2)
     if uplim >= 1:
         uplim = 0.99
-
+    
     b, a = butter(3, [10/(sample_rate/2), uplim], btype='band')
 
     D = data[start_index:end_index, :] * bit_volts
-
+    
     D_filt = np.zeros(D.shape)  # datatype set by D
 
     for i in range(D.shape[1]):
@@ -219,23 +217,22 @@ def get_noise_channels(raw_data_file, num_channels, sample_rate, bit_volts, nois
     rms_values = np.apply_along_axis(rms, axis=0, arr=D_filt)
 
     above_median = rms_values - medfilt(rms_values, 11)
-
+    
     print('number of noise channels: ' +
           repr(sum(above_median > noise_threshold)))
 
     return above_median < noise_threshold
 
-
 def fix_phy_params(output_dir, dat_path, dat_name, chan_phy_binary, sample_rate):
 
-    # write a new params.py file.
+    # write a new params.py file. 
     # dat_path will be set to a relative path from output_dir to
     # dat_path/dat_name
     # sample rate will be written out to sufficient digits to be used
-
+    
     shutil.copy(os.path.join(output_dir, 'params.py'),
                 os.path.join(output_dir, 'old_params.py'))
-
+    
     relPath = os.path.relpath(dat_path, output_dir)
     new_path = os.path.join(relPath, dat_name)
     new_path = new_path.replace('\\', '/')
@@ -252,7 +249,7 @@ def fix_phy_params(output_dir, dat_path, dat_name, chan_phy_binary, sample_rate)
                 currLine = "n_channels_dat = " + repr(chan_phy_binary) + "\n"
             elif 'sample_rate' in currLine:
                 currLine = (f'sample_rate = {sample_rate:.12f}\n')
-            paramLines.append(currLine)
+            paramLines.append(currLine)           
             currLine = f.readline()
 
     with open(os.path.join(output_dir, 'params.py'), 'w') as fout:

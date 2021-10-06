@@ -41,6 +41,8 @@ def run_CatGT(args):
         cmd_parts.append('-loccar=' + repr(inner_site) + ',' + repr(outer_site))
     elif car_mode == 'gbldmx':
         cmd_parts.append('-gbldmx')
+    elif car_mode == 'gblcar':
+        car_str = ' -gblcar'
     cmd_parts.append(args['catGT_helper_params']['cmdStr'])
     cmd_parts.append('-dest=' + args['directories']
                      ['extracted_data_directory'])

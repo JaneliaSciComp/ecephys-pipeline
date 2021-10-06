@@ -34,8 +34,7 @@ from tkinter import filedialog
 # the MATLAB version of readMeta.
 #
 # The string values are converted to numbers using the "int" and "float"
-# fucntions. Note that python 3 has no size limit for integers.
-#
+# functions. Note that python 3 has no size limit for integers.
 def readMeta(metaPath):
     metaDict = {}
     if metaPath.exists():
@@ -53,7 +52,8 @@ def readMeta(metaPath):
     else:
         print("no meta file")
     return(metaDict)
-    
+
+
 # Return array of original channel IDs. As an example, suppose we want the
 # imec gain for the ith channel stored in the binary data. A gain array
 # can be obtained using ChanGainsIM(), but we need an original channel
@@ -61,7 +61,6 @@ def readMeta(metaPath):
 # ith channel in the file isn't necessarily the ith acquired channel.
 # Use this function to convert from ith stored to original index.
 # Note that the SpikeGLX channels are 0 based.
-#
 def OriginalChans(meta):
     if meta['snsSaveChanSubset'] == 'all':
         # output = int32, 0 to nSavedChans - 1
@@ -82,10 +81,9 @@ def OriginalChans(meta):
             chans = np.append(chans, newChans)
     return(chans)
 
-    
+
 # Return counts of each imec channel type that composes the timepoints
 # stored in the binary files.
-#
 def ChannelCountsIM(meta):
     chanCountList = meta['snsApLfSy'].split(sep=',')
     AP = int(chanCountList[0])
@@ -95,12 +93,12 @@ def ChannelCountsIM(meta):
 
 
 # Read shank map for any probe type and return list
-# of channels that are disabled. This will include the 
+# of channels that are disabled. This will include the
 # reference channels
 #
 # Note that first entry in the shankMap is the header
-def findDisabled(meta):     
-    # read in the shank map   
+def findDisabled(meta):
+    # read in the shank map
     shankMap = meta['snsShankMap'].split(sep=')')
 
     # There's an entry in the shank map for each saved channel.
@@ -108,19 +106,18 @@ def findDisabled(meta):
     chan = OriginalChans(meta)
     # Find out how many are AP chans
     [AP, LF, SY] = ChannelCountsIM(meta)
-    exChan = list();
-    for i in range(0,AP):
+    exChan = list()
+    for i in range(0, AP):
         # get enabled flag from this entry, skipping first header entry
         currList = shankMap[i+1].split(':')
-        if currList[3] == '0':          
+        if currList[3] == '0':
             exChan.append(chan[i])
-    
+
     return(exChan)
 
 
 # Return shank and electrode number for NP1.0 or 3A
 # Index into these with original (acquired) channel IDs.
-#
 def NP10_ElecInd(meta):
     # Works for 3A and 3B data
     # also works for type 1100 probes, which are the single bank UHD
@@ -156,46 +153,47 @@ def NP10_ElecInd(meta):
 
 
 # Return x y coords for electrode index for NP1.0 or 3A
-#
 def XYCoord10(meta, elecInd, showPlot):
-    nElec = 960;    # per shank; pattern repeats for the four shanks
-    vSep = 20;      # in um
-    hSep = 32;
+    nElec = 960    # per shank; pattern repeats for the four shanks
+    vSep = 20      # in um
+    hSep = 32
 
-    elecPos = np.zeros((nElec,2), dtype='float')
-    
+    elecPos = np.zeros((nElec, 2), dtype='float')
+
     # fill in x values
     ind = np.arange(0, nElec, step=4, dtype='int')
-    elecPos[ind,0] = hSep/2             # sites 0,4,8...
+    elecPos[ind, 0] = hSep/2             # sites 0,4,8...
     ind = np.arange(1, nElec, step=4, dtype='int')
-    elecPos[ind,0] =  (3/2)*hSep        # sites 1,5,9...
+    elecPos[ind, 0] = (3/2)*hSep        # sites 1,5,9...
     ind = np.arange(2, nElec, step=4, dtype='int')
-    elecPos[ind,0] = 0                  # sites 2,6,10...
+    elecPos[ind, 0] = 0                  # sites 2,6,10...
     ind = np.arange(3, nElec, step=4, dtype='int')
-    elecPos[ind,0] =  hSep;             # sites 3,7,11...
-    elecPos[:,0] = elecPos[:,0] + 11;       #x offset on the shank
-    
-    # fill in y values        
-    viHalf = np.arange(0,(nElec/2), dtype='int')         # row numbers
-    ind0 = np.arange(0, nElec, step=2, dtype ='int')
-    elecPos[ind0,1] = viHalf * vSep       # sites 0,2,4...
-    ind1 = np.arange(1, nElec, step=2, dtype ='int')
-    elecPos[ind1,1] = elecPos[ind0,1];    # sites 1,3,5...
+    elecPos[ind, 0] = hSep             # sites 3,7,11...
+    elecPos[:, 0] = elecPos[:, 0] + 11  # x offset on the shank
+
+    # fill in y values
+    viHalf = np.arange(0, (nElec/2), dtype='int')         # row numbers
+    ind0 = np.arange(0, nElec, step=2, dtype='int')
+    elecPos[ind0, 1] = viHalf * vSep       # sites 0,2,4...
+    ind1 = np.arange(1, nElec, step=2, dtype='int')
+    elecPos[ind1, 1] = elecPos[ind0, 1]    # sites 1,3,5...
 
     xCoord = elecPos[elecInd, 0]
     yCoord = elecPos[elecInd, 1]
 
     if showPlot:
         # single shank probe. Plot only lowest selected electrode
-        
-        fig = plt.figure(figsize=(2,12))
-        
-        # plot all positions   
-        marker_style = dict(c='w', edgecolor = 'k', linestyle='None', marker='s', s=20)                 
-        plt.scatter(elecPos[:,0], elecPos[:,1], **marker_style)
+
+        fig = plt.figure(figsize=(2, 12))
+
+        # plot all positions
+        marker_style = dict(c='w', edgecolor='k',
+                            linestyle='None', marker='s', s=20)
+        plt.scatter(elecPos[:, 0], elecPos[:, 1], **marker_style)
 
         # plot selected position
-        marker_style = dict(c='b', edgecolor='b', linestyle='None', marker='s', s=15)
+        marker_style = dict(c='b', edgecolor='b',
+                            linestyle='None', marker='s', s=15)
         plt.scatter(xCoord, yCoord, **marker_style)
 
         plt.show()
@@ -204,46 +202,47 @@ def XYCoord10(meta, elecInd, showPlot):
 
 
 # Return x y coords for electrode index for NP1.0 or 3A
-#
 def XYCoordUHD(meta, elecInd, showPlot):
-    nElec = 384;    # per shank; pattern repeats for the four shanks
-    vSep = 6;      # in um
-    hSep = 6;
+    nElec = 384    # per shank; pattern repeats for the four shanks
+    vSep = 6      # in um
+    hSep = 6
 
-    elecPos = np.zeros((nElec,2), dtype='float')
-    
+    elecPos = np.zeros((nElec, 2), dtype='float')
+
     # fill in x and y values
     for i in range(0, 8):
         ind = np.arange(i, nElec, step=8, dtype='int')
-        elecPos[ind,0] = i*hSep             # i = 0 for site 0,8,16..., i = 1 for sites 1,9,17...
-        rowind = ind/8;
+        # i = 0 for site 0,8,16..., i = 1 for sites 1,9,17...
+        elecPos[ind, 0] = i*hSep
+        rowind = ind/8
         rowind = rowind.astype('int')
-        elecPos[ind,1] = rowind*vSep
-    
+        elecPos[ind, 1] = rowind*vSep
 
     xCoord = elecPos[elecInd, 0]
     yCoord = elecPos[elecInd, 1]
 
     if showPlot:
         # single shank probe. Plot only lowest selected electrode
-        
-        fig = plt.figure(figsize=(2,12))
-        
-        # plot all positions   
-        marker_style = dict(c='w', edgecolor = 'k', linestyle='None', marker='s', s=20)                 
-        plt.scatter(elecPos[:,0], elecPos[:,1], **marker_style)
+
+        fig = plt.figure(figsize=(2, 12))
+
+        # plot all positions
+        marker_style = dict(c='w', edgecolor='k',
+                            linestyle='None', marker='s', s=20)
+        plt.scatter(elecPos[:, 0], elecPos[:, 1], **marker_style)
 
         # plot selected position
-        marker_style = dict(c='b', edgecolor='b', linestyle='None', marker='s', s=15)
+        marker_style = dict(c='b', edgecolor='b',
+                            linestyle='None', marker='s', s=15)
         plt.scatter(xCoord, yCoord, **marker_style)
 
         plt.show()
 
     return(xCoord, yCoord)
 
+
 # Return shank and electrode number for NP2.0 probes
 # Index into these with original (acquired) channel IDs.
-#
 def NP20_ElecInd(meta):
 
     pType = meta['imDatPrb_type']
@@ -255,24 +254,22 @@ def NP20_ElecInd(meta):
     shankInd = np.zeros(nChan, dtype='int')
     connected = np.ones(nChan, dtype='int')
 
-    
     if pType == '21':
         # Single shank probe
         # imro table entries: (channel, bankMask, refType, electrode #)
 
-        for i in range(0,nChan):
+        for i in range(0, nChan):
             currList = imroList[i+1]
             currList = currList[1:len(currList)]    # trim leading '('
             currList = currList.split(' ')
             chan[i] = int(currList[0])
             bankMask[i] = int(currList[1])
             elecInd[i] = int(currList[3])
-            
-      
+
     else:
         # 4 shank probe
         # imro table entries: (channel, shank, bank, refType, electrode #)
-        for i in range(0,nChan):
+        for i in range(0, nChan):
             currList = imroList[i+1]
             currList = currList[1:len(currList)]    # trim leading '('
             currList = currList.split(' ')
@@ -280,19 +277,19 @@ def NP20_ElecInd(meta):
             shankInd[i] = int(currList[1])
             bankMask = int(currList[2])
             elecInd[i] = int(currList[4])
-        
+
     exChan = findDisabled(meta)
-    
-    for i in range(0,len(exChan)): 
+
+    for i in range(0, len(exChan)):
         ind = np.argwhere(chan == exChan[i])
         if ind.size > 0:
-            connected[ind] = 0  
-  
+            connected[ind] = 0
+
     return (elecInd, shankInd, bankMask, connected)
 
+
 # Return x y coords for electrode index for 2.0 probes
-#    
-def XYCoord20(meta, elecInd, bankMask, shankInd, showPlot):  
+def XYCoord20(meta, elecInd, bankMask, shankInd, showPlot):
 
     pType = meta['imDatPrb_type']
 
@@ -300,7 +297,7 @@ def XYCoord20(meta, elecInd, bankMask, shankInd, showPlot):
     vSep = 15      # in um
     hSep = 32
 
-    elecPos = np.zeros((nElec,2), dtype='float')  
+    elecPos = np.zeros((nElec, 2), dtype='float')
 
     # fill in x values
     ind0 = np.arange(0, nElec, step=2, dtype='int')
@@ -308,54 +305,59 @@ def XYCoord20(meta, elecInd, bankMask, shankInd, showPlot):
     ind1 = np.arange(1, nElec, step=2, dtype='int')
     elecPos[ind1, 0] = hSep      # sites 1,3,5...
 
-    # fill in y values        
-    viHalf = np.arange(0,(nElec/2), dtype='int')         # row numbers
+    # fill in y values
+    viHalf = np.arange(0, (nElec/2), dtype='int')         # row numbers
     elecPos[ind0, 1] = viHalf * vSep       # sites 0,2,4...
     elecPos[ind1, 1] = elecPos[ind0, 1]    # sites 1,3,5...
-    
-   
-    xCoord = elecPos[elecInd,0]
-    yCoord = elecPos[elecInd,1]
-    
+
+    xCoord = elecPos[elecInd, 0]
+    yCoord = elecPos[elecInd, 1]
+
     if showPlot:
         if pType == '21':
             # single shank probe. Plot only lowest selected electrode
-            fig = plt.figure(figsize=(2,12))
-        
-            # plot all positions   
-            marker_style = dict(c='w', edgecolor = 'k', linestyle='None', marker='s', s=20)                 
-            plt.scatter(elecPos[:,0], elecPos[:,1], **marker_style)
-        
+            fig = plt.figure(figsize=(2, 12))
+
+            # plot all positions
+            marker_style = dict(c='w', edgecolor='k',
+                                linestyle='None', marker='s', s=20)
+            plt.scatter(elecPos[:, 0], elecPos[:, 1], **marker_style)
+
             # plot selected positions
-            marker_style = dict(c='b', edgecolor = 'b', linestyle='None', marker='s', s=15) 
-            plt.scatter(xCoord,yCoord, **marker_style)
-        
+            marker_style = dict(c='b', edgecolor='b',
+                                linestyle='None', marker='s', s=15)
+            plt.scatter(xCoord, yCoord, **marker_style)
+
             plt.show()
-            
+
         else:
-            # four shank probe, no multiple connections   
-            fig = plt.figure(figsize=(2,12))
-        
+            # four shank probe, no multiple connections
+            fig = plt.figure(figsize=(2, 12))
+
             shankSep = 250
-            
+
             # loop over shanks
-            for sI in range(0,4):
-                
-                # plot all positions   
-                marker_style = dict(c='w', edgecolor = 'k', linestyle='None', marker='s', s=20)                 
-                plt.scatter(shankSep*sI + elecPos[:,0], elecPos[:,1], **marker_style)
-        
+            for sI in range(0, 4):
+
+                # plot all positions
+                marker_style = dict(c='w', edgecolor='k',
+                                    linestyle='None', marker='s', s=20)
+                plt.scatter(
+                    shankSep*sI + elecPos[:, 0], elecPos[:, 1], **marker_style)
+
                 # plot selected positions
                 currInd = np.argwhere(shankInd == sI)
-                marker_style = dict(c='b', edgecolor = 'b', linestyle='None', marker='s', s=15) 
-                plt.scatter(shankSep*sI + xCoord[currInd], yCoord[currInd], **marker_style)
-    
+                marker_style = dict(c='b', edgecolor='b',
+                                    linestyle='None', marker='s', s=15)
+                plt.scatter(
+                    shankSep*sI + xCoord[currInd], yCoord[currInd], **marker_style)
+
             plt.show()
-   
+
     return(xCoord, yCoord)
 
 
-def CoordsToText(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath ):
+def CoordsToText(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath):
 
     if buildPath:
         newName = baseName + '_siteCoords.txt'
@@ -366,87 +368,93 @@ def CoordsToText(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName,
     # Note that the channel index written is the index of that channel in the saved file
 
     with open(saveFullPath, 'w') as outFile:
-        for i in range(0,chans.size):
+        for i in range(0, chans.size):
             currX = shankInd[i]*shankSep + xCoord[i]
-            currLine = '{:d}\t{: .1f}\t{: .1f}\t{:d}\n'.format(i, currX, yCoord[i], shankInd[i])
+            currLine = '{:d}\t{: .1f}\t{: .1f}\t{:d}\n'.format(
+                i, currX, yCoord[i], shankInd[i])
             outFile.write(currLine)
-            
-def CoordsToJRCString(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath ):
-    
+
+
+def CoordsToJRCString(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath):
+
     if buildPath:
-        newName = baseName +'_forJRCprm.txt'
+        newName = baseName + '_forJRCprm.txt'
         saveFullPath = Path(savePath / newName)
     else:
         saveFullPath = savePath
-    
+
     # siteMap, equivalent of chanMap in KS, is the order of channels in the saved file
     # rather than original channel indicies.
     nChan = chans.size
-    siteMap = np.arange(0,nChan, dtype = 'int')
+    siteMap = np.arange(0, nChan, dtype='int')
     siteMap = siteMap + 1   # convert to 1-based for MATLAB
-    
-    shankInd = shankInd + 1 # conver to 1-based for MATLAB
- 
+
+    shankInd = shankInd + 1  # conver to 1-based for MATLAB
+
     shankStr = 'shankMap = ['
     coordStr = 'siteLoc = ['
     siteMapStr = 'siteMap = ['
-    
+
     xCoord = shankInd*shankSep + xCoord
-    
-    for i in range(0,chans.size-1):
-        shankStr = shankStr + '{:d},'.format(shankInd[i])   # convert to 1-based for MATLAB
+
+    for i in range(0, chans.size-1):
+        # convert to 1-based for MATLAB
+        shankStr = shankStr + '{:d},'.format(shankInd[i])
         coordStr = coordStr + '{:.1f},{:.1f};'.format(xCoord[i], yCoord[i])
-        siteMapStr = siteMapStr + '{:d},'.format(siteMap[i])    # convert to 1-based for MATLAB
-    
+        # convert to 1-based for MATLAB
+        siteMapStr = siteMapStr + '{:d},'.format(siteMap[i])
+
     # final entries
     shankStr = shankStr + '{:d}];\n'.format(shankInd[nChan-1])
-    coordStr = coordStr + '{:.1f},{:.1f}];\n'.format(xCoord[nChan-1], yCoord[nChan-1])
+    coordStr = coordStr + \
+        '{:.1f},{:.1f}];\n'.format(xCoord[nChan-1], yCoord[nChan-1])
     siteMapStr = siteMapStr + '{:d}];\n'.format(siteMap[nChan-1])
-    
+
     with open(saveFullPath, 'w') as outFile:
-        outFile.write(shankStr) 
+        outFile.write(shankStr)
         outFile.write(coordStr)
         outFile.write(siteMapStr)
 
 
-def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath ): 
-    
+def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath):
+
     if buildPath:
-        newName = baseName +'_kilosortChanMap.mat'
+        newName = baseName + '_kilosortChanMap.mat'
         saveFullPath = Path(savePath / newName)
     else:
         saveFullPath = savePath
-    
+
     nChan = chans.size
-    # channel map is the order of channels in the file, rather than the 
+    # channel map is the order of channels in the file, rather than the
     # original indicies of the channels
-    chanMap0ind = np.arange(0,nChan,dtype='float64')
-    chanMap0ind = chanMap0ind.reshape((nChan,1))
+    chanMap0ind = np.arange(0, nChan, dtype='float64')
+    chanMap0ind = chanMap0ind.reshape((nChan, 1))
     chanMap = chanMap0ind + 1
-    
-    connected = (connected==1)
-    connected = connected.reshape((nChan,1))
-    
+
+    connected = (connected == 1)
+    connected = connected.reshape((nChan, 1))
+
     xCoord = shankInd*shankSep + xCoord
-    xCoord = xCoord.reshape((nChan,1))
-    yCoord = yCoord.reshape((nChan,1))
-    
+    xCoord = xCoord.reshape((nChan, 1))
+    yCoord = yCoord.reshape((nChan, 1))
+
     kcoords = shankInd + 1
-    kcoords = kcoords.reshape((nChan,1))
+    kcoords = kcoords.reshape((nChan, 1))
     kcoords = kcoords.astype('float64')
-    
+
     name = baseName
-    
+
     mdict = {
-            'chanMap':chanMap,
-            'chanMap0ind':chanMap0ind,
-            'connected':connected,
-            'name':name,
-            'xcoords':xCoord,
-            'ycoords':yCoord,
-            'kcoords':kcoords,
-            }
+        'chanMap': chanMap,
+        'chanMap0ind': chanMap0ind,
+        'connected': connected,
+        'name': name,
+        'xcoords': xCoord,
+        'ycoords': yCoord,
+        'kcoords': kcoords,
+    }
     scipy.io.savemat(saveFullPath, mdict)
+
 
 # Given a path to a SpikeGLX metadata file, write out coordinates
 # in formats for analysis software to consume
@@ -454,33 +462,32 @@ def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd, shankSep, base
 #   metaFullPath: full path, including the file name
 #   outType:  format for the output
 #   badChan:  channels other than reference channels to exclude
-#   destFullPath: 
-    
-def MetaToCoords(metaFullPath, outType, badChan= np.zeros((0), dtype = 'int'), destFullPath = '', showPlot=False):
-    
+#   destFullPath:
+def MetaToCoords(metaFullPath, outType, badChan=np.zeros((0), dtype='int'), destFullPath='', showPlot=False):
+
     # shank separation for multishank probe
     shankSep = 250
-    
+
     # Read in metadata; returns a dictionary with string for values
     meta = readMeta(metaFullPath)
-    
+
     if 'imDatPrb_type' in meta:
         pType = int(meta['imDatPrb_type'])
     else:
-        pType = 0    #3A probe
-        
+        pType = 0  # 3A probe
+
     print(pType)
-    
-    if pType <= 1 or pType == 1100:  
+
+    if pType <= 1 or pType == 1100:
         # Neuropixels 1.0 or 3A probe
-        
+
         # Get indices of electrodes
         [elecInd, connected] = NP10_ElecInd(meta)
-             
+
         # Get saved channels
-        chans = OriginalChans(meta)     #inludes SY channel
-        [AP,LF,SY] = ChannelCountsIM(meta)    
-        chans = chans[0:AP]    
+        chans = OriginalChans(meta)  # inludes SY channel
+        [AP, LF, SY] = ChannelCountsIM(meta)
+        chans = chans[0:AP]
 
         # Trim elecInd, connected, and shankind to include only saved channels
         elecInd = elecInd[chans]
@@ -502,20 +509,20 @@ def MetaToCoords(metaFullPath, outType, badChan= np.zeros((0), dtype = 'int'), d
 
     else:
         # Neuropixels type 21 (single shank) or 24 (four shank)
-    
+
         # Get indices of all electrodes from the imro table
         [elecInd, shankInd, bankMask, connected] = NP20_ElecInd(meta)
 
         # Get saved channels
         chans = OriginalChans(meta)     # includes SY channel
-        [AP, LF, SY] = ChannelCountsIM(meta)  
+        [AP, LF, SY] = ChannelCountsIM(meta)
         chans = chans[0:AP]
 
         # Trim elecInd, connected, and shankind to include only saved channels
         elecInd = elecInd[chans]
         connected = connected[chans]
         shankInd = shankInd[chans]
-        
+
         # Channels identified as noisy by kilosort helper indexed
         # according to position in the file
         # since these can include the SYNC channel, remove any from
@@ -524,32 +531,37 @@ def MetaToCoords(metaFullPath, outType, badChan= np.zeros((0), dtype = 'int'), d
         connected[badChan] = 0
 
         # Get XY coords for saved channels and plot
-        [xCoord, yCoord] = XYCoord20(meta, elecInd, bankMask, shankInd, showPlot)
+        [xCoord, yCoord] = XYCoord20(
+            meta, elecInd, bankMask, shankInd, showPlot)
 
     baseName = metaFullPath.stem
-    # write output as text
-    if len(destFullPath) == 0:
-        savePath = metaFullPath.parent
-        buildPath = True
-    else:
-        buildPath = False
-        savePath = destFullPath
-    outputSwitch = {
+
+    if outType > 0:
+        if len(destFullPath) == 0:
+            savePath = metaFullPath.parent
+            buildPath = True
+        else:
+            buildPath = False
+            savePath = destFullPath
+        outputSwitch = {
             0: CoordsToText,
             1: CoordsToKSChanMap,
             2: CoordsToJRCString,
-    }
-    
-    writeFunc = outputSwitch.get(outType)
-    writeFunc(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath )
-    
+        }
+
+        writeFunc = outputSwitch.get(outType)
+        writeFunc(chans, xCoord, yCoord, connected, shankInd,
+                  shankSep, baseName, savePath, buildPath)
+
+    return xCoord, yCoord, shankInd
+
+
 # Sample calling program to get a metadata file from the user,
 # output a file set by outType
-#
 def main():
-    
+
     outType = 1
-    
+
     # Get file from user
     root = Tk()         # create the Tkinter widget
     root.withdraw()     # hide the Tkinter root window
@@ -559,10 +571,9 @@ def main():
 
     metaFullPath = Path(filedialog.askopenfilename(title="Select meta file"))
     root.destroy()      # destroy the Tkinter widget
-   
-    MetaToCoords( metaFullPath=metaFullPath, outType=outType, showPlot=True  )
 
-        
+    MetaToCoords(metaFullPath=metaFullPath, outType=outType, showPlot=True)
+
 
 if __name__ == "__main__":
     main()
