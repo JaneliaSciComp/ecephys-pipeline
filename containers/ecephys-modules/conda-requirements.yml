@@ -4,22 +4,23 @@ channels:
   - defaults
 
 dependencies:
-  - pip
   - coverage
-  - sphinx
-  - pytest
-  - ruamel.yaml
+  - GitPython
+  - h5py
   - matplotlib
-  - scipy
   - numpy
   - pandas
-  - GitPython
   - pillow
-  - xarray
-  - scikit-learn
-  - h5py
-  - urllib3
+  - pip
+  - psutil
+  - pytest
   - requests
+  - ruamel.yaml
+  - scikit-learn
+  - scipy
+  - sphinx
+  - urllib3
+  - xarray
   - pip:
     - tox
     - sphinx-gallery
