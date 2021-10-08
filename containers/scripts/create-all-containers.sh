@@ -1,4 +1,7 @@
-TOOLS_VERSION=1.0.1
+DIR=$(cd "$(dirname "$0")"; pwd)
+
+source ${DIR}/container-versions.sh
+
 docker build \
     -t matlab-centos8:2020b \
     -t registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b \
@@ -6,26 +9,26 @@ docker build \
     containers/matlab-dockerfile-centos8
 
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/ecephys-modules:${TOOLS_VERSION} \
-    -t ecephys-modules:${TOOLS_VERSION} \
+    -t registry.int.janelia.org/janeliascicomp/ecephys-modules:${ECEPHYS_CONTAINERS_VERSION} \
+    -t ecephys-modules:${ECEPHYS_CONTAINERS_VERSION} \
     containers/ecephys-modules
 
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/catgt:${TOOLS_VERSION} \
-    -t catgt:${TOOLS_VERSION} \
+    -t registry.int.janelia.org/janeliascicomp/catgt:${ECEPHYS_CONTAINERS_VERSION} \
+    -t catgt:${ECEPHYS_CONTAINERS_VERSION} \
     containers/catgt
 
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/cwaves:${TOOLS_VERSION} \
-    -t cwaves:${TOOLS_VERSION} \
+    -t registry.int.janelia.org/janeliascicomp/cwaves:${ECEPHYS_CONTAINERS_VERSION} \
+    -t cwaves:${ECEPHYS_CONTAINERS_VERSION} \
     containers/cwaves
 
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/tprime:${TOOLS_VERSION} \
-    -t tprime:${TOOLS_VERSION} \
+    -t registry.int.janelia.org/janeliascicomp/tprime:${ECEPHYS_CONTAINERS_VERSION} \
+    -t tprime:${ECEPHYS_CONTAINERS_VERSION} \
     containers/tprime
 
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/kilosort:${TOOLS_VERSION} \
-    -t kilosort:${TOOLS_VERSION} \
+    -t registry.int.janelia.org/janeliascicomp/kilosort:${ECEPHYS_CONTAINERS_VERSION} \
+    -t kilosort:${ECEPHYS_CONTAINERS_VERSION} \
     containers/kilosort
