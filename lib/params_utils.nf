@@ -116,7 +116,7 @@ def get_hyphenated_value_param(Map ps, String param) {
 def catgt_modules_container_param(Map ps) {
     def catgt_container = ps.catgt_container
     if (!catgt_container)
-        "${ps.container_repo}/catgt:1.0.0"
+        "${ps.container_repo}/catgt:1.0.1"
     else
         catgt_container
 }
@@ -124,7 +124,7 @@ def catgt_modules_container_param(Map ps) {
 def cwaves_modules_container_param(Map ps) {
     def cwaves_container = ps.cwaves_container
     if (!cwaves_container)
-        "${ps.container_repo}/cwaves:1.0.0"
+        "${ps.container_repo}/cwaves:1.0.1"
     else
         cwaves_container
 }
@@ -132,7 +132,7 @@ def cwaves_modules_container_param(Map ps) {
 def ecephys_modules_container_param(Map ps) {
     def ecephys_modules_container = ps.ecephys_modules_container
     if (!ecephys_modules_container)
-        "${ps.container_repo}/ecephys-modules:1.0.0"
+        "${ps.container_repo}/ecephys-modules:1.0.1"
     else
         ecephys_modules_container
 }
@@ -140,7 +140,7 @@ def ecephys_modules_container_param(Map ps) {
 def kilosort_container_param(Map ps) {
     def kilosort_container = ps.kilosort_container
     if (!kilosort_container)
-        "${ps.container_repo}/kilosort:1.0.0"
+        "${ps.container_repo}/kilosort:1.0.1"
     else
         kilosort_container
 }
@@ -148,7 +148,7 @@ def kilosort_container_param(Map ps) {
 def tprime_modules_container_param(Map ps) {
     def tprime_container = ps.tprime_container
     if (!tprime_container)
-        "${ps.container_repo}/tprime:1.0.0"
+        "${ps.container_repo}/tprime:1.0.1"
     else
         tprime_container
 }
