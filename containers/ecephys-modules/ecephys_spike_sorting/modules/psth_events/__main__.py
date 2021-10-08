@@ -20,9 +20,6 @@ def get_psth_events(args):
     # reside in the directory with the binary data and extracted NI edges
     # reside in the parent of that folder
 
-    print('ecephys spike sorting: PSTH events module')
-    start = time.time()
-
     input_file = args['ephys_params']['ap_band_file']
     extract_str = args['psth_events']['event_ex_param_str']
 
@@ -61,7 +58,7 @@ def get_psth_events(args):
             flt_list = fnmatch.filter(file_list, ex_file_name)
             if len(flt_list) != 1:
                 print('No edge file or multiple files for psth evens')
-                return
+                return {'message': 'nidq channel: No edge file or multiple files for psth evens'}
             ex_path = os.path.join(run_directory, flt_list[0])
         else:
             # SY channel. could be on any probe, so get the probe string
@@ -71,7 +68,7 @@ def get_psth_events(args):
             flt_list = fnmatch.filter(file_list, match_str)
             if len(flt_list) != 1:
                 print('No edge file or multiple files for psth evens')
-                return
+                return {'message': 'SY channel: No edge file or multiple files for psth evens'}
             ex_file_name = flt_list[0]
             ex_path = os.path.join(run_directory, ex_prb_fld_name, ex_file_name)
 
@@ -96,11 +93,7 @@ def get_psth_events(args):
             outfile.write(f'{edgeTimes[i]:.6f},')
         outfile.write(f'{edgeTimes[nEvent-1]:.6f}')
 
-    execution_time = time.time() - start
-
-    print('total time: ' + str(np.around(execution_time, 2)) + ' seconds')
-
-    return {"execution_time": execution_time}  # output manifest
+    return {'message': event_path}  # empty manifest
 
 
 def main():
@@ -111,7 +104,12 @@ def main():
     mod = ArgSchemaParser(schema_type=InputParameters,
                           output_schema_type=OutputParameters)
 
+    print('ecephys spike sorting: Start PSTH events module')
+    start = time.time()
     output = get_psth_events(mod.args)
+    execution_time = time.time() - start
+    print('total time: ' + str(np.around(execution_time, 2)) + ' seconds')
+    output.update({"execution_time": execution_time})  # -- update execution time
 
     output.update({"input_parameters": mod.args})
     if "output_json" in mod.args:

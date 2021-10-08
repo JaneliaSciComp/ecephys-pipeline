@@ -68,20 +68,24 @@ def calculate_mean_waveforms(args):
         else:
             print('unknown system, cannot run C_Waves')
         
-        cwaves_cmd = exe_path + ' -spikeglx_bin=' + spikeglx_bin + \
-                                ' -clus_table_npy=' + clus_table_npy + \
-                                ' -clus_time_npy=' + clus_time_npy + \
-                                ' -clus_lbl_npy=' + clus_lbl_npy + \
-                                ' -dest=' + dest + \
-                                ' -samples_per_spike=' + repr(args['mean_waveform_params']['samples_per_spike']) + \
-                                ' -pre_samples=' + repr(args['mean_waveform_params']['pre_samples']) + \
-                                ' -num_spikes=' + repr(args['mean_waveform_params']['spikes_per_epoch']) + \
-                                ' -snr_radius=' + repr(args['mean_waveform_params']['snr_radius'])
+        cwaves_cmd_parts = list()
+
+        cwaves_cmd_parts.append(exe_path)
+
+        cwaves_cmd_parts.append(' -spikeglx_bin=' + spikeglx_bin)
+        cwaves_cmd_parts.append(' -clus_table_npy=' + clus_table_npy)
+        cwaves_cmd_parts.append(' -clus_time_npy=' + clus_time_npy)
+        cwaves_cmd_parts.append(' -clus_lbl_npy=' + clus_lbl_npy)
+        cwaves_cmd_parts.append(' -dest=' + dest)
+        cwaves_cmd_parts.append(' -samples_per_spike=' + repr(args['mean_waveform_params']['samples_per_spike']))
+        cwaves_cmd_parts.append(' -pre_samples=' + repr(args['mean_waveform_params']['pre_samples']))
+        cwaves_cmd_parts.append(' -num_spikes=' + repr(args['mean_waveform_params']['spikes_per_epoch']))
+        cwaves_cmd_parts.append(' -snr_radius=' + repr(args['mean_waveform_params']['snr_radius']))
                                 
-        print(cwaves_cmd)
+        print(cwaves_cmd_parts)
         
         # make the C_Waves call
-        subprocess.call(cwaves_cmd)
+        subprocess.call(cwaves_cmd_parts)
         
         # for first version, retain original names
         if clu_version == 0:

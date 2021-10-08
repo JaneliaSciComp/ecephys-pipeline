@@ -23,5 +23,5 @@ class OutputSchema(DefaultSchema):
 
 
 class OutputParameters(OutputSchema):
-
+    message = String()  # added message to the schema to see what is happening
     execution_time = Float()

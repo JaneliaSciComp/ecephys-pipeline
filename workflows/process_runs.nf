@@ -170,7 +170,7 @@ workflow process_probes_for_all_runs {
     if (steps.contains('mean_waveforms')) {
         mean_waveforms_output = mean_waveforms_input | run_mean_waveforms
     } else {
-        mean_waveforms_output = psth_events_input
+        mean_waveforms_output = mean_waveforms_input
     }
 
     def quality_metrics_input = mean_waveforms_output
@@ -178,7 +178,7 @@ workflow process_probes_for_all_runs {
     if (steps.contains('quality_metrics')) {
         quality_metrics_output = quality_metrics_input | run_quality_metrics
     } else {
-        quality_metrics_output = psth_events_input
+        quality_metrics_output = quality_metrics_input
     }
 
     emit:
