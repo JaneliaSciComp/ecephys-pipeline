@@ -5,7 +5,7 @@ import os
 import sys
 from pathlib import Path
 
-from ..common.SGLXMetaToCoords import SGLXMetaToCoords as SGLXMeta
+from ..common import SGLXMetaToCoords as SGLXMeta
 
 
 def GetFirstTrialPath(catGT_run_name, gate_string, trigger_string, probe_string ):
