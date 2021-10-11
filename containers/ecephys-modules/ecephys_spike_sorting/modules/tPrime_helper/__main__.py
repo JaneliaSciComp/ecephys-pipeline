@@ -109,10 +109,11 @@ def call_TPrime(args):
         file_list = os.listdir(os.path.join(run_directory, prb_dir))
         flt_list = fnmatch.filter(file_list, match_str)
         if len(flt_list) != 1:
-            print('No edge file or multiple files for toStream found\n' )
-            return              
+            message = 'SY {}/{} -> {}: No edge file or multiple files for toStream found'.format(run_directory, prb_dir, match_str)
+            print(message)
+            return {'message': message}
+
         toStream_name = flt_list[0]
-        
         toStream_path = os.path.join(run_directory, prb_dir, toStream_name)
         
         # convert events in the toStream to sec; they will not be adjusted
@@ -142,11 +143,12 @@ def call_TPrime(args):
             # -1 option to specify the last channel in the file 
             prb_dir = prb_dir_prefix + str(c_prb)
             match_str = run_name + '_tcat.imec' + str(c_prb) + '.ap.SY_*_6_*.txt'
-            file_list = os.listdir(os.path.join(run_directory,prb_dir))
-            flt_list = fnmatch.filter(file_list,match_str)
+            file_list = os.listdir(os.path.join(run_directory, prb_dir))
+            flt_list = fnmatch.filter(file_list, match_str)
             if len(flt_list) != 1:
-                print('No edge file or multiple files for toStream found\n' )
-                return              
+                message = '{} -> {}: No edge file or multiple files for toStream found'.format(prb_dir, match_str)
+                print(message)
+                return {'message': message}
             c_name = flt_list[0]
              
             from_list.append(os.path.join(run_directory, prb_dir, c_name))
@@ -228,11 +230,12 @@ def call_TPrime(args):
             # -1 option to specify the last channel in the file 
             prb_dir = prb_dir_prefix + str(c_prb)
             match_str = run_name + '_tcat.imec' + str(c_prb) + '.ap.SY_*_6_*.txt'
-            file_list = os.listdir(os.path.join(run_directory,prb_dir))
-            flt_list = fnmatch.filter(file_list,match_str)
+            file_list = os.listdir(os.path.join(run_directory, prb_dir))
+            flt_list = fnmatch.filter(file_list, match_str)
             if len(flt_list) != 1:
-                print('No edge file or multiple files for fromStream found')
-                return              
+                message = '{}/{} -> {} No edge file or multiple files for fromStream found'.format(run_directory, prb_dir, match_str)
+                print(message)
+                return {'message': message}
             c_name = flt_list[0]
            
             from_list.append(os.path.join(run_directory, prb_dir, c_name))
@@ -329,10 +332,11 @@ def call_TPrime_3A(args):
     print(toStream_parent)
     print(match_str)
     file_list = os.listdir(toStream_parent)
-    flt_list = fnmatch.filter(file_list,match_str)
+    flt_list = fnmatch.filter(file_list, match_str)
     if len(flt_list) != 1:
-        print('No edge file or multiple files for toStream found')
-        return
+        message = '{} -> {}. No edge file or multiple files for toStream found'.format(toStream_parent, match_str)
+        print(message)
+        return {'message': message}
     toStream_name = flt_list[0]
     toStream_path = os.path.join(toStream_parent, toStream_name)
 
@@ -358,10 +362,11 @@ def call_TPrime_3A(args):
 
     for fS_parent in from_list:
         file_list = os.listdir(fS_parent)
-        flt_list = fnmatch.filter(file_list,match_str)
+        flt_list = fnmatch.filter(file_list, match_str)
         if len(flt_list) != 1:
-            print('No edge file or multiple files for fromStream found')
-            return
+            message = '{} -> {}. No edge file or multiple files for fromStream found'.format(fS_parent, match_str)
+            print(message)
+            return { 'message': message }
         fS_name = flt_list[0]
         fS_file_list.append(os.path.join(fS_parent,fS_name))
         ks_outdir = fnmatch.filter(file_list, 'imec_*_ks2')[0]

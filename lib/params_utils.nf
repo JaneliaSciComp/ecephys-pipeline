@@ -48,7 +48,7 @@ def default_params() {
         ni_present: true,
         ni_extract_cmd_args: '-XA=0,1,3,500 -XA=1,3,3,0 -XD=4,1,50 -XD=4,2,1.7 -XD=4,3,5',
 
-        catgt_car_mode: 'gbldmx', // must be 'None', 'gbldmx', or 'loccar'
+        catgt_car_mode: 'gblcar', // must be 'None', 'gblcar', or 'loccar'
         catgt_cmd_args: '-prb_fld -out_prb_fld -aphipass=300 -gfix=0,0.10,0.02',
         catgt_loccar_min: 40,
         catgt_loccar_max: 160,

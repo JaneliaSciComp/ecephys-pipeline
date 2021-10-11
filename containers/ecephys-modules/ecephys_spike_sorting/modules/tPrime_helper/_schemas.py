@@ -30,4 +30,5 @@ class OutputSchema(DefaultSchema):
 
 
 class OutputParameters(OutputSchema):
+    message = String()
     execution_time = Float()
