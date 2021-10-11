@@ -161,6 +161,16 @@ def createInputJson(output_file,
     fproc = os.path.join(kilosort_output_tmp, 'temp_wh.dat')
     fproc_forward_slash = fproc.replace('\\', '/')
     fproc_str = "'" + fproc_forward_slash + "'"
+    ap_band_file = continuous_file
+    # continuous file may be null so test it (cg)
+    if continuous_file is not None:
+        lfp_band_file = continuous_file.replace('.ap.bin', '.lf.bin')
+    else:
+        print('No continuous file found', npx_directory)
+        lfp_band_file = os.path.join(extracted_data_directory,
+                                    'continuous',
+                                    'Neuropix-' + acq_system + '-100.1',
+                                    'continuous.dat')
 
     dictionary = \
         {
@@ -187,8 +197,8 @@ def createInputJson(output_file,
                 "vertical_site_spacing": 10e-6,
                 "run_name": catGT_run_name,
                 "gate_string": gate_string,
-                "ap_band_file": continuous_file,
-                "lfp_band_file": continuous_file.replace('.ap.bin', '.lf.bin'),
+                "ap_band_file": ap_band_file,
+                "lfp_band_file": lfp_band_file,
                 "reorder_lfp_channels": False,
                 "cluster_group_file_name": 'cluster_group.tsv'
             },
