@@ -37,19 +37,21 @@ def run_kilosort(args):
                               args['ephys_params']['bit_volts'])
 
     if args['kilosort_helper_params']['spikeGLX_data']:
-       # SpikeGLX data, will build KS chanMap based on the metadata file plus 
-       # exclusion of noise channels found in get_noise_channels
-       # metadata file must be in the same directory as the ap_band_file
-       # resulting chanmap is copied to the matlab home directory, and will 
-       # overwrite any existing 'chanMap.mat'
-       metaName, binExt = os.path.splitext(
+        # SpikeGLX data, will build KS chanMap based on the metadata file plus 
+        # exclusion of noise channels found in get_noise_channels
+        # metadata file must be in the same directory as the ap_band_file
+        # resulting chanmap is copied to the matlab home directory, and will 
+        # overwrite any existing 'chanMap.mat'
+        metaPath, binExt = os.path.splitext(
            args['ephys_params']['ap_band_file'])
-       metaFullPath = Path(metaName + '.meta')
+        metaDir, metaName = os.path.split(metaPath)
 
-       destFullPath = os.path.join(
+        metaFullPath = Path(metaPath + '.meta')
+
+        destFullPath = os.path.join(
            args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
-       MaskChannels = np.where(mask == False)[0]      
-       MetaToCoords(metaFullPath=metaFullPath, outType=1,
+        MaskChannels = np.where(mask == False)[0]
+        MetaToCoords(metaFullPath=metaFullPath, outType=1,
                     badChan=MaskChannels, destFullPath=destFullPath)
        # end of SpikeGLX block
 
@@ -89,7 +91,7 @@ def run_kilosort(args):
                                              args['kilosort_helper_params']['kilosort2_params'])
     else:
         print('unknown kilosort version')
-        return
+        return {'message': 'unknown kilosort version'}  # return an error message
 
     start = time.time()
 
@@ -126,9 +128,9 @@ def run_kilosort(args):
     # to the input directory and set dat_path to point to it. Set the number of 
     # channls in the processed file
     dat_dir, dat_name = os.path.split(input_file)
-    
+
     copy_fproc = args['kilosort_helper_params']['kilosort2_params']['copy_fproc']
-  
+
     if copy_fproc:
         fproc_path_str = args['kilosort_helper_params']['kilosort2_params']['fproc']
         # trim quotes off string sent to matlab
@@ -137,7 +139,7 @@ def run_kilosort(args):
         # make a new name for the processed file based on the original
         # binary and metadata files
         fp_save_name = metaName + '_ksproc.bin'
-        shutil.copy(fproc_path, os.path.join(dat_dir, fp_save_name))
+        shutil.copy(fproc_path, os.path.join(output_dir, fp_save_name))
         cm_path = os.path.join(output_dir, 'channel_map.npy')
         cm = np.load(cm_path)
         chan_phy_binary = cm.size
@@ -151,8 +153,12 @@ def run_kilosort(args):
     # make a copy of the channel map to the data directory
     # named according to the binary and meta file
     # alredy have path to chanMap = destFullPath
+
     cm_save_name = metaName + '_chanMap.mat'
-    shutil.copy(destFullPath, os.path.join(output_dir, cm_save_name))
+    # copy chanMap file to the output dir instead of dat_dir
+    cm_dest = os.path.join(output_dir, cm_save_name)
+    print('Copy', metaName, destFullPath, cm_dest)
+    shutil.copy(destFullPath, cm_dest)
 
     if args['kilosort_helper_params']['ks_make_copy']:
         # get the kilsort output directory name
@@ -169,13 +175,13 @@ def run_kilosort(args):
 
     print('kilsort run time: ' + str(np.around(execution_time, 2)) + ' seconds')
     print()
-    
+
     # Don't call getSortResults until after any postprocessing
     # but get useful characteristics of ksort output right now
     spkTemplate = np.load(os.path.join(output_dir, 'spike_templates.npy'))
     nTemplate = np.unique(spkTemplate).size
     nTot = spkTemplate.size
-       
+
     return {"execution_time": execution_time,
             "kilosort_commit_date": commit_date,
             "kilosort_commit_hash": commit_time,

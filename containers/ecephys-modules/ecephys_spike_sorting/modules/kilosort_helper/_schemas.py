@@ -83,7 +83,7 @@ class OutputSchema(DefaultSchema):
                               required=True) 
  
 class OutputParameters(OutputSchema): 
-
+    message = String()
     execution_time = Float()
     kilosort_commit_hash = String()
     kilosort_commit_date = String()
