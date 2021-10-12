@@ -104,9 +104,10 @@ def calculate_mean_waveforms(args):
         # call version of calculate_waveform_metrics that will use these files
         
         # load in kilosort output needed for these calculations
+        ks_output_dir = args['directories']['kilosort_output_directory']
         spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
         channel_pos, clusterIDs, cluster_quality, cluster_amplitude = \
-                load_kilosort_data(args['directories']['kilosort_output_directory'], \
+                load_kilosort_data(ks_output_dir, \
                     args['ephys_params']['sample_rate'], \
                     convert_to_seconds = False)
                 
@@ -123,11 +124,10 @@ def calculate_mean_waveforms(args):
         input_file = args['ephys_params']['ap_band_file']
         dat_dir, dat_fname = os.path.split(input_file)
         dat_name, dat_ext = os.path.splitext(dat_fname)
-        chanMapMat = os.path.join(dat_dir, (dat_name +'_chanMap.mat'))
+        # chMat file is located in Kilosort's output
+        chanMapMat = os.path.join(ks_output_dir, (dat_name +'_chanMap.mat'))
         site_x = np.squeeze(loadmat(chanMapMat)['xcoords'])
         site_y = np.squeeze(loadmat(chanMapMat)['ycoords'])
-        
-
 
         metrics = metrics_from_file(mean_waveform_fullpath, snr_fullpath, clus_table_npy, \
                     spike_times, \
