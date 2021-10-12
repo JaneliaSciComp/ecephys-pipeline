@@ -45,7 +45,7 @@ def default_params() {
         ks_whitening_radius_um: 163,
         ks_working_dir: '/tmp/kilosort_temp',
 
-        process_lf: false, // this must be true if depth_estimation is run
+        process_lf: true, // this must be true if depth_estimation is run
 
         ni_present: true,
         ni_extract_cmd_args: '-XA=0,1,3,500 -XA=1,3,3,0 -XD=4,1,50 -XD=4,2,1.7 -XD=4,3,5',
