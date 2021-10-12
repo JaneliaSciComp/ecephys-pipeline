@@ -152,7 +152,7 @@ def run_kilosort(args):
     # named according to the binary and meta file
     # alredy have path to chanMap = destFullPath
     cm_save_name = metaName + '_chanMap.mat'
-    shutil.copy(destFullPath, os.path.join(dat_dir, cm_save_name))
+    shutil.copy(destFullPath, os.path.join(output_dir, cm_save_name))
 
     if args['kilosort_helper_params']['ks_make_copy']:
         # get the kilsort output directory name
