@@ -172,6 +172,47 @@ process run_catgt {
     """
 }
 
+process run_depth_estimation {
+    container { params.ecephys_modules_container }
+    cpus { params.depth_estimation_cpus }
+
+    input:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    output:
+    tuple val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers)
+
+    script:
+    def code = create_code_block(
+        'depth_estimation',
+        probe_config_file,
+        probe_folder_name,
+        [
+            'depth_estimation_params',
+            'ephys_params',
+            'directories',
+            'common_files'
+        ]
+    )
+    """
+    ${code}
+    """
+}
+
 process run_kilosort {
     container { params.kilosort_container }
     cpus { params.ks_cpus }

@@ -9,6 +9,7 @@ include {
 include {
     create_probe_config;
     run_catgt;
+    run_depth_estimation;
     run_kilosort;
     run_kilosort_post_process;
     run_noise_templates;
@@ -135,7 +136,18 @@ workflow process_probes_for_all_runs {
         catgt_output = catgt_input
     }
 
-    def ks_input = catgt_output
+    def depth_estimation_input = catgt_output
+    def depth_estimation_output
+    if (steps.contains('depth_estimation')) {
+        if (!params.process_lf) {
+            log.warn "Depth estimation requires CatGT to process the low frequency stream - set --process_lf to true"
+        }
+        depth_estimation_output = depth_estimation_input | run_depth_estimation
+    } else {
+        depth_estimation_output = depth_estimation_input
+    }
+
+    def ks_input = depth_estimation_output
     def ks_output
     if (steps.contains('kilosort_helper')) {
         ks_output = ks_input | run_kilosort
