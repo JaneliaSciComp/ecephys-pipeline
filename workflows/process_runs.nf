@@ -80,9 +80,11 @@ workflow process_probes_for_all_runs {
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
         def probe_catgt_extract_string
         def ni_extract_cmd_args = get_hyphenated_value_param(params, 'ni_extract_cmd_args')
-        if (params.ni_present && probe_index == 0) {
+        if (probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
-            probe_stream_params = "'ap -ni'" // this will be hyphenated by the config tool
+            def ni_flag = params.ni_present ? '-ni' : ''
+            def lf_flag = params.process_lf ? '-lf' : ''
+            probe_stream_params = "'ap ${ni_flag} ${lf_flag}'" // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags} ${ni_extract_cmd_args}'"
         } else {
             probe_stream_params = 'ap' // this will be hyphenated by the config tool
