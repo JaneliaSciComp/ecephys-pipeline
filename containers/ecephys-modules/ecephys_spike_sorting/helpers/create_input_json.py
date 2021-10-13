@@ -172,6 +172,7 @@ def createInputJson(default_config,
                                     'Neuropix-' + acq_system + '-100.1',
                                     'continuous.dat')
 
+    dictionary = {}
     dictionary['directories'] = default_config['directories'] | {
         "npx_directory": npx_directory,
         "extracted_data_directory": extracted_data_directory,
