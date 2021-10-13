@@ -24,7 +24,8 @@ def create_samba_directory(samba_server, samba_share):
     return data_dir
 
 
-def createInputJson(output_file,
+def createInputJson(default_config,
+                    output_file,
                     npx_directory=None,
                     continuous_file=None,
                     spikeGLX_data=True,
@@ -42,7 +43,6 @@ def createInputJson(output_file,
                     catGT_loccar_min_um=40,
                     catGT_loccar_max_um=160,
                     catGT_cmd_string='-prb_fld -out_prb_fld -apfilter=butter,12,300,10000 -gfix=0,0.10,0.02',
-                    noise_template_use_rf=True,
                     event_ex_param_str='XD=4,1,50',
                     tPrime_im_ex_list='SY=0,384,6,500',
                     tPrime_ni_ex_list='XA=0,1,3,500',
@@ -70,12 +70,7 @@ def createInputJson(output_file,
                     ):
 
     # hard coded paths to code on your computer and system
-    ecephys_directory = '/app/ecephys_spike_sorting/ecephys_spike_sorting'
     kilosort_repository = '/app/kilosort-{}'.format(ks_ver)
-    npy_matlab_repository = '/app/npy-matlab'
-    catGTPath = '/app/CatGT'
-    tPrime_path = '/app/TPrime'
-    cWaves_path = '/app/C_Waves'
 
     # KS 3.0 does not yet output pcs.
     if ks_ver == '3.0':
@@ -87,18 +82,11 @@ def createInputJson(output_file,
 
     # derived directory names
 
-    modules_directory = os.path.join(ecephys_directory, 'modules')
-
     if kilosort_output_directory is None \
             and extracted_data_directory is None \
             and npx_directory is None:
         raise Exception('Must specify at least one output directory')
 
-    # default ephys params. For spikeGLX, these get replaced by values read from metadata
-    sample_rate = 30000
-    num_channels = 385
-    reference_channels = [191]
-    uVPerBit = 2.34375
     acq_system = 'PXI'
 
     if spikeGLX_data:
@@ -117,6 +105,18 @@ def createInputJson(output_file,
             print('SpikeGLX params read from meta')
             print('probe type: {:s}, sample_rate: {:.5f}, num_channels: {:d}, uVPerBit: {:.4f}'.format
                   (probe_type, sample_rate, num_channels, uVPerBit))
+            probe_sampling_info = {
+                'probe_type': probe_type,
+                'sample_rate': sample_rate,
+                'lfp_sample_rate': sample_rate / 12,
+                'num_channels': num_channels,
+                'bit_volts': uVPerBit,
+            }
+        else:
+            probe_sampling_info = {}
+            if probe_type:
+                probe_sampling_info['probe_type'] = probe_type
+
         print('kilosort output directory: ', kilosort_output_directory)
 
     else:
@@ -172,186 +172,98 @@ def createInputJson(output_file,
                                     'Neuropix-' + acq_system + '-100.1',
                                     'continuous.dat')
 
-    dictionary = \
-        {
-            "directories": {
-                "ecephys_directory": ecephys_directory,
-                "npx_directory": npx_directory,
-                "extracted_data_directory": extracted_data_directory,
-                "kilosort_output_directory": kilosort_output_directory,
-                "kilosort_output_tmp": kilosort_output_tmp
-            },
-
-            "common_files": {
-                "settings_json": npx_directory,
-                "probe_json": npx_directory,
-            },
-
-            "ephys_params": {
-                "probe_type": probe_type,
-                "sample_rate": sample_rate,
-                "lfp_sample_rate": 2500,
-                "bit_volts": uVPerBit,
-                "num_channels": num_channels,
-                "reference_channels": reference_channels,
-                "vertical_site_spacing": 10e-6,
-                "run_name": catGT_run_name,
-                "gate_string": gate_string,
-                "ap_band_file": ap_band_file,
-                "lfp_band_file": lfp_band_file,
-                "reorder_lfp_channels": False,
-                "cluster_group_file_name": 'cluster_group.tsv'
-            },
-
-            "kilosort_helper_params": {
-
-                "matlab_home_directory": kilosort_output_tmp,
-                "kilosort_repository": kilosort_repository,
-                "npy_matlab_repository": npy_matlab_repository,
-                "kilosort_version": 2,
-                "spikeGLX_data": True,
-                "ks_make_copy": ks_make_copy,
-                "surface_channel_buffer": 15,
-
-                "kilosort2_params": {
-                    "KSver": ks_ver,
-                    # these are expressed as int rather than Bool for matlab compatability
-                    "remDup": ks_remDup,
-                    "finalSplits": ks_finalSplits,
-                    "labelGood": ks_labelGood,
-                    "saveRez": ks_saveRez,
-                    "copy_fproc": ks_copy_fproc,
-                    "fproc": fproc_str,
-                    "chanMap": "'chanMap.mat'",
-                    "fshigh": 150,
-                    "minfr_goodchannels": ks_minfr_goodchannels,
-                    "Th": ks_Th,
-                    "lam": 10,
-                    "AUCsplit": 0.9,
-                    "minFR": 1/50.,
-                    "momentum": '[20 400]',
-                    "sigmaMask": 30,
-                    "ThPre": 8,
-                    "gain": uVPerBit,
-                    "CSBseed": ks_CSBseed,
-                    "LTseed": ks_LTseed,
-                    "whiteningRange": ks_whiteningRange,
-                    "nNeighbors": ks_nNeighbors
-                }
-            },
-
-            "ks_postprocessing_params": {
-                "align_avg_waveform" : False,
-                "remove_duplicates" : True,
-                "cWaves_path" : cWaves_path,
-                # as implemented, "within_unit_overlap window" must be >= "between unit overlap window"
-                "within_unit_overlap_window": 0.000333,
-                "between_unit_overlap_window": 0.000333,
-                "between_unit_dist_um": 42,
-                "deletion_mode": 'lowAmpCluster',
-                "include_pcs": include_pcs
-            },
-
-            "waveform_metrics": {
-                "waveform_metrics_file": os.path.join(kilosort_output_directory, 'waveform_metrics.csv')
-            },
-
-            "cluster_metrics": {
-                "cluster_metrics_file": os.path.join(kilosort_output_directory, 'metrics.csv')
-            },
-
-            "extract_from_npx_params": {
-                "npx_directory": npx_directory,
-                "settings_xml": npx_directory,
-                "npx_extractor_executable": r"C:\Users\svc_neuropix\Documents\GitHub\npxextractor\Release\NpxExtractor.exe",
-                "npx_extractor_repo": r"C:\Users\svc_neuropix\Documents\GitHub\npxextractor"
-            },
-
-            "depth_estimation_params": {
-                "hi_noise_thresh": 50.0,
-                "lo_noise_thresh": 3.0,
-                "save_figure": 1,
-                "figure_location": os.path.join(extracted_data_directory, 'probe_depth.png'),
-                "smoothing_amount": 5,
-                "power_thresh": 2.5,
-                "diff_thresh": -0.06,
-                "freq_range": [0, 10],
-                "max_freq": 150,
-                "saline_range_um": [3700, 3800],
-                "n_passes": 10,
-                "air_gap_um": 1000,
-                "time_interval": 5,
-                "skip_s_per_pass": 10,
-                "start_time": 10
-            },
-
-            "median_subtraction_params": {
-                "median_subtraction_executable": "C:\\Users\\svc_neuropix\\Documents\\GitHub\\spikebandmediansubtraction\\Builds\\VisualStudio2013\\Release\\SpikeBandMedianSubtraction.exe",
-                "median_subtraction_repo": "C:\\Users\\svc_neuropix\\Documents\\GitHub\\spikebandmediansubtraction\\",
-            },
-
-            "mean_waveform_params": {
-                "mean_waveforms_file": os.path.join(kilosort_output_directory, 'mean_waveforms.npy'),
-                "samples_per_spike": 82,
-                "pre_samples": 20,
-                "num_epochs": 1,  # epochs not implemented for c_waves
-                "spikes_per_epoch": 1000,
-                "spread_threshold": 0.12,
-                "site_range": 16,
-                "cWaves_path": cWaves_path,
-                "use_C_Waves": True,
-                "snr_radius": c_waves_radius_sites
-            },
-
-            "noise_waveform_params": {
-                "classifier_path": os.path.join(modules_directory, 'noise_templates', 'rf_classifier.pkl'),
-                "multiprocessing_worker_count": 10,
-                "use_random_forest": noise_template_use_rf
-            },
-
-            "quality_metrics_params": {
-                "isi_threshold": qm_isi_thresh,
-                "min_isi": 0.000166,
-                "tbin_sec" : 0.001,
-                "max_radius_um": 68,
-                "max_spikes_for_unit": 500,
-                "max_spikes_for_nn": 10000,
-                "n_neighbors": 4,
-                'n_silhouette': 10000,
-                "drift_metrics_interval_s": 51,
-                "drift_metrics_min_spikes_per_interval": 10,
-                "include_pcs": include_pcs # should this be set to True or be based on ks_ver?
-            },
-
-            "catGT_helper_params": {
-                "run_name": catGT_run_name,
-                "gate_string": gate_string,
-                "probe_string": probe_string,
-                "trigger_string": trigger_string,
-                "stream_string": catGT_stream_string,
-                "car_mode": catGT_car_mode,
-                "loccar_inner": catGT_loccar_min_sites,
-                "loccar_outer": catGT_loccar_max_sites,
-                "cmdStr": catGT_cmd_string,
-                "catGTPath": catGTPath
-            },
-
-            "tPrime_helper_params": {
-                "tPrime_path": tPrime_path,
-                "im_ex_list": tPrime_im_ex_list,
-                "ni_ex_list": tPrime_ni_ex_list,
-                "sync_period": sync_period,
-                "toStream_sync_params": toStream_sync_params,
-                "ni_sync_params": niStream_sync_params,
-                "tPrime_3A": tPrime_3A,
-                "toStream_path_3A": toStream_path_3A,
-                "fromStream_list_3A": fromStream_list_3A
-            },
-
-            "psth_events": {
-                "event_ex_param_str": event_ex_param_str
-            }
+    dictionary['directories'] = default_config['directories'] | {
+        "npx_directory": npx_directory,
+        "extracted_data_directory": extracted_data_directory,
+        "kilosort_output_directory": kilosort_output_directory,
+        "kilosort_output_tmp": kilosort_output_tmp,
+    }
+    dictionary['common_files'] = default_config['common_files'] | {
+        "settings_json": npx_directory,
+        "probe_json": npx_directory,
+    }
+    dictionary['ephys_params'] = default_config['ephys_params'] | {
+        "run_name": catGT_run_name,
+        "gate_string": gate_string,
+        "ap_band_file": ap_band_file,
+        "lfp_band_file": lfp_band_file,
+    } | probe_sampling_info
+    dictionary['kilosort_helper_params'] = default_config['kilosort_helper_params'] | {
+        'matlab_home_directory': kilosort_output_tmp,
+        'kilosort_repository': kilosort_repository,
+        'spikeGLX_data': spikeGLX_data,
+        'ks_make_copy': ks_make_copy,
+        'kilosort2_params': default_config['kilosort_helper_params']['kilosort2_params'] | {
+            "KSver": ks_ver,
+            # these are expressed as int rather than Bool for matlab compatability
+            "remDup": ks_remDup,
+            "finalSplits": ks_finalSplits,
+            "labelGood": ks_labelGood,
+            "saveRez": ks_saveRez,
+            "copy_fproc": ks_copy_fproc,
+            "fproc": fproc_str,
+            "minfr_goodchannels": ks_minfr_goodchannels,
+            "Th": ks_Th,
+            "gain": uVPerBit,
+            "CSBseed": ks_CSBseed,
+            "LTseed": ks_LTseed,
+            "whiteningRange": ks_whiteningRange,
+            "nNeighbors": ks_nNeighbors,
         }
+    }
+
+    dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
+        "include_pcs": include_pcs,
+    }
+    dictionary['waveform_metrics'] = default_config['waveform_metrics'] | {
+        "waveform_metrics_file": os.path.join(kilosort_output_directory, 'waveform_metrics.csv'),        
+    }
+    dictionary['cluster_metrics'] = default_config['cluster_metrics'] | {
+        "cluster_metrics_file": os.path.join(kilosort_output_directory, 'metrics.csv'),
+    }
+    dictionary['extract_from_npx_params'] = default_config['extract_from_npx_params'] | {
+        "npx_directory": npx_directory,
+        "settings_xml": npx_directory,
+    }
+    dictionary['depth_estimation_params'] = default_config['depth_estimation_params'] | {
+        "figure_location": os.path.join(extracted_data_directory, 'probe_depth.png'),
+    }
+    dictionary['median_subtraction_params'] = default_config['median_subtraction_params'] | {
+    }
+    dictionary['mean_waveform_params'] = default_config['mean_waveform_params'] | {
+        "mean_waveforms_file": os.path.join(kilosort_output_directory, 'mean_waveforms.npy'),
+        "snr_radius": c_waves_radius_sites
+    }
+    dictionary['noise_waveform_params'] = default_config['noise_waveform_params'] | {
+    }
+    dictionary['quality_metrics_params'] = default_config['quality_metrics_params'] | {
+        "isi_threshold": qm_isi_thresh,
+        "include_pcs": include_pcs # should this be set to True or be based on ks_ver?
+    }
+    dictionary['catGT_helper_params'] = default_config['catGT_helper_params'] | {
+        "run_name": catGT_run_name,
+        "gate_string": gate_string,
+        "probe_string": probe_string,
+        "trigger_string": trigger_string,
+        "stream_string": catGT_stream_string,
+        "car_mode": catGT_car_mode,
+        "loccar_inner": catGT_loccar_min_sites,
+        "loccar_outer": catGT_loccar_max_sites,
+        "cmdStr": catGT_cmd_string,
+    }
+    dictionary['tPrime_helper_params'] = default_config['tPrime_helper_params'] | {
+        "im_ex_list": tPrime_im_ex_list,
+        "ni_ex_list": tPrime_ni_ex_list,
+        "sync_period": sync_period,
+        "toStream_sync_params": toStream_sync_params,
+        "ni_sync_params": niStream_sync_params,
+        "tPrime_3A": tPrime_3A,
+        "toStream_path_3A": toStream_path_3A,
+        "fromStream_list_3A": fromStream_list_3A,
+    }
+    dictionary['psth_events'] = default_config['psth_events'] | {
+        "event_ex_param_str": event_ex_param_str,
+    }
 
     with io.open(output_file, 'w', encoding='utf-8') as f:
         f.write(json.dumps(dictionary, ensure_ascii=False, sort_keys=True, indent=4))

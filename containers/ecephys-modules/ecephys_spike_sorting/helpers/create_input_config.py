@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import argparse
@@ -15,6 +16,9 @@ def main(argv):
 
     parser = argparse.ArgumentParser(description='Create input json tool', allow_abbrev=False)
 
+    parser.add_argument('--default_config_template',
+                        default='/app/config/default_ecephys_config.json',
+                        help='Config template')
     parser.add_argument('--npx_dir', help='Data directory')
     parser.add_argument('--probe_data', help='Probe data file')
     parser.add_argument('--probe_meta', help='Probe metadata file')
@@ -56,6 +60,9 @@ def main(argv):
 
     args = parser.parse_args()
 
+    with open(args.default_config_template) as default_config_file:
+        default_config = json.load(default_config_file)
+
     npx_directory = args.npx_dir
     if npx_directory is None and args.probe_data is not None:
         npx_directory = os.path.dirname(args.probe_data)
@@ -79,6 +86,7 @@ def main(argv):
     else:
         kilosort_output_directory = ''
     info = createInputJson(
+        default_config,
         args.output_config_file,
         npx_directory=npx_directory, 
 	    continuous_file=args.probe_data,
@@ -113,7 +121,6 @@ def main(argv):
         catGT_loccar_max_um=args.catgt_loccar_max,
         catGT_cmd_string=catGT_cmd_string,
         # C_Waves args
-        noise_template_use_rf=False,
         event_ex_param_str=args.event_ex_param_str,
         c_Waves_snr_um=args.c_waves_snr_um,
         qm_isi_thresh=qm_isi_thresh,

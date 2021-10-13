@@ -22,13 +22,14 @@ WORKDIR /app/ecephys_spike_sorting
 
 RUN conda config --set always_yes yes && \
     conda update -q conda && \
-    conda install python=3.8 && \
+    conda install python=3.9 && \
     conda env update -n base -f /ecephys-install/conda-requirements.yml
 
 COPY ecephys_spike_sorting /ecephys-install/ecephys_spike_sorting/
 COPY ecephys_spike_sorting /app/ecephys_spike_sorting/ecephys_spike_sorting/
 COPY scripts /ecephys-install/scripts
 COPY scripts /app/scripts
+COPY default_ecephys_config.json /app/config/default_ecephys_config.json
 
 RUN chmod 555 /app/scripts/*.sh
 

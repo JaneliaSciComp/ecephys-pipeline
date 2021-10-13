@@ -8,6 +8,8 @@ def default_params() {
         runtime_opts: '',
         lsf_opts: '',
 
+        probe_config_json: '', // config template used for probe processing
+        tprime_config_json: '', // config template used for tprime which aggregates all probes
         data_dir: '',
         results_dir: '',
         config_dir: '',

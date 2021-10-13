@@ -12,7 +12,7 @@ from ...common.SGLXMetaToCoords import MetaToCoords
 
 def run_depth_estimation(args):
 
-    print('ecephys spike sorting: depth estimation module\n')
+    print('ecephys spike sorting: depth estimation module')
 
     start = time.time()
 
@@ -29,7 +29,7 @@ def run_depth_estimation(args):
     
     [xCoord, yCoord, shankInd] = MetaToCoords(metaFullPath, -1, badChan= np.zeros((0), dtype = 'int'), destFullPath = '', showPlot=False)
 
-    print('Computing surface channel...')
+    print('Computing surface channel...', repr(rawDataLfp.shape), repr(dataLfp.shape))
 
     info_lfp = find_surface_channel(dataLfp, 
                                 args['ephys_params'], 

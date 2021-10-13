@@ -98,6 +98,7 @@ workflow process_probes_for_all_runs {
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
         def r = [
+            params.probe_config_json,
             data_dir,
             probe_data_file,
             probe_meta_file,
@@ -238,6 +239,7 @@ workflow process_tprime {
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
 
         def r = [
+            params.tprime_config_json,
             data_dir,
             '', // probe_data_file
             '', // probe_meta_file

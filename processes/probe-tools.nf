@@ -13,7 +13,8 @@ process create_probe_config {
     cpus 1
 
     input:
-    tuple val(probe_data_dir),
+    tuple val(json_config_template),
+          val(probe_data_dir),
           val(probe_data_file),
           val(probe_meta_file),
           val(probe_config_file),
@@ -54,6 +55,7 @@ process create_probe_config {
     script:
     def probe_config_dir = file(probe_config_file).parent
     def args_list = [
+        create_arg('--default_config_template', json_config_template),
         create_arg('--npx_dir', probe_data_dir),
         create_arg('--probe_data', probe_data_file),
         create_arg('--probe_meta', probe_meta_file),
