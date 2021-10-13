@@ -172,6 +172,8 @@ def createInputJson(default_config,
                                     'Neuropix-' + acq_system + '-100.1',
                                     'continuous.dat')
 
+    kilosort_parent_dir, kilosort_dirname = os.path.split(kilosort_output_directory)
+
     dictionary = {}
     dictionary['directories'] = default_config['directories'] | {
         "npx_directory": npx_directory,
@@ -181,7 +183,7 @@ def createInputJson(default_config,
     }
     dictionary['common_files'] = default_config['common_files'] | {
         "settings_json": npx_directory,
-        "probe_json": os.path.join(extracted_data_directory,'probe_json.json'),
+        "probe_json": os.path.join(kilosort_parent_dir,'probe_json.json'),
     }
     dictionary['ephys_params'] = default_config['ephys_params'] | {
         "run_name": catGT_run_name,
@@ -227,7 +229,7 @@ def createInputJson(default_config,
         "settings_xml": npx_directory,
     }
     dictionary['depth_estimation_params'] = default_config['depth_estimation_params'] | {
-        "figure_location": os.path.join(extracted_data_directory, 'probe_depth.png'),
+        "figure_location": os.path.join(kilosort_parent_dir, 'probe_depth.png'),
     }
     dictionary['median_subtraction_params'] = default_config['median_subtraction_params'] | {
     }
