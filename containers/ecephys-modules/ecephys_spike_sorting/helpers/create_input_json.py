@@ -181,7 +181,7 @@ def createInputJson(default_config,
     }
     dictionary['common_files'] = default_config['common_files'] | {
         "settings_json": npx_directory,
-        "probe_json": npx_directory,
+        "probe_json": os.path.join(extracted_data_directory,'probe_json.json'),
     }
     dictionary['ephys_params'] = default_config['ephys_params'] | {
         "run_name": catGT_run_name,
