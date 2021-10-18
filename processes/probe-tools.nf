@@ -1,6 +1,7 @@
 include {
-    filter_config;
     config_file;
+    filter_config;
+    get_probe_data_filename;
 } from '../lib/probe_utils'
 
 include {
