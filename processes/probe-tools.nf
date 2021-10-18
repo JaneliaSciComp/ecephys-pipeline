@@ -197,12 +197,14 @@ process run_catgt {
 
     """
     ${code}
+    """
+    """
     # make a copy of the config file used for catgt
     cp ${probe_config_file} ${catgt_input_config_file}
     cat > ${probe_config_file} <<EOF
     ${json_all_config}
     EOF
-    """
+    """.stripIndent()
 }
 
 process run_depth_estimation {
