@@ -98,7 +98,7 @@ workflow process_probes_for_all_runs {
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
         def r = [
-            params.probe_config_json,
+            params.probe_config_json, // config template
             data_dir,
             probe_data_file,
             probe_meta_file,
