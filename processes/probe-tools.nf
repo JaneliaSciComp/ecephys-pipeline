@@ -181,14 +181,14 @@ process run_catgt {
         run_name,
         gate,
         probe,
-        'tcat',
+        'cat',
         '.ap.bin'
     )
     def probe_lf_output_name = get_probe_data_filename(
         run_name,
         gate,
         probe,
-        'tcat',
+        'cat',
         '.lf.bin'
     )
     catgt_input_config['ephys_params']['ap_band_file'] = "${catgt_output_dir}/${probe_output_name}"
