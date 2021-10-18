@@ -193,16 +193,21 @@ process run_catgt {
     )
     catgt_input_config['ephys_params']['ap_band_file'] = "${catgt_output_dir}/${probe_output_name}"
     catgt_input_config['ephys_params']['lfp_band_file'] = "${catgt_output_dir}/${probe_lf_output_name}"
-    json_all_config = to_json(catgt_input_config)
+    def json_all_config = to_json(catgt_input_config)
 
+    def create_new_config_code =
     """
-    ${code}
     # make a copy of the config file used for catgt
     cp ${probe_config_file} ${catgt_input_config_file}
     cat > ${probe_config_file} <<EOF
     ${json_all_config}
     EOF
     """.stripIndent()
+
+    """
+    ${code}
+    ${create_new_config_code}
+    """
 }
 
 process run_depth_estimation {
