@@ -175,6 +175,7 @@ process run_catgt {
     def catgt_input_config = read_json("${probe_config_file}")
     def config_dir = file("${probe_config_file}").parent
     def catgt_input_config_file = config_file(config_dir, probe_folder_name, 'all-catgt', 'config')
+    def after_catgt_input_config_file = config_file(config_dir, probe_folder_name, 'all-post-catgt', 'config')
     // update probe files with the names created by catgt
     def catgt_output_dir = file(catgt_input_config['directories']['kilosort_output_directory']).parent
     def probe_output_name = get_probe_data_filename(
@@ -194,19 +195,12 @@ process run_catgt {
     catgt_input_config['ephys_params']['ap_band_file'] = "${catgt_output_dir}/${probe_output_name}"
     catgt_input_config['ephys_params']['lfp_band_file'] = "${catgt_output_dir}/${probe_lf_output_name}"
     def json_all_config = to_json(catgt_input_config)
-
-    def create_new_config_code =
-    """
-    # make a copy of the config file used for catgt
-    cp ${probe_config_file} ${catgt_input_config_file}
-    cat > ${probe_config_file} <<EOF
-    ${json_all_config}
-    EOF
-    """.stripIndent()
+    after_catgt_input_config_file.write(json_all_config)
 
     """
     ${code}
-    ${create_new_config_code}
+    mv ${probe_config_file} ${catgt_input_config_file}
+    mv ${after_catgt_input_config_file} ${probe_config_file}
     """
 }
 
