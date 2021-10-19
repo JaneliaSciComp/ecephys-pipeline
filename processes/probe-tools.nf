@@ -204,7 +204,7 @@ process run_catgt {
         )
         catgt_input_config['ephys_params']['lfp_band_file'] = "${catgt_output_dir}/${probe_lf_output_name}"
     } else {
-        catgt_input_config['ephys_params']['lfp_band_file'] = null
+        catgt_input_config['ephys_params'].remove('lfp_band_file')
     }
 
     def json_all_config = to_json(catgt_input_config)
