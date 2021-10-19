@@ -46,7 +46,7 @@ probe_steps = get_list_or_default(
             'probe_steps',
             [
                 'catGT_helper',
-                'depth_estimation',
+                // 'depth_estimation', !!!!!!!!!!!!!!
                 'kilosort_helper',
                 'kilosort_postprocessing',
                 'noise_templates',
@@ -98,17 +98,19 @@ workflow {
 
         if (probe_steps.contains('tPrime_helper')) {
             def tprime_inputs = probe_results
-            | groupTuple(by: [2,4,5,7]) // group by run_folder, run_name, gate, triggers
+            | groupTuple(by: [3,5,6,8]) // group by run_folder, run_name, gate, triggers
+
+            tprime_inputs.subscribe { log.info "!!!!! TPRIME input: $it" }
 
             process_tprime(
                 data_dir,
                 results_dir,
                 config_dir,
-                tprime_inputs.map { it[2] }, // run folder
-                tprime_inputs.map { it[4] }, // run name
-                tprime_inputs.map { it[5] }, // gate name
-                tprime_inputs.map { it[6] }, // probes
-                tprime_inputs.map { it[7] }, // triggers
+                tprime_inputs.map { it[3] }, // run folder
+                tprime_inputs.map { it[5] }, // run name
+                tprime_inputs.map { it[6] }, // gate name
+                tprime_inputs.map { it[7] }, // probes
+                tprime_inputs.map { it[8] }, // triggers
             ) | view
         }
     }

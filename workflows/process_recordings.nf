@@ -55,6 +55,7 @@ workflow process_all_recordings {
         def ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
 
         def r = [
+            -1,  // there's no probe index
             params.probe_config_json,
             recording_dir,
             recording_bin_file,

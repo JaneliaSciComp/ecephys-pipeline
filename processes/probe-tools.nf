@@ -14,7 +14,8 @@ process create_probe_config {
     cpus 1
 
     input:
-    tuple val(json_config_template),
+    tuple val(probe_index),
+          val(json_config_template),
           val(probe_data_dir),
           val(probe_data_file),
           val(probe_meta_file),
@@ -44,7 +45,8 @@ process create_probe_config {
           val(ni_stream_sync_params)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -110,7 +112,8 @@ process wait_for_config {
     executor 'Local'
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -120,7 +123,8 @@ process wait_for_config {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -140,7 +144,8 @@ process run_catgt {
     cpus { params.catgt_cpus }
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -150,7 +155,8 @@ process run_catgt {
           val(triggers)
           
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -209,7 +215,8 @@ process run_depth_estimation {
     cpus { params.depth_estimation_cpus }
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -219,7 +226,8 @@ process run_depth_estimation {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -252,7 +260,8 @@ process run_kilosort {
     label 'withGPU'
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -262,7 +271,8 @@ process run_kilosort {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -293,7 +303,8 @@ process run_kilosort_post_process {
     cpus 1
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -303,7 +314,8 @@ process run_kilosort_post_process {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -333,7 +345,8 @@ process run_noise_templates {
     cpus { params.noise_cpus }
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -343,7 +356,8 @@ process run_noise_templates {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -373,7 +387,8 @@ process run_mean_waveforms {
     cpus { params.waveforms_cpus }
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -383,7 +398,8 @@ process run_mean_waveforms {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -415,7 +431,8 @@ process run_psth_events {
     cpus { params.events_cpus }
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -425,7 +442,8 @@ process run_psth_events {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -455,7 +473,8 @@ process run_quality_metrics {
     cpus { params.metrics_cpus }
 
     input:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
@@ -465,7 +484,8 @@ process run_quality_metrics {
           val(triggers)
 
     output:
-    tuple val(probe_data_file),
+    tuple val(probe_index),
+          val(probe_data_file),
           val(probe_config_file),
           val(run_folder_name),
           val(probe_folder_name),
