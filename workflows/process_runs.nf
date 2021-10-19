@@ -143,8 +143,19 @@ workflow process_probes_for_all_runs {
     if (steps.contains('depth_estimation')) {
         if (!params.process_lf) {
             log.warn "Depth estimation requires CatGT to process the low frequency stream - set --process_lf to true"
+            depth_estimation_output = depth_estimation_input
+        } else {
+            def depth_estimation_branches = depth_estimation_input
+            | branch {
+                with_depth_est: it[0] == 0
+                without_depth_est: it[0] != 0
+            }
+            depth_estimation_branches.with_depth_est | view
+            depth_estimation_branches.without_depth_est | view
+            depth_estimation_output = depth_estimation_branches.with_depth_est 
+            | run_depth_estimation
+            | concat (depth_estimation_branches.without_depth_est)
         }
-        depth_estimation_output = depth_estimation_input | run_depth_estimation
     } else {
         depth_estimation_output = depth_estimation_input
     }
@@ -240,6 +251,7 @@ workflow process_tprime {
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
 
         def r = [
+            -1, // no probe index
             params.tprime_config_json,
             data_dir,
             '', // probe_data_file
@@ -272,9 +284,9 @@ workflow process_tprime {
     | wait_for_config
     | map {
         [
-            it[1], // run_config_file
-            it[2], // run_folder_name
-            it[4], // run_name
+            it[2], // run_config_file
+            it[3], // run_folder_name
+            it[5], // run_name
         ]
     }
     | run_tprime
