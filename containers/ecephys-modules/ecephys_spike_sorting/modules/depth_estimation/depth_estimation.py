@@ -129,6 +129,8 @@ def find_surface_channel(lfp_data, ephys_params, params, xCoord, yCoord, shankIn
 
     max_y = np.max(chan_y)
 
+    print('Use {} passes for depth estimation'.format(passes_used))
+
     for p in range(passes_used):
         
         startPt = int(sample_frequency*params['skip_s_per_pass']*p)
@@ -169,8 +171,9 @@ def find_surface_channel(lfp_data, ephys_params, params, xCoord, yCoord, shankIn
             candidates[p] = np.max(surface_y)
         else:
             candidates[p] = max_y
-      
+
     surface_y = np.median(candidates)
+    print('surface_y candidates', candidates, 'surface_y=', surface_y, 'max_y=', max_y)
     air_y = np.min([surface_y + params['air_gap_um'], max_y])
 
     output_dict = {
@@ -222,7 +225,9 @@ def plot_results(chunk,
     plt.subplot(4,1,3)
     plt.plot(y_sorted, values[chunk_order]) 
     plt.plot([chan_y[0],chan_y[nchannels-1]],[power_thresh,power_thresh],'--k')
-    
+
+    print('chunk_order', chunk_order)
+    print('y_sorted', y_sorted)
     surface_index = np.min(np.where(y_sorted > surface_y))
     plt.plot([surface_index, surface_index],[-2, 2],'--r')
 

@@ -463,7 +463,11 @@ def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd, shankSep, base
 #   outType:  format for the output
 #   badChan:  channels other than reference channels to exclude
 #   destFullPath:
-def MetaToCoords(metaFullPath, outType, badChan=np.zeros((0), dtype='int'), destFullPath='', showPlot=False):
+def MetaToCoords(metaFullPath,
+                 outType,
+                 badChan=np.zeros((0), dtype='int'),
+                 destFullPath='',
+                 showPlot=False):
 
     # shank separation for multishank probe
     shankSep = 250

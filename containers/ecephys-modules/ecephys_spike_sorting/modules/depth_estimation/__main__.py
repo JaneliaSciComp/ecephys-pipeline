@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .depth_estimation import compute_channel_offsets, find_surface_channel
+from .depth_estimation import find_surface_channel
 from ...common.utils import write_probe_json
 from ...common.SGLXMetaToCoords import MetaToCoords
 
@@ -27,7 +27,11 @@ def run_depth_estimation(args):
     metaName, binExt = os.path.splitext(args['ephys_params']['ap_band_file'])
     metaFullPath = Path(metaName + '.meta')  
     
-    [xCoord, yCoord, shankInd] = MetaToCoords(metaFullPath, -1, badChan= np.zeros((0), dtype = 'int'), destFullPath = '', showPlot=False)
+    [xCoord, yCoord, shankInd] = MetaToCoords(metaFullPath,
+                                              -1,
+                                              badChan=np.zeros((0), dtype='int'),
+                                              destFullPath='',
+                                              showPlot=False)
 
     print('Computing surface channel...', repr(rawDataLfp.shape), repr(dataLfp.shape))
 
