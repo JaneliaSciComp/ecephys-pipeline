@@ -193,19 +193,14 @@ process run_catgt {
     )
     catgt_input_config['ephys_params']['ap_band_file'] = "${catgt_output_dir}/${probe_output_name}"
 
-    // low frequencies are only processed for probe 0
-    if (probe_index == 0) {
-        def probe_lf_output_name = get_probe_data_filename(
-            run_name,
-            gate,
-            probe,
-            'cat',
-            '.lf.bin'
-        )
-        catgt_input_config['ephys_params']['lfp_band_file'] = "${catgt_output_dir}/${probe_lf_output_name}"
-    } else {
-        catgt_input_config['ephys_params'].remove('lfp_band_file')
-    }
+    def probe_lf_output_name = get_probe_data_filename(
+        run_name,
+        gate,
+        probe,
+        'cat',
+        '.lf.bin'
+    )
+    catgt_input_config['ephys_params']['lfp_band_file'] = "${catgt_output_dir}/${probe_lf_output_name}"
 
     def json_all_config = to_json(catgt_input_config)
     after_catgt_input_config_file.write(json_all_config)
