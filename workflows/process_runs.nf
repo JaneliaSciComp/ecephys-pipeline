@@ -81,14 +81,14 @@ workflow process_probes_for_all_runs {
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
         def probe_catgt_extract_string
         def ni_extract_cmd_args = get_hyphenated_value_param(params, 'ni_extract_cmd_args')
+        def lf_flag = params.process_lf ? '-lf' : ''
         if (probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
             def ni_flag = params.ni_present ? '-ni' : ''
-            def lf_flag = params.process_lf ? '-lf' : ''
             probe_stream_params = "'ap ${ni_flag} ${lf_flag}'" // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags} ${ni_extract_cmd_args}'"
         } else {
-            probe_stream_params = 'ap' // this will be hyphenated by the config tool
+            probe_stream_params = "'ap ${lf_flag}'" // this will be hyphenated by the config tool
             probe_catgt_extract_string = "'${probe_sync_extract_flags}'"
         }
         def catgt_cmd_args = get_hyphenated_value_param(params, 'catgt_cmd_args')
@@ -142,19 +142,10 @@ workflow process_probes_for_all_runs {
     def depth_estimation_output
     if (steps.contains('depth_estimation')) {
         if (!params.process_lf) {
-            log.warn "Depth estimation requires CatGT to process the low frequency stream - set --process_lf to true"
+            log.warn "Depth estimation requires CatGT to process the low frequency stream - set --process_lf to true to process depth estimation"
             depth_estimation_output = depth_estimation_input
         } else {
-            def depth_estimation_branches = depth_estimation_input
-            | branch {
-                with_depth_est: it[0] == 0
-                without_depth_est: it[0] != 0
-            }
-            depth_estimation_branches.with_depth_est | view
-            depth_estimation_branches.without_depth_est | view
-            depth_estimation_output = depth_estimation_branches.with_depth_est 
-            | run_depth_estimation
-            | concat (depth_estimation_branches.without_depth_est)
+            depth_estimation_output = depth_estimation_input | run_depth_estimation
         }
     } else {
         depth_estimation_output = depth_estimation_input
