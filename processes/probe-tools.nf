@@ -220,6 +220,7 @@ process run_catgt {
 process run_depth_estimation {
     container { params.ecephys_modules_container }
     cpus { params.depth_estimation_cpus }
+    memory { get_str_value_or_default(params, 'depth_estimation_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -309,7 +310,8 @@ process run_kilosort {
 
 process run_kilosort_post_process {
     container { params.cwaves_container }
-    cpus 1
+    cpus { params.ks_post_cpus }
+    memory { get_str_value_or_default(params, 'ks_post_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -352,6 +354,7 @@ process run_kilosort_post_process {
 process run_noise_templates {
     container { params.ecephys_modules_container }
     cpus { params.noise_cpus }
+    memory { get_str_value_or_default(params, 'noise_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -394,6 +397,7 @@ process run_noise_templates {
 process run_mean_waveforms {
     container { params.cwaves_container }
     cpus { params.waveforms_cpus }
+    memory { get_str_value_or_default(params, 'waveforms_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -438,6 +442,7 @@ process run_mean_waveforms {
 process run_psth_events {
     container { params.ecephys_modules_container }
     cpus { params.events_cpus }
+    memory { get_str_value_or_default(params, 'events_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -480,6 +485,7 @@ process run_psth_events {
 process run_quality_metrics {
     container { params.ecephys_modules_container }
     cpus { params.metrics_cpus }
+    memory { get_str_value_or_default(params, 'metrics_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -524,6 +530,7 @@ process run_quality_metrics {
 process run_tprime {
     container { params.tprime_container }
     cpus { params.tprime_cpus }
+    memory { get_str_value_or_default(params, 'tprime_mem', '') }
 
     input:
     tuple val(run_config_file),

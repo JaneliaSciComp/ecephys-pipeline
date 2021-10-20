@@ -66,6 +66,8 @@ def default_params() {
         depth_estimation_mem: '',
         ks_cpus: 1,
         ks_mem: '',
+        ks_post_cpus: 1,
+        ks_post_mem: '',
         noise_cpus: 1,
         noise_mem: '',
         events_cpus: 1,

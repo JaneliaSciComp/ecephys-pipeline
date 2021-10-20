@@ -100,7 +100,7 @@ workflow {
             def tprime_inputs = probe_results
             | groupTuple(by: [3,5,6,8]) // group by run_folder, run_name, gate, triggers
 
-            tprime_inputs.subscribe { log.info "!!!!! TPRIME input: $it" }
+            tprime_inputs.subscribe { log.debug "TPrime input: $it" }
 
             process_tprime(
                 data_dir,
