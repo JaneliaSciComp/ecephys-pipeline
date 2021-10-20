@@ -5,6 +5,10 @@ include {
 } from '../lib/probe_utils'
 
 include {
+    get_str_value_or_default;
+} from '../lib/params_utils'
+
+include {
     read_json;
     to_json;
 } from '../lib/utils'
@@ -142,6 +146,7 @@ process wait_for_config {
 process run_catgt {
     container { params.catgt_container }
     cpus { params.catgt_cpus }
+    memory { get_str_value_or_default(params, 'catgt_mem', '') }
 
     input:
     tuple val(probe_index),
@@ -258,6 +263,8 @@ process run_depth_estimation {
 process run_kilosort {
     container { params.kilosort_container }
     cpus { params.ks_cpus }
+    memory { get_str_value_or_default(params, 'ks_mem', '') }
+
     accelerator 1
     label 'withGPU'
 

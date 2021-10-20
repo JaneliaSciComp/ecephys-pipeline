@@ -61,8 +61,10 @@ def default_params() {
         c_waves_snr_um: 160,
 
         catgt_cpus: 1,
+        catgt_mem: '',
         depth_estimation_cpus: 1,
         ks_cpus: 1,
+        ks_mem: '',
         noise_cpus: 1,
         events_cpus: 1,
         waveforms_cpus: 1,
@@ -78,6 +80,13 @@ def default_params() {
 
 def get_value_or_default(Map ps, String param, Object default_value) {
     if (ps[param])
+        ps[param]
+    else
+        default_value
+}
+
+def get_str_value_or_default(Map ps, String param, Object default_value) {
+    if (ps[param] instanceof String && ps[param])
         ps[param]
     else
         default_value
