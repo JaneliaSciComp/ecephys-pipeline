@@ -20,9 +20,10 @@ ENV PATH=/miniconda/bin:${PATH}
 
 WORKDIR /app/ecephys_spike_sorting
 
+# using 3.9 because creating the json config uses dictionary union operator ('|'')
 RUN conda config --set always_yes yes && \
     conda update -q conda && \
-    conda install python=3.8 && \
+    conda install python=3.9 && \
     conda env update -n base -f /ecephys-install/conda-requirements.yml
 
 COPY ecephys_spike_sorting /ecephys-install/ecephys_spike_sorting/
