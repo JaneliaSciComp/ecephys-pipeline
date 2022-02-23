@@ -266,7 +266,7 @@ process run_depth_estimation {
 
 process run_kilosort {
     container { params.with_pyks
-                    ? params.kilosort_container
+                    ? params.pykilosort_container
                     : params.kilosort_container }
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }

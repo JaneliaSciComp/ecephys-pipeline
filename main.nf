@@ -20,6 +20,7 @@ include {
     cwaves_modules_container_param;
     ecephys_modules_container_param;
     kilosort_container_param;
+    pykilosort_container_param;
     tprime_modules_container_param
 } from './lib/params_utils'
 
@@ -38,6 +39,7 @@ process_params = final_params +
         cwaves_container: cwaves_modules_container_param(final_params),
         ecephys_modules_container: ecephys_modules_container_param(final_params),
         kilosort_container: kilosort_container_param(final_params),
+        pykilosort_container: pykilosort_container_param(final_params),
         tprime_container: tprime_modules_container_param(final_params),
     ]
 
