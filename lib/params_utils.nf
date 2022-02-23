@@ -5,6 +5,7 @@ include {
 def default_params() {
     [
         container_repo: 'registry.int.janelia.org/janeliascicomp',
+        containers_version: '1.0.2',
         runtime_opts: '',
         lsf_opts: '',
 
@@ -34,6 +35,8 @@ def default_params() {
 
         probe_type: 'NP1',
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
+
+        with_pyks: true,
 
         ks_csb_seed: 1,
         ks_lt_seed: 1,
@@ -138,7 +141,7 @@ def get_hyphenated_value_param(Map ps, String param) {
 def catgt_modules_container_param(Map ps) {
     def catgt_container = ps.catgt_container
     if (!catgt_container)
-        "${ps.container_repo}/catgt:1.0.1"
+        "${ps.container_repo}/catgt:${containers_version}"
     else
         catgt_container
 }
@@ -146,7 +149,7 @@ def catgt_modules_container_param(Map ps) {
 def cwaves_modules_container_param(Map ps) {
     def cwaves_container = ps.cwaves_container
     if (!cwaves_container)
-        "${ps.container_repo}/cwaves:1.0.1"
+        "${ps.container_repo}/cwaves:${containers_version}"
     else
         cwaves_container
 }
@@ -154,7 +157,7 @@ def cwaves_modules_container_param(Map ps) {
 def ecephys_modules_container_param(Map ps) {
     def ecephys_modules_container = ps.ecephys_modules_container
     if (!ecephys_modules_container)
-        "${ps.container_repo}/ecephys-modules:1.0.1"
+        "${ps.container_repo}/ecephys-modules:${containers_version}"
     else
         ecephys_modules_container
 }
@@ -162,15 +165,23 @@ def ecephys_modules_container_param(Map ps) {
 def kilosort_container_param(Map ps) {
     def kilosort_container = ps.kilosort_container
     if (!kilosort_container)
-        "${ps.container_repo}/kilosort:1.0.1"
+        "${ps.container_repo}/kilosort:${containers_version}"
     else
         kilosort_container
+}
+
+def pykilosort_container_param(Map ps) {
+    def pykilosort_container = ps.pykilosort_container
+    if (!pykilosort_container)
+        "${ps.container_repo}/pykilosort:${containers_version}"
+    else
+        pykilosort_container
 }
 
 def tprime_modules_container_param(Map ps) {
     def tprime_container = ps.tprime_container
     if (!tprime_container)
-        "${ps.container_repo}/tprime:1.0.1"
+        "${ps.container_repo}/tprime:${containers_version}"
     else
         tprime_container
 }

@@ -262,7 +262,9 @@ process run_depth_estimation {
 }
 
 process run_kilosort {
-    container { params.kilosort_container }
+    container { params.with_pyks
+                    ? params.kilosort_container
+                    : params.kilosort_container }
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }
 
@@ -292,12 +294,14 @@ process run_kilosort {
           val(triggers)
 
     script:
+    def helper_module = params.with_pyks ? 'pykilosort_helper' : 'kilosort_helper'
+    def helper_module_params = params.with_pyks ? 'pykilosort_helper_params' : 'kilosort_helper_params'
     def code = create_code_block(
-        'kilosort_helper',
+        helper_module,
         probe_config_file,
         probe_folder_name,
         [
-            'kilosort_helper_params',
+            helper_module_params,
             'directories',
             'ephys_params',
             'common_files'

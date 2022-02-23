@@ -32,3 +32,8 @@ docker build \
     -t registry.int.janelia.org/janeliascicomp/kilosort:${ECEPHYS_CONTAINERS_VERSION} \
     -t kilosort:${ECEPHYS_CONTAINERS_VERSION} \
     containers/kilosort
+
+docker build \
+    -t registry.int.janelia.org/janeliascicomp/pykilosort:${ECEPHYS_CONTAINERS_VERSION} \
+    -t pykilosort:${ECEPHYS_CONTAINERS_VERSION} \
+    containers/pykilosort
