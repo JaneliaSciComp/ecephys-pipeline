@@ -67,7 +67,6 @@ def createInputJson(default_config,
                     ks_working_dir='/tmp/kilosort_datatemp',
                     pyks_preprocessing_function='kilosort2',
                     ibl_neuropixel_version=1,
-                    neuropixel_version=1,
                     pyks_alf_location=None,
                     c_Waves_snr_um=160,
                     qm_isi_thresh=1.5/1000

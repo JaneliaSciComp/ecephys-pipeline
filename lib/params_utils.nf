@@ -37,7 +37,9 @@ def default_params() {
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
 
         with_pyks: true,
-
+        pyks_preproc: '',
+        pyks_alf: '',
+        ibl_neuropixel_version: 1,
         ks_csb_seed: 1,
         ks_lt_seed: 1,
         ks_copy_results: true,
