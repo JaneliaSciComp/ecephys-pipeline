@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.1 as builder
+FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.2 as builder
 
 WORKDIR /tmp
 RUN git clone \
@@ -7,7 +7,7 @@ RUN git clone \
     --single-branch \
     pykilosort
 
-FROM centos:8
+FROM oraclelinux:8
 
 USER root
 
