@@ -112,7 +112,7 @@ def main(argv):
         ks_LTseed=args.ks_lt_seed,
         ks_templateRadius_um=args.ks_template_radius_um,
         # PyKS args
-        pyks_preprocessing_method=args.pyks_preproc,
+        pyks_preprocessing_function=args.pyks_preproc,
         pyks_alf_location=args.pyks_alf,
         neuropixel_version=args.neuropixel_version,
         # CatGT args
