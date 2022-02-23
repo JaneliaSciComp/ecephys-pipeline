@@ -104,6 +104,11 @@
         "spikeGLX_data": true,
         "surface_channel_buffer": 15
     },
+    "pykilosort_helper_params": {
+        "preprocessing_function": "kilosort2",
+        "ibl_neuropixel_version": 1,
+        "alf_location": "alf"
+    },
     "ks_postprocessing_params": {
         "align_avg_waveform": false,
         "between_unit_dist_um": 42,
