@@ -23,6 +23,7 @@ def get_ks_params(probe_dict, preprocessing_function='kilosort2', ibl_neuropixel
     probe.Nchan = int(probe_dict.get('nSavedChans'))
     probe.xc = neuropixel_header['x']
     probe.yc = neuropixel_header['y']
+    probe.chanMap = np.arange(probe.Nchan-1)
     probe.kcoords = np.zeros(probe.Nchan-1)
 
     params = KilosortParams()
