@@ -39,7 +39,7 @@ def main(argv):
     parser.add_argument('--ks_template_radius_um', type=int, default=1, help='Run seed')
     parser.add_argument('--pyks_preproc', default='kilosort2', help='PyyKilosort preprocessing function')
     parser.add_argument('--ibl_neuropixel_version', type=int, default=1, help='Neuropixel version')
-    parser.add_argument('--pyks_alf', help='ALF location')
+    parser.add_argument('--pyks_alf', default='', help='ALF location')
     parser.add_argument('--catgt_run_name', help='CatGT run name')
     parser.add_argument('--probe_type')
     parser.add_argument('--gate_string', default='0')

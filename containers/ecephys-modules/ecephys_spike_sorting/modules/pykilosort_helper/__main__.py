@@ -11,13 +11,16 @@ from ibllib.ephys import spikes, neuropixel
 from pykilosort import add_default_handler, run, Bunch
 from pykilosort.params import KilosortParams
 
+from ...common.SGLXMetaToCoords import readMeta
+
 from pathlib import Path
 
 
-def get_ks_params(probe, preprocessing_function='kilosort2', ibl_neuropixel_version=1):
+def get_ks_params(probe_dict, preprocessing_function='kilosort2', ibl_neuropixel_version=1):
     neuropixel_header = neuropixel.trace_header(version=ibl_neuropixel_version)
 
-    probe.Nchan = int(probe.nSavedChans)
+    probe = Bunch()
+    probe.Nchan = int(probe_dict.get('nSavedChans'))
     probe.xc = neuropixel_header['x']
     probe.yc = neuropixel_header['y']
     probe.kcoords = np.zeros(probe.Nchan-1)
@@ -27,7 +30,6 @@ def get_ks_params(probe, preprocessing_function='kilosort2', ibl_neuropixel_vers
     params.probe = probe
 
     return dict(params)
-
 
 
 def run_kilosort(args):
@@ -46,12 +48,12 @@ def run_kilosort(args):
     start = time.time()
 
     # read meta data which is already of type Bunch
-    md = spikeglx.read_meta_data(input_file.with_suffix('.meta'))
+    probe_meta = readMeta(input_file.with_suffix('.meta'))
     preprocessing_function = args['pykilosort_helper_params']['preprocessing_function']
     ibl_neuropixel_version = args['pykilosort_helper_params']['ibl_neuropixel_version']
 
-    params = get_ks_params(md,
-                           preprocessing_method=preprocessing_method,
+    params = get_ks_params(probe_meta,
+                           preprocessing_function=preprocessing_function,
                            ibl_neuropixel_version=ibl_neuropixel_version)
     run(input_file, output_dir=ks_output_dir, **ks_params)
 
