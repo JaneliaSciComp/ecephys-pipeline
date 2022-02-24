@@ -11,7 +11,7 @@ class PyKilosortHelperParameters(DefaultSchema):
 
 
 class InputParameters(ArgSchema):
-    pykilosort_helper_params = Nested(KilosortHelperParameters)
+    pykilosort_helper_params = Nested(PyKilosortHelperParameters)
     directories = Nested(Directories)
     ephys_params = Nested(EphysParams)
     common_files = Nested(CommonFiles)

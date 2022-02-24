@@ -23,7 +23,8 @@ RUN dnf -y install --nogpgcheck \
         https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
 
 RUN dnf install -y \
-    git
+    git \
+    mesa-libGL
 
 WORKDIR /tmp-install
 
