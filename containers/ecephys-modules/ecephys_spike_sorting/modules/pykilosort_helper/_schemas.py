@@ -7,7 +7,7 @@ from ...common.schemas import EphysParams, Directories, CommonFiles
 class PyKilosortHelperParameters(DefaultSchema):
     preprocessing_function = String(required=True, default='kilosort2', help='Preprocessing function')
     ibl_neuropixel_version = Float(required=True, default=1, help='Neuropixel version used by IBL. Valid values so far are: 1, 2, 2.4')
-    alf_location = String(required=False, default=None, help='ALF location under the results directory')
+    alf_location = String(required=False, default='', help='ALF location under the results directory')
 
 
 class InputParameters(ArgSchema):

@@ -46,7 +46,7 @@ def run_kilosort(args):
     start = time.time()
 
     # read meta data which is already of type Bunch
-    md = spikeglx.read_meta_data(input_file_name.with_suffix('.meta'))
+    md = spikeglx.read_meta_data(input_file.with_suffix('.meta'))
     preprocessing_function = args['pykilosort_helper_params']['preprocessing_function']
     ibl_neuropixel_version = args['pykilosort_helper_params']['ibl_neuropixel_version']
 

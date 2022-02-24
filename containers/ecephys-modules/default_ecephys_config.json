@@ -107,7 +107,7 @@
     "pykilosort_helper_params": {
         "preprocessing_function": "kilosort2",
         "ibl_neuropixel_version": 1,
-        "alf_location": null
+        "alf_location": "",
     },
     "ks_postprocessing_params": {
         "align_avg_waveform": false,
