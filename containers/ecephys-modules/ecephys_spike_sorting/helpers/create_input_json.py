@@ -221,7 +221,7 @@ def createInputJson(default_config,
     dictionary['pykilosort_helper_params'] = default_config['pykilosort_helper_params'] | {
         'preprocessing_function': pyks_preprocessing_function,
         'ibl_neuropixel_version': ibl_neuropixel_version,
-        'alf_location': '' if not pyks_alf_location else pyks_alf_location
+        'alf_location': '' if pyks_alf_location is None else pyks_alf_location
     }
     dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
         "include_pcs": include_pcs,

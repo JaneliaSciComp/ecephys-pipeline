@@ -26,7 +26,7 @@ def get_ks_params(probe_dict, preprocessing_function='kilosort2', ibl_neuropixel
     probe.kcoords = np.zeros(probe.Nchan-1)
 
     params = KilosortParams()
-    params.preprocessing_function = preprocessing_method
+    params.preprocessing_function = preprocessing_function
     params.probe = probe
 
     return dict(params)
