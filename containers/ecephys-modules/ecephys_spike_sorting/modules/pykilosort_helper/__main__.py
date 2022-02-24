@@ -52,9 +52,9 @@ def run_kilosort(args):
     preprocessing_function = args['pykilosort_helper_params']['preprocessing_function']
     ibl_neuropixel_version = args['pykilosort_helper_params']['ibl_neuropixel_version']
 
-    params = get_ks_params(probe_meta,
-                           preprocessing_function=preprocessing_function,
-                           ibl_neuropixel_version=ibl_neuropixel_version)
+    ks_params = get_ks_params(probe_meta,
+                              preprocessing_function=preprocessing_function,
+                              ibl_neuropixel_version=ibl_neuropixel_version)
     run(input_file, output_dir=ks_output_dir, **ks_params)
 
     execution_time = time.time() - start
