@@ -20,11 +20,11 @@ def get_ks_params(probe_dict, preprocessing_function='kilosort2', ibl_neuropixel
     neuropixel_header = neuropixel.trace_header(version=ibl_neuropixel_version)
 
     probe = Bunch()
-    probe.Nchan = int(probe_dict.get('nSavedChans'))
+    probe.NchanTOT = int(probe_dict.get('nSavedChans'))
     probe.xc = neuropixel_header['x']
     probe.yc = neuropixel_header['y']
-    probe.chanMap = np.arange(probe.Nchan-1)
-    probe.kcoords = np.zeros(probe.Nchan-1)
+    probe.chanMap = np.arange(probe.NchanTOT-1)
+    probe.kcoords = np.zeros(probe.NchanTOT-1)
 
     params = KilosortParams()
     params.preprocessing_function = preprocessing_function
@@ -48,8 +48,9 @@ def run_kilosort(args):
 
     start = time.time()
 
-    # read meta data which is already of type Bunch
-    probe_meta = readMeta(input_file.with_suffix('.meta'))
+    meta_file = input_file.with_suffix('.meta')
+    meta_name = meta_file.stem
+    probe_meta = readMeta(meta_file)
     preprocessing_function = args['pykilosort_helper_params']['preprocessing_function']
     ibl_neuropixel_version = args['pykilosort_helper_params']['ibl_neuropixel_version']
 
@@ -58,6 +59,8 @@ def run_kilosort(args):
                               ibl_neuropixel_version=ibl_neuropixel_version)
     run(input_file, output_dir=ks_output_dir, **ks_params)
 
+    chanMapName = meta_name + '_chanMap.mat'
+    
     execution_time = time.time() - start
 
     print('kilsort run time: ' + str(np.around(execution_time, 2)) + ' seconds')
