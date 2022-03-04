@@ -56,7 +56,7 @@
         "lfp_band_file": "<lf band file>",
         "lfp_sample_rate": 2500,
         "num_channels": 385,
-        "probe_type": "NP1",
+        "probe_type": "NP1100",
         "reference_channels": [
             191
         ],
@@ -73,13 +73,14 @@
     },
     "kilosort_helper_params": {
         "kilosort2_params": {
+            "KSver": "2.0",
             "AUCsplit": 0.9,
             "CSBseed": 1,
-            "KSver": "2.0",
             "LTseed": 1,
             "Th": "[10, 4]",
             "ThPre": 8,
             "chanMap": "'chanMap.mat'",
+            "doFilter": 0,
             "copy_fproc": 0,
             "finalSplits": 1,
             "fproc": "'temp_wh.dat'",
@@ -94,7 +95,8 @@
             "remDup": 0,
             "saveRez": 1,
             "sigmaMask": 30,
-            "whiteningRange": 32
+            "whiteningRange": 32,
+            "CAR" : 0
         },
         "kilosort_repository": "/app/kilosort-<kilosort version>",
         "kilosort_version": 2,
@@ -108,6 +110,26 @@
         "preprocessing_function": "kilosort2",
         "ibl_neuropixel_version": 1,
         "alf_location": "",
+        "seed": 42,
+        "Th": "[10, 4]",
+        "ThPre": 8,
+        "lam": 10,
+        "AUCsplit": 0.9,
+        "minFR": 0.02,
+        "momentum": "[20 400]",
+        "sig_datashift": 20.0,
+        "sigmaMask": 30,
+        "fshigh": 150,
+        "fslow": null,
+        "minfr_goodchannels": 0.1,
+        "whiteningRange": 32,
+        "car" : false,
+        "ks2_mode": false,
+        "perform_drift_registration": true,
+        "save_temp_files": true,
+        "deterministic_mode": true,
+        "overwrite": true,
+        "nblocks": 5
     },
     "ks_postprocessing_params": {
         "align_avg_waveform": false,

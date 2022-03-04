@@ -1,3 +1,4 @@
+import ast
 import numpy as np
 import os
 import time
@@ -16,21 +17,66 @@ from ...common.SGLXMetaToCoords import readMeta
 from pathlib import Path
 
 
-def get_ks_params(probe_dict, preprocessing_function='kilosort2', ibl_neuropixel_version=1):
-    neuropixel_header = neuropixel.trace_header(version=ibl_neuropixel_version)
+def _string_as_list_param(dict, param, default_val):
+    v = dict.get(param, default_val)
+    if v is None:
+        return None
+    else:
+        return ast.literal_eval(v if ',' in v else v.replace(' ', ',', 1))
+
+
+def get_ks_params(probe_dict, params_dict):
+    """
+    Create kilosort parameters from the probe metadata and
+    from the input JSON
+    """
+    neuropixel_header = neuropixel.trace_header(
+        version=params_dict.get('ibl_neuropixel_version', 1))
 
     probe = Bunch()
-    probe.NchanTOT = int(probe_dict.get('nSavedChans'))
     probe.xc = neuropixel_header['x']
     probe.yc = neuropixel_header['y']
+    probe.NchanTOT = int(probe_dict.get('nSavedChans'))
     probe.chanMap = np.arange(probe.NchanTOT-1)
     probe.kcoords = np.zeros(probe.NchanTOT-1)
 
     params = KilosortParams()
-    params.preprocessing_function = preprocessing_function
     params.probe = probe
 
+    params.preprocessing_function = params_dict.get('ks2_mode', False)
+    params.seed = params_dict.get('seed', 42)
+    params.ks2_mode = params_dict.get('ks2_mode', False)
+    params.perform_drift_registration = params_dict.get('perform_drift_registration',
+                                                        True)
+    params.do_whitening = True
+    params.car = params_dict.get('car', False)
+    params.fs = probe_dict.get('imSampRate', 30000)  # sample rate
+    params.n_channels = probe.NchanTOT
+    params.save_temp_files = params_dict.get('save_temp_files', True)
+    params.fshigh = params_dict.get('fshigh')
+    params.fslow = params_dict.get('fslow', )
+    params.minfr_goodchannels = params_dict.get('minfr_goodchannels', 0.1)
+    params.genericSpkTh = params_dict.get('ThPre', 8.0)
+    params.nblocks = params_dict.get('nblocks', 5)
+    params.overwrite = params_dict.get('overwrite', True)
+    params.sig_datashift = params_dict.get('sig_datashift', 20.0)
+    params.deterministic_mode = params_dict.get('deterministic_mode', True)
+    params.datashift = params_dict.get('datashift')
+    params.Th = _string_as_list_param(params_dict, 'Th', '[10, 4]')
+    params.ThPre = params_dict.get('ThPre', 8)
+    params.lam = params_dict.get('lam', 10)
+    params.AUCsplit = params_dict.get('AUCsplit', 0.9)
+    params.minFR = params_dict.get('minFR', 0.02)
+    params.momentum = _string_as_list_param(params_dict,
+                                            'momentum', '[20,400]')
+    params.sigmaMask = params_dict.get('sigmaMask', 30)
+    params.whiteningRange = params_dict.get('whiteningRange', 32)
+
     return dict(params)
+
+
+def create_chanmap():
+    None
 
 
 def run_kilosort(args):
@@ -55,12 +101,11 @@ def run_kilosort(args):
     ibl_neuropixel_version = args['pykilosort_helper_params']['ibl_neuropixel_version']
 
     ks_params = get_ks_params(probe_meta,
-                              preprocessing_function=preprocessing_function,
-                              ibl_neuropixel_version=ibl_neuropixel_version)
+                              args['pykilosort_helper_params'])
     run(input_file, output_dir=ks_output_dir, **ks_params)
 
     chanMapName = meta_name + '_chanMap.mat'
-    
+
     execution_time = time.time() - start
 
     print('kilsort run time: ' + str(np.around(execution_time, 2)) + ' seconds')
@@ -69,7 +114,6 @@ def run_kilosort(args):
     return {
         'execution_time': execution_time,
     }  # output manifest
-
 
 
 def main():

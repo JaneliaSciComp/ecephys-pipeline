@@ -26,6 +26,7 @@ def main(argv):
     parser.add_argument('--kilosort_output_dir', help='Kilosort output directory')
     parser.add_argument('--ks_working_dir', default='/tmp/kilosort_datatemp', help='Kilosort working dir')
     parser.add_argument('--ks_ver', default='2.0', help='Kilosort version')
+    parser.add_argument('--with_ks_filter', action='store_true', help='If set kilosort will perform LF filter')
     parser.add_argument('--ks_copy_results', action='store_true',
                         help='Make a copy of the kilosort results for postprocessing')
     parser.add_argument('--ks_remove_dups', type=int, help='Kilosort remove duplicates')
@@ -37,6 +38,18 @@ def main(argv):
     parser.add_argument('--ks_csb_seed', type=int, default=1, help='Run seed')
     parser.add_argument('--ks_lt_seed', type=int, default=1, help='Run seed')
     parser.add_argument('--ks_template_radius_um', type=int, default=1, help='Run seed')
+    parser.add_argument('--ks_maxNeighbors', type=int, default=64)
+
+    parser.add_argument('--ks_mode', action='store_true', help='Use ClusterSinglrBatches')
+    parser.add_argument('--ks_no_drift_registration', action='store_true',
+                        help='No electrode drift estimation and no registration')
+    parser.add_argument('--ks_sigma_mask', type=float, default=30, help='constant for residual variance')
+    parser.add_argument('--ks_fshigh', type=float, default=150, help='high pass filter')
+    parser.add_argument('--ks_fslow', type=float, help='low pass filter')
+    parser.add_argument('--ks_car', action='store_true', help='common average referencing')
+    parser.add_argument('--ks_no_temp_files', action='store_true', help='Do not save temp files')
+    parser.add_argument('--ks_non_deterministic', action='store_true', help='Use a stochastic process')
+    parser.add_argument('--ks_nblocks', type=int, default=5, help='number of blocks used to segment probe')
     parser.add_argument('--pyks_preproc', default='kilosort2', help='PyyKilosort preprocessing function')
     parser.add_argument('--ibl_neuropixel_version', type=int, default=1, help='Neuropixel version')
     parser.add_argument('--pyks_alf', default='', help='ALF location')
@@ -55,6 +68,7 @@ def main(argv):
     parser.add_argument('--event_ex_param_str')
     parser.add_argument('--c_waves_snr_um', type=float)
     parser.add_argument('--ref_per_ms', type=float)
+    parser.add_argument('--include_pcs', action='store_true', help='Include PCS; if KS3.0 is used this arg is ignored')
     parser.add_argument('--im_ex_list', type=hyphenated)
     parser.add_argument('--ni_ex_list', type=hyphenated)
     parser.add_argument('--sync_period', type=float)
@@ -99,6 +113,7 @@ def main(argv):
 		kilosort_output_directory=kilosort_output_directory,
         ks_working_dir=args.ks_working_dir,
         ks_ver=args.ks_ver,
+        ks_doFilter=(1 if args.with_ks_filter else 0),
         ks_make_copy=args.ks_copy_results,
         ks_remDup=args.ks_remove_dups,
         ks_finalSplits=1,
@@ -111,10 +126,20 @@ def main(argv):
         ks_CSBseed=args.ks_csb_seed,
         ks_LTseed=args.ks_lt_seed,
         ks_templateRadius_um=args.ks_template_radius_um,
+        ks_maxNeighbors=args.ks_maxNeighbors,
         # PyKS args
         pyks_preprocessing_function=args.pyks_preproc,
         pyks_alf_location=args.pyks_alf,
         ibl_neuropixel_version=args.ibl_neuropixel_version,
+        ks_mode=args.ks_mode,
+        ks_drift_registration=not args.ks_no_drift_registration,
+        ks_sigma_mask=args.ks_sigma_mask,
+        ks_fshigh=args.ks_fshigh,
+        ks_fslow=args.ks_fslow,
+        ks_car=args.ks_car,
+        ks_save_temp_files=not args.ks_no_temp_files,
+        ks_deterministic=not args.ks_non_deterministic,
+        ks_nblocks=args.ks_nblocks,
         # CatGT args
         extracted_data_directory=args.catgt_output_dir,
         catGT_run_name=args.catgt_run_name,
@@ -131,6 +156,7 @@ def main(argv):
         event_ex_param_str=args.event_ex_param_str,
         c_Waves_snr_um=args.c_waves_snr_um,
         qm_isi_thresh=qm_isi_thresh,
+        include_pcs=args.include_pcs,
         # TPrime args
         tPrime_im_ex_list=args.im_ex_list,
         tPrime_ni_ex_list=args.ni_ex_list,

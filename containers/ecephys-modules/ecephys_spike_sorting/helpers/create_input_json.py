@@ -42,7 +42,7 @@ def createInputJson(default_config,
                     catGT_car_mode='gblcar',
                     catGT_loccar_min_um=40,
                     catGT_loccar_max_um=160,
-                    catGT_cmd_string='-prb_fld -out_prb_fld -apfilter=butter,12,300,10000 -gfix=0,0.10,0.02',
+                    catGT_cmd_string = '-prb_fld -out_prb_fld',
                     event_ex_param_str='XD=4,1,50',
                     tPrime_im_ex_list='SY=0,384,6,500',
                     tPrime_ni_ex_list='XA=0,1,3,500',
@@ -53,6 +53,18 @@ def createInputJson(default_config,
                     toStream_path_3A=None,
                     fromStream_list_3A=None,
                     ks_ver='2.0',  # must equal '3.0', '2.5' or '2.0', and match the kiilosort_repository
+                    ks_doFilter=0,
+
+                    ks_mode=False,
+                    ks_drift_registration=True,
+                    ks_sigma_mask=30,
+                    ks_fshigh=150,
+                    ks_fslow=None,
+                    ks_car=0,
+                    ks_save_temp_files=True,
+                    ks_deterministic=True,
+                    ks_nblocks=5,
+
                     ks_remDup=0,
                     ks_finalSplits=1,
                     ks_labelGood=1,
@@ -65,11 +77,13 @@ def createInputJson(default_config,
                     ks_LTseed=1,
                     ks_templateRadius_um=163,
                     ks_working_dir='/tmp/kilosort_datatemp',
+                    ks_maxNeighbors=64, # 64 for standard build of KS
                     pyks_preprocessing_function='kilosort2',
                     ibl_neuropixel_version=1,
                     pyks_alf_location='',
                     c_Waves_snr_um=160,
-                    qm_isi_thresh=1.5/1000
+                    qm_isi_thresh=1.5/1000,
+                    include_pcs=True
                     ):
 
     # hard coded paths to code on your computer and system
@@ -78,8 +92,7 @@ def createInputJson(default_config,
     # KS 3.0 does not yet output pcs.
     if ks_ver == '3.0':
         include_pcs = False  # set to false for KS2ver = '3.0'
-    else:
-        include_pcs = True
+
     # for config files and kilosort working space
     kilosort_output_tmp = ks_working_dir
 
@@ -124,13 +137,13 @@ def createInputJson(default_config,
         print('kilosort output directory: ', kilosort_output_directory)
 
     else:
-        print('currently only supporting spikeGLX data')
+        print('using default values for probe params')
 
     # geometry params by probe type. expand the dictoionaries to add types
     # vertical probe pitch vs probe type
-    vpitch = {'3A': 20, 'NP1': 20, 'NP21': 15, 'NP24': 15, 'NP1100': 6}
-    hpitch = {'3A': 32, 'NP1': 32, 'NP21': 32, 'NP24': 32, 'NP1100': 6}
-    nColumn = {'3A': 2, 'NP1': 2, 'NP21': 2, 'NP24': 2, 'NP1100': 8}
+    vpitch = {'3A': 20, 'NP1': 20, 'NP21': 15, 'NP24': 15, 'NP1100': 6, 'NP1300':20}
+    hpitch = {'3A': 32, 'NP1': 32, 'NP21': 32, 'NP24': 32, 'NP1100': 6, 'NP1300':48}
+    nColumn = {'3A': 2, 'NP1': 2, 'NP21': 2, 'NP24': 2, 'NP1100': 8,'NP1300':2}
 
     # CatGT needs the inner and outer redii for local common average referencing
     # specified in sites
@@ -155,8 +168,8 @@ def createInputJson(default_config,
     nrows = np.sqrt((np.square(ks_templateRadius_um) -
                      np.square(hpitch.get(probe_type))))/vpitch.get(probe_type)
     ks_nNeighbors = int(round(2*nrows*nColumn.get(probe_type)))
-    if ks_nNeighbors > 64:
-        ks_nNeighbors = 64  # max allowed in CUDA
+    if ks_nNeighbors > ks_maxNeighbors:
+        ks_nNeighbors = ks_maxNeighbors
     print('ks_nNeighbors: ' + repr(ks_nNeighbors))
 
     c_waves_radius_sites = int(round(c_Waves_snr_um/vpitch.get(probe_type)))
@@ -201,27 +214,45 @@ def createInputJson(default_config,
         'spikeGLX_data': spikeGLX_data,
         'ks_make_copy': ks_make_copy,
         'kilosort2_params': default_config['kilosort_helper_params']['kilosort2_params'] | {
-            "KSver": ks_ver,
+            'KSver': ks_ver,
             # these are expressed as int rather than Bool for matlab compatability
-            "remDup": ks_remDup,
-            "finalSplits": ks_finalSplits,
-            "labelGood": ks_labelGood,
-            "saveRez": ks_saveRez,
-            "copy_fproc": ks_copy_fproc,
-            "fproc": fproc_str,
-            "minfr_goodchannels": ks_minfr_goodchannels,
-            "Th": ks_Th,
+            'remDup': ks_remDup,
+            'finalSplits': ks_finalSplits,
+            'labelGood': ks_labelGood,
+            'saveRez': ks_saveRez,
+            'copy_fproc': ks_copy_fproc,
+            'fproc': fproc_str,
+            'minfr_goodchannels': ks_minfr_goodchannels,
+            'Th': ks_Th,
             "gain": uVPerBit,
-            "CSBseed": ks_CSBseed,
-            "LTseed": ks_LTseed,
-            "whiteningRange": ks_whiteningRange,
-            "nNeighbors": ks_nNeighbors,
+            'CSBseed': ks_CSBseed,
+            'LTseed': ks_LTseed,
+            'sigmaMask': ks_sigma_mask,
+            'fshigh': ks_fshigh,
+            'whiteningRange': ks_whiteningRange,
+            'nNeighbors': ks_nNeighbors,
+            'doFilter': ks_doFilter,
+            'CAR': 1 if ks_car else 0
         }
     }
     dictionary['pykilosort_helper_params'] = default_config['pykilosort_helper_params'] | {
         'preprocessing_function': pyks_preprocessing_function,
         'ibl_neuropixel_version': ibl_neuropixel_version,
-        'alf_location': '' if pyks_alf_location is None else pyks_alf_location
+        'alf_location': '' if pyks_alf_location is None else pyks_alf_location,
+        'seed': ks_CSBseed,
+        'Th': ks_Th,
+        'minfr_goodchannels': ks_minfr_goodchannels,
+        'whiteningRange': ks_whiteningRange,
+        'overwrite': True if ks_copy_fproc else False
+        'ks2_mode': ks_mode,
+        'perform_drift_registration': ks_drift_registration,
+        'car': True if ks_car else False,
+        'sigmaMask': ks_sigma_mask,
+        'fshigh': ks_fshigh,
+        'fslow': ks_fslow,
+        'save_temp_files': ks_save_temp_files,
+        'deterministic_mode': ks_deterministic,
+        'nblocks': ks_nblocks,
     }
     dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
         "include_pcs": include_pcs,
