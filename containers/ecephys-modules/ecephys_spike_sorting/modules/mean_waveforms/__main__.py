@@ -147,7 +147,7 @@ def calculate_mean_waveforms(args):
            # save new metrics as _version number
            wm_fullpath = os.path.join(pathlib.Path(wm_fullpath).parent, pathlib.Path(wm_fullpath).stem + '_' + repr(clu_version) + '.csv')
 
-        metrics.to_csv(wm_fullpath)
+        metrics.to_csv(wm_fullpath, index=False)
 
     else:
         
@@ -175,7 +175,7 @@ def calculate_mean_waveforms(args):
                     args['mean_waveform_params'])
     
         writeDataAsNpy(waveforms, args['mean_waveform_params']['mean_waveforms_file'])
-        metrics.to_csv(args['waveform_metrics']['waveform_metrics_file'])
+        metrics.to_csv(args['waveform_metrics']['waveform_metrics_file'], index=False)
 
 
     # if the cluster metrics have already been run, merge the waveform metrics into that file
@@ -190,7 +190,7 @@ def calculate_mean_waveforms(args):
                      on='cluster_id',
                      suffixes=('_quality_metrics','_waveform_metrics'))  
         print("Saving merged quality metrics ...")
-        qmetrics.to_csv(metrics_curr)
+        qmetrics.to_csv(metrics_curr, index=False)
         
     execution_time = time.time() - start
 

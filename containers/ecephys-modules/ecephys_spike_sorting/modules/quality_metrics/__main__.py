@@ -76,7 +76,7 @@ def calculate_quality_metrics(args):
 
     print("Saving data...")
 
-    metrics.to_csv(output_file)
+    metrics.to_csv(output_file, index=False)
 
     execution_time = time.time() - start
 
