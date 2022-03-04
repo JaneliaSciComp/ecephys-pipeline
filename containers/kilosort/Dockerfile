@@ -6,12 +6,13 @@ RUN mkdir kilosort-1.0 && \
     git clone https://github.com/cortex-lab/KiloSort.git . && \
     cd ..
 
+# Checkout the modified version of kilosort2
 RUN mkdir kilosort-2.0 && \
     cd kilosort-2.0 && \
-    git clone https://github.com/jenniferColonell/Kilosort2.git . && \
-    git checkout -b 2.0 1a030bf && \
+    git clone https://github.com/jenniferColonell/KS20_for_preprocessed_data.git . && \
     cd ..
 
+# Checkout tag 2.5 from Kilosort2 repo
 RUN mkdir kilosort-2.5 && \
     cd kilosort-2.5 && \
     git clone https://github.com/jenniferColonell/Kilosort2.git . && \
