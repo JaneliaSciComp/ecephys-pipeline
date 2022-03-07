@@ -9,7 +9,7 @@ class PyKilosortHelperParameters(DefaultSchema):
     ibl_neuropixel_version = Float(required=True, default=1, help='Neuropixel version used by IBL. Valid values so far are: 1, 2, 2.4')
     alf_location = String(required=False, default='', help='ALF location under the results directory')
 
-    seed = Int(required=False, default=42, help="seed for deterministic output")   => 'CSB_seed'
+    seed = Int(required=False, default=42, help="seed for deterministic output")
     ks2_mode = Bool(required=False, default=False, help='Use ClusterSingleBatches and reorder')
     perform_drift_registration = Bool(required=False, default=True, help='Estimate electrode drift and apply registration')
     car = Bool(required=False, default=True, help='set to True to perform common average referencing (median subtraction)')
