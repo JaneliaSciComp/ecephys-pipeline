@@ -35,7 +35,7 @@ def get_ks_params(meta_file, chanmap_file, params_dict):
     probe.xc, probe.yc, probe.kcoords, connected = MetaToCoords(
         metaFullPath=meta_file,
         outType=1,
-        destFullPath=chanmap_file)
+        destFullPath=str(chanmap_file))
     probe.NchanTOT = int(probe_meta.get('nSavedChans'))
     probe.chanMap = np.arange(np.size(connected))
 
@@ -49,7 +49,7 @@ def get_ks_params(meta_file, chanmap_file, params_dict):
                                                         True)
     params.do_whitening = True
     params.car = params_dict.get('car', False)
-    params.fs = probe_dict.get('imSampRate', 30000)  # sample rate
+    params.fs = probe_meta.get('imSampRate', 30000)  # sample rate
     params.n_channels = probe.NchanTOT
     params.save_temp_files = params_dict.get('save_temp_files', True)
     params.fshigh = params_dict.get('fshigh')
