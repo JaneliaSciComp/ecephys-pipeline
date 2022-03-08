@@ -2,7 +2,7 @@ FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.2 as builder
 
 WORKDIR /tmp
 RUN git clone \
-    https://github.com/int-brain-lab/pykilosort.git \
+    https://github.com/jenniferColonell/pykilosort.git \
     --branch ibl_prod \
     --single-branch \
     pykilosort

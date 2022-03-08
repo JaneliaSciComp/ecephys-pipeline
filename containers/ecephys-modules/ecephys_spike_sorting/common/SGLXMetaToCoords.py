@@ -600,7 +600,7 @@ def MetaToCoords(metaFullPath,
         writeFunc(chans, xCoord, yCoord, connected, shankInd,
                   shankSep, baseName, savePath, buildPath)
 
-    return xCoord, yCoord, shankInd
+    return xCoord, yCoord, shankInd, connected
 
 
 # Sample calling program to get a metadata file from the user,

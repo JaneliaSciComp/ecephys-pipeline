@@ -25,25 +25,25 @@ def _string_as_list_param(dict, param, default_val):
         return ast.literal_eval(v if ',' in v else v.replace(' ', ',', 1))
 
 
-def get_ks_params(probe_dict, params_dict):
+def get_ks_params(meta_file, chanmap_file, params_dict):
     """
     Create kilosort parameters from the probe metadata and
     from the input JSON
     """
-    neuropixel_header = neuropixel.trace_header(
-        version=params_dict.get('ibl_neuropixel_version', 1))
-
     probe = Bunch()
-    probe.xc = neuropixel_header['x']
-    probe.yc = neuropixel_header['y']
-    probe.NchanTOT = int(probe_dict.get('nSavedChans'))
-    probe.chanMap = np.arange(probe.NchanTOT-1)
+    probe_meta = readMeta(meta_file)
+    probe.xc, probe.yc, probe.kcoords, connected = MetaToCoords(
+        metaFullPath=meta_file,
+        outType=1,
+        destFullPath=chanmap_file)
+    probe.NchanTOT = int(probe_meta.get('nSavedChans'))
+    probe.chanMap = np.arange(np.size(connected))
     probe.kcoords = np.zeros(probe.NchanTOT-1)
 
     params = KilosortParams()
     params.probe = probe
 
-    params.preprocessing_function = params_dict.get('ks2_mode', False)
+    params.preprocessing_function = params_dict.get('preprocessing_function', False)
     params.seed = params_dict.get('seed', 42)
     params.ks2_mode = params_dict.get('ks2_mode', False)
     params.perform_drift_registration = params_dict.get('perform_drift_registration',
@@ -93,18 +93,13 @@ def run_kilosort(args):
     ks_output_dir.mkdir(parents=True, exist_ok=True)
 
     start = time.time()
-
     meta_file = input_file.with_suffix('.meta')
     meta_name = meta_file.stem
-    probe_meta = readMeta(meta_file)
-    preprocessing_function = args['pykilosort_helper_params']['preprocessing_function']
-    ibl_neuropixel_version = args['pykilosort_helper_params']['ibl_neuropixel_version']
+    chanmap_file = input_file.with_name(meta_name + '_chanMap.mat')
 
-    ks_params = get_ks_params(probe_meta,
+    ks_params = get_ks_params(meta_file, chanmap_file,
                               args['pykilosort_helper_params'])
     run(input_file, output_dir=ks_output_dir, **ks_params)
-
-    chanMapName = meta_name + '_chanMap.mat'
 
     execution_time = time.time() - start
 

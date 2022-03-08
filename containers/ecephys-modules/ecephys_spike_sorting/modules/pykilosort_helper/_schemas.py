@@ -22,13 +22,13 @@ class PyKilosortHelperParameters(DefaultSchema):
     sig_datashift = Float(required=True, default=20.0, help='sigma for the Gaussian process smoothing')
     sigmaMask = Float(required=False, default=30, help='spatial constant in um for computing residual variance of spike')
     fshigh = Float(required=False, default=300, help='high pass filter frequency')
-    fslow = Float(required=False, help='low pass filter frequency')
+    fslow = Float(required=False, allow_none=True, help='low pass filter frequency')
     minfr_goodchannels = Float(required=False, default=0.1, help='minimum firing rate on a "good" channel (0 to skip)')
     whiteningRange = Int(required=False, default=32, help='number of channels to use for whitening each channel')
     save_temp_files: bool = Bool(required=False, default=True, help='keep temporary files created while running')
     deterministic_mode =Bool(required=False, default=True, help='make output deterministic by sorting spikes before applying kernels')
     overwrite = Bool(required=False, default=True, help='overwrite proc file with shifted data')
-    output_filename = String(required=False, help='optionally save registered data to a new binary file')
+    output_filename = String(required=False, allow_none=True, help='optionally save registered data to a new binary file')
     nblocks = Int(required=False, default=5, help='number of blocks used to segment the probe when tracking drift, 0 == do not track, 1 == rigid, > 1 == non-rigid')
 
 
