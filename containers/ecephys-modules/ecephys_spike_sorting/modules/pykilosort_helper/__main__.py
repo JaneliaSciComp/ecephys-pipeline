@@ -12,7 +12,7 @@ from ibllib.ephys import spikes, neuropixel
 from pykilosort import add_default_handler, run, Bunch
 from pykilosort.params import KilosortParams
 
-from ...common.SGLXMetaToCoords import readMeta
+from ...common.SGLXMetaToCoords import readMeta, MetaToCoords
 
 from pathlib import Path
 
@@ -38,7 +38,6 @@ def get_ks_params(meta_file, chanmap_file, params_dict):
         destFullPath=chanmap_file)
     probe.NchanTOT = int(probe_meta.get('nSavedChans'))
     probe.chanMap = np.arange(np.size(connected))
-    probe.kcoords = np.zeros(probe.NchanTOT-1)
 
     params = KilosortParams()
     params.probe = probe

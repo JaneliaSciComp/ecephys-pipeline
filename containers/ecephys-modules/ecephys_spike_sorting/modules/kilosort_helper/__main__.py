@@ -52,7 +52,7 @@ def run_kilosort(args):
            args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
         MaskChannels = np.where(mask == False)[0]
         MetaToCoords(metaFullPath=metaFullPath, outType=1,
-                    badChan=MaskChannels, destFullPath=destFullPath)
+                     badChan=MaskChannels, destFullPath=destFullPath)
        # end of SpikeGLX block
 
     else:

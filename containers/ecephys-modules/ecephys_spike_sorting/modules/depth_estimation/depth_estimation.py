@@ -9,8 +9,7 @@ from scipy.signal import welch
 from scipy.ndimage.filters import gaussian_filter1d
 
 from ...common.utils import find_range, rms, printProgressBar
-from ...common.OEFileInfo import get_lfp_channel_order
-from ...common.SGLXMetaToCoords import MetaToCoords
+
 
 def compute_channel_offsets(ap_data, ephys_params, params, xCoord, yCoord):
 
