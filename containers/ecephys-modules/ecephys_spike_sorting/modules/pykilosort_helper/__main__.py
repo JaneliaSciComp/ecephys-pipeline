@@ -25,7 +25,7 @@ def _string_as_list_param(dict, param, default_val):
         return ast.literal_eval(v if ',' in v else v.replace(' ', ',', 1))
 
 
-def get_ks_params(meta_file, chanmap_file, params_dict):
+def _get_ks_params(meta_file, chanmap_file, params_dict):
     """
     Create kilosort parameters from the probe metadata and
     from the input JSON
@@ -57,7 +57,7 @@ def get_ks_params(meta_file, chanmap_file, params_dict):
     params.minfr_goodchannels = params_dict.get('minfr_goodchannels', 0.1)
     params.genericSpkTh = params_dict.get('ThPre', 8.0)
     params.nblocks = params_dict.get('nblocks', 5)
-    params.overwrite = params_dict.get('overwrite', True)
+    params.overwrite = params_dict.get('copy_fproc') ? True : False
     params.sig_datashift = params_dict.get('sig_datashift', 20.0)
     params.deterministic_mode = params_dict.get('deterministic_mode', True)
     params.datashift = params_dict.get('datashift')
@@ -74,8 +74,39 @@ def get_ks_params(meta_file, chanmap_file, params_dict):
     return dict(params)
 
 
-def create_chanmap():
-    None
+def _fix_phy_params(output_dir, dat_path, dat_name, chan_phy_binary,
+                    sample_rate):
+    """
+    Writes a new params.py file.
+    dat_path will be set to a relative path from output_dir to
+    dat_path/dat_name
+    sample rate will be written out to sufficient digits to be used
+    """
+    shutil.copy(os.path.join(output_dir, 'params.py'),
+                os.path.join(output_dir, 'old_params.py'))
+
+    relPath = os.path.relpath(dat_path, output_dir)
+    new_path = os.path.join(relPath, dat_name)
+    new_path = new_path.replace('\\', '/')
+
+    paramLines = list()
+
+    with open(os.path.join(output_dir, 'old_params.py'), 'r') as f:
+        currLine = f.readline()
+
+        while currLine != '':  # The EOF char is an empty string
+            if 'dat_path' in currLine:
+                currLine = "dat_path = '" + new_path + "'\n"
+            elif 'n_channels_dat' in currLine:
+                currLine = "n_channels_dat = " + repr(chan_phy_binary) + "\n"
+            elif 'sample_rate' in currLine:
+                currLine = (f'sample_rate = {sample_rate:.12f}\n')
+            paramLines.append(currLine)
+            currLine = f.readline()
+
+    with open(os.path.join(output_dir, 'params.py'), 'w') as fout:
+        for line in paramLines:
+            fout.write(line)
 
 
 def run_kilosort(args):
@@ -94,11 +125,31 @@ def run_kilosort(args):
     start = time.time()
     meta_file = input_file.with_suffix('.meta')
     meta_name = meta_file.stem
-    chanmap_file = input_file.with_name(meta_name + '_chanMap.mat')
+    chanmap_filename = meta_name + '_chanMap.mat'
+    chanmap_file = os.path.join(ks_output_dir, chanmap_filename)
 
-    ks_params = get_ks_params(meta_file, chanmap_file,
-                              args['pykilosort_helper_params'])
+    pyks_params = args['pykilosort_helper_params']
+    ks_params = _get_ks_params(meta_file, chanmap_file, pyks_params)
     run(input_file, output_dir=ks_output_dir, **ks_params)
+
+    if pyks_params.get('copy_fproc'):
+        fproc_path_str = pyks_params['fproc']
+        # trim quotes off string sent to matlab
+        fproc_path = fproc_path_str[1:len(fproc_path_str)-1]
+        fp_dir, fp_name = os.path.split(fproc_path)
+        # make a new name for the processed file based on the original
+        # binary and metadata files
+        fp_save_name = meta_name + '_ksproc.bin'
+        shutil.copy(fproc_path, os.path.join(output_dir, fp_save_name))
+        cm_path = os.path.join(output_dir, 'channel_map.npy')
+        cm = np.load(cm_path)
+        chan_phy_binary = cm.size
+        _fix_phy_params(output_dir, input_file.parent, fp_save_name,
+                        chan_phy_binary, args['ephys_params']['sample_rate'])
+    else:
+        chan_phy_binary = args['ephys_params']['num_channels']
+        _fix_phy_params(output_dir, input_file.parent, input_file.name,
+                       chan_phy_binary, args['ephys_params']['sample_rate'])
 
     execution_time = time.time() - start
 

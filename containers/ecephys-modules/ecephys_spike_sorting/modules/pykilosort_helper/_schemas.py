@@ -8,7 +8,9 @@ class PyKilosortHelperParameters(DefaultSchema):
     preprocessing_function = String(required=True, default='kilosort2', help='Preprocessing function. Valid values: {"kilosort2", "destriping"} ')
     ibl_neuropixel_version = Float(required=True, default=1, help='Neuropixel version used by IBL. Valid values so far are: 1, 2, 2.4')
     alf_location = String(required=False, default='', help='ALF location under the results directory')
-
+    copy_fproc = Int(required=False, default=1, help='Copy processed binary to output directory')
+    fproc = String(required=False, default='D:\kilosort_datatemp\temp_wh.dat',
+                    help='Processed data file on a fast ssd')
     seed = Int(required=False, default=42, help="seed for deterministic output")
     ks2_mode = Bool(required=False, default=False, help='Use ClusterSingleBatches and reorder')
     perform_drift_registration = Bool(required=False, default=True, help='Estimate electrode drift and apply registration')
@@ -27,7 +29,6 @@ class PyKilosortHelperParameters(DefaultSchema):
     whiteningRange = Int(required=False, default=32, help='number of channels to use for whitening each channel')
     save_temp_files: bool = Bool(required=False, default=True, help='keep temporary files created while running')
     deterministic_mode =Bool(required=False, default=True, help='make output deterministic by sorting spikes before applying kernels')
-    overwrite = Bool(required=False, default=True, help='overwrite proc file with shifted data')
     output_filename = String(required=False, allow_none=True, help='optionally save registered data to a new binary file')
     nblocks = Int(required=False, default=5, help='number of blocks used to segment the probe when tracking drift, 0 == do not track, 1 == rigid, > 1 == non-rigid')
 
