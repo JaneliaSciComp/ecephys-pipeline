@@ -57,7 +57,7 @@ def _get_ks_params(meta_file, chanmap_file, params_dict):
     params.minfr_goodchannels = params_dict.get('minfr_goodchannels', 0.1)
     params.genericSpkTh = params_dict.get('ThPre', 8.0)
     params.nblocks = params_dict.get('nblocks', 5)
-    params.overwrite = params_dict.get('copy_fproc') ? True : False
+    params.overwrite = True if params_dict.get('copy_fproc') else False
     params.sig_datashift = params_dict.get('sig_datashift', 20.0)
     params.deterministic_mode = params_dict.get('deterministic_mode', True)
     params.datashift = params_dict.get('datashift')
