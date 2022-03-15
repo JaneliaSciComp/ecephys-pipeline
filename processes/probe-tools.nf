@@ -77,7 +77,6 @@ process create_probe_config {
         create_arg('--ks_copy_fproc', params.ks_copy_fproc),
         create_arg('--ks_minfr_goodchannels', params.ks_minfr_goodchannels),
         create_arg('--ks_whitening_radius_um', params.ks_whitening_radius_um),
-        create_arg('--ks_no_drift_registration')
         create_arg('--ks_th', probe_ks_th),
         create_arg('--ks_csb_seed', params.ks_csb_seed),
         create_arg('--ks_lt_seed', params.ks_lt_seed),
