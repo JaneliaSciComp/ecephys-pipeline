@@ -38,7 +38,7 @@ def main(argv):
     parser.add_argument('--ks_csb_seed', type=int, default=1, help='Run seed')
     parser.add_argument('--ks_lt_seed', type=int, default=1, help='Run seed')
     parser.add_argument('--ks_template_radius_um', type=int, default=1, help='Run seed')
-    parser.add_argument('--ks_maxNeighbors', type=int, default=64)
+    parser.add_argument('--ks_max_neighbors', type=int, default=64)
 
     parser.add_argument('--ks_mode', action='store_true', help='Use ClusterSinglrBatches')
     parser.add_argument('--ks_no_drift_registration', action='store_true',
@@ -51,7 +51,6 @@ def main(argv):
     parser.add_argument('--ks_non_deterministic', action='store_true', help='Use a stochastic process')
     parser.add_argument('--ks_nblocks', type=int, default=5, help='number of blocks used to segment probe')
     parser.add_argument('--pyks_preproc', default='kilosort2', help='PyyKilosort preprocessing function')
-    parser.add_argument('--ibl_neuropixel_version', type=int, default=1, help='Neuropixel version')
     parser.add_argument('--pyks_alf', default='', help='ALF location')
     parser.add_argument('--catgt_run_name', help='CatGT run name')
     parser.add_argument('--probe_type')
@@ -126,11 +125,10 @@ def main(argv):
         ks_CSBseed=args.ks_csb_seed,
         ks_LTseed=args.ks_lt_seed,
         ks_templateRadius_um=args.ks_template_radius_um,
-        ks_maxNeighbors=args.ks_maxNeighbors,
+        ks_maxNeighbors=args.ks_max_neighbors,
         # PyKS args
         pyks_preprocessing_function=args.pyks_preproc,
         pyks_alf_location=args.pyks_alf,
-        ibl_neuropixel_version=args.ibl_neuropixel_version,
         ks_mode=args.ks_mode,
         ks_drift_registration=not args.ks_no_drift_registration,
         ks_sigma_mask=args.ks_sigma_mask,

@@ -77,7 +77,6 @@ def createInputJson(default_config,
                     ks_working_dir='/tmp/kilosort_datatemp',
                     ks_maxNeighbors=64, # 64 for standard build of KS
                     pyks_preprocessing_function='kilosort2',
-                    ibl_neuropixel_version=1,
                     pyks_alf_location='',
                     c_Waves_snr_um=160,
                     qm_isi_thresh=1.5/1000,
@@ -235,7 +234,6 @@ def createInputJson(default_config,
     }
     dictionary['pykilosort_helper_params'] = default_config['pykilosort_helper_params'] | {
         'preprocessing_function': pyks_preprocessing_function,
-        'ibl_neuropixel_version': ibl_neuropixel_version,
         'alf_location': '' if pyks_alf_location is None else pyks_alf_location,
         'seed': ks_CSBseed,
         'Th': ks_Th,

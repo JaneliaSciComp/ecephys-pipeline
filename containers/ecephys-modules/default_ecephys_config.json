@@ -108,7 +108,6 @@
     },
     "pykilosort_helper_params": {
         "preprocessing_function": "kilosort2",
-        "ibl_neuropixel_version": 1,
         "alf_location": "",
         "seed": 42,
         "Th": "[10, 4]",

@@ -6,10 +6,7 @@ import shutil
 
 from argschema import ArgSchemaParser
 
-from ibllib.io import spikeglx
-from ibllib.ephys import spikes, neuropixel
-
-from pykilosort import add_default_handler, run, Bunch
+from pykilosort import run, Bunch
 from pykilosort.params import KilosortParams
 
 from ...common.SGLXMetaToCoords import readMeta, MetaToCoords

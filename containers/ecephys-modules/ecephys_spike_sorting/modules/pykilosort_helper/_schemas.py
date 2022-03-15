@@ -6,7 +6,6 @@ from ...common.schemas import EphysParams, Directories, CommonFiles
 
 class PyKilosortHelperParameters(DefaultSchema):
     preprocessing_function = String(required=True, default='kilosort2', help='Preprocessing function. Valid values: {"kilosort2", "destriping"} ')
-    ibl_neuropixel_version = Float(required=True, default=1, help='Neuropixel version used by IBL. Valid values so far are: 1, 2, 2.4')
     alf_location = String(required=False, default='', help='ALF location under the results directory')
     copy_fproc = Int(required=False, default=1, help='Copy processed binary to output directory')
     fproc = String(required=False, default='D:\kilosort_datatemp\temp_wh.dat',

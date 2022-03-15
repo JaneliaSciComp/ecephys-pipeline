@@ -37,9 +37,9 @@ def default_params() {
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
 
         with_pyks: true,
+        with_ks_filter: false, // by default skip the filtering done by kilosort
         pyks_preproc: '',
         pyks_alf: '',
-        ibl_neuropixel_version: 1,
         ks_csb_seed: 1,
         ks_lt_seed: 1,
         ks_copy_results: true,
@@ -51,6 +51,19 @@ def default_params() {
         ks_template_radius_um: 163,
         ks_whitening_radius_um: 163,
         ks_working_dir: '/tmp/kilosort_temp',
+        // for the following ks parameter use the defaults
+        // defined in the ecephys module
+        ks_mode: '',
+        ks_max_neighbors: '',
+        ks_no_drift_registration: false,
+        ks_sigma_mask: '',
+        params.ks_fshigh: '',
+        params.ks_fslow: '',
+        ks_car: false,
+        ks_no_temp_files: false,
+        ks_non_deterministic: false,
+        ks_nblocks: '',
+        include_pcs: false,
 
         process_lf: true, // this must be true if depth_estimation is run
 
