@@ -107,6 +107,7 @@
     "pykilosort_helper_params": {
         "preprocessing_function": "kilosort2",
         "alf_location": "alf",
+        "copy_fproc": 0,
         "seed": 42,
         "Th": "[10, 4]",
         "ThPre": 8,
@@ -125,7 +126,6 @@
         "perform_drift_registration": true,
         "save_temp_files": true,
         "deterministic_mode": true,
-        "overwrite": true,
         "nblocks": 5
     },
     "ks_postprocessing_params": {
