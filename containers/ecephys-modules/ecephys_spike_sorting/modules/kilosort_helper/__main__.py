@@ -143,7 +143,7 @@ def run_kilosort(args):
         cm_path = os.path.join(output_dir, 'channel_map.npy')
         cm = np.load(cm_path)
         chan_phy_binary = cm.size
-        fix_phy_params(output_dir, dat_dir, fp_save_name,
+        fix_phy_params(output_dir, output_dir.parent, fp_save_name,
                        chan_phy_binary, args['ephys_params']['sample_rate'])
     else:
         chan_phy_binary = args['ephys_params']['num_channels']
