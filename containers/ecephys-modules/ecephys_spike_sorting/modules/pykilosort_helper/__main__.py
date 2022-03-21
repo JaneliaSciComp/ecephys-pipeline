@@ -137,8 +137,8 @@ def run_kilosort(args):
         # make a new name for the processed file based on the original
         # binary and metadata files
         fp_save_name = meta_name + '_ksproc.bin'
-        shutil.copy(fproc_path, os.path.join(output_dir, fp_save_name))
-        cm_path = os.path.join(output_dir, 'channel_map.npy')
+        shutil.copy(fproc_path, os.path.join(ks_output_dir, fp_save_name))
+        cm_path = os.path.join(ks_output_dir, 'channel_map.npy')
         cm = np.load(cm_path)
         chan_phy_binary = cm.size
         _fix_phy_params(ks_output_dir, ks_output_dir.parent, fp_save_name,
