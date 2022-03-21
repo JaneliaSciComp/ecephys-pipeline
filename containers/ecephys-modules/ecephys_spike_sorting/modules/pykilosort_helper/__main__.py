@@ -65,6 +65,7 @@ def _get_ks_params(meta_file, chanmap_file, params_dict):
     params.minFR = params_dict.get('minFR', 0.02)
     params.momentum = _string_as_list_param(params_dict,
                                             'momentum', '[20,400]')
+    params.output_filename = params_dict.get('fproc')
     params.sigmaMask = params_dict.get('sigmaMask', 30)
     params.whiteningRange = params_dict.get('whiteningRange', 32)
 
@@ -119,6 +120,10 @@ def run_kilosort(args):
     ks_output_dir = Path(ks_output_dir_name)
     ks_output_dir.mkdir(parents=True, exist_ok=True)
 
+    ks_tmp_output_dir_name = args['directories']['kilosort_output_tmp']
+    ks_tmp_output_dir = Path(ks_tmp_output_dir_name)
+    ks_tmp_output_dir.mkdir(parents=True, exist_ok=True)
+
     start = time.time()
     meta_file = input_file.with_suffix('.meta')
     meta_name = meta_file.stem
@@ -127,13 +132,14 @@ def run_kilosort(args):
 
     pyks_params = args['pykilosort_helper_params']
     ks_params = _get_ks_params(meta_file, chanmap_file, pyks_params)
-    run(input_file, output_dir=ks_output_dir, **ks_params)
+    run(input_file,
+        output_dir=ks_output_dir,
+        dir_path=ks_tmp_output_dir,
+        **ks_params)
 
     if pyks_params.get('copy_fproc'):
         fproc_path_str = pyks_params['fproc']
-        # trim quotes off string sent to matlab
-        fproc_path = fproc_path_str[1:len(fproc_path_str)-1]
-        fp_dir, fp_name = os.path.split(fproc_path)
+        fproc_path = ks_tmp_output_dir / '.kilosort' / Path(input_file).stem/'proc.dat'
         # make a new name for the processed file based on the original
         # binary and metadata files
         fp_save_name = meta_name + '_ksproc.bin'
