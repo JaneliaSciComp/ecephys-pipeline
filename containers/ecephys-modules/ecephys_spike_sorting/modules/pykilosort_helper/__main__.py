@@ -143,7 +143,7 @@ def run_kilosort(args):
         # make a new name for the processed file based on the original
         # binary and metadata files
         fp_save_name = meta_name + '_ksproc.bin'
-        shutil.copy(fproc_path, os.path.join(ks_output_dir, fp_save_name))
+        shutil.copy(fproc_path, os.path.join(ks_output_dir.parent, fp_save_name))
         cm_path = os.path.join(ks_output_dir, 'channel_map.npy')
         cm = np.load(cm_path)
         chan_phy_binary = cm.size
@@ -153,6 +153,13 @@ def run_kilosort(args):
         chan_phy_binary = args['ephys_params']['num_channels']
         _fix_phy_params(ks_output_dir, input_file.parent, input_file.name,
                        chan_phy_binary, args['ephys_params']['sample_rate'])
+
+    if ks_tmp_output_dir != ks_output_dir:
+        try:
+            print('Remove KS temporary dir %s' % ks_tmp_output_dir)
+            shutil.rmtree(ks_tmp_output_dir)
+        except OSError as e:
+            print('Error: %s : %s' % (ks_tmp_output_dir, e.strerror))
 
     execution_time = time.time() - start
 

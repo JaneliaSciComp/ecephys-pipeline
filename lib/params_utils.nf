@@ -42,7 +42,7 @@ def default_params() {
         pyks_alf: '',
         ks_csb_seed: 1,
         ks_lt_seed: 1,
-        ks_copy_results: true,
+        ks_copy_results: false,
         ks_ver: '3.0',
         ks_remove_dups: 0,
         ks_save_rez: 1,
