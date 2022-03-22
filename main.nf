@@ -74,11 +74,11 @@ recording_steps = get_list_or_default(
 include {
     process_probes_for_all_runs;
     process_tprime;
-} from './workflows/process_runs' addParams(process_params + create_ks_params(probe_steps))
+} from './workflows/process_runs' addParams(process_params)
 
 include {
     process_all_recordings;
-} from './workflows/process_recordings' addParams(process_params+ create_ks_params(recording_steps))
+} from './workflows/process_recordings' addParams(process_params)
 
 data_dir = final_params.data_dir // probes dir
 results_dir = get_value_or_default(final_params, 'results_dir', data_dir)
@@ -130,11 +130,4 @@ workflow {
         recording_results | view
     }
 
-}
-
-def create_ks_params(steps) {
-    [
-        ks_copy_results: steps.contains('kilosort_postprocessing') ||
-                         steps.contains('noise_templates'),
-    ]
 }
