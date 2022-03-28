@@ -29,7 +29,7 @@ def run_kilosort(args):
     input_file_forward_slash = input_file.replace('\\', '/')
 
     output_dir_name = args['directories']['kilosort_output_directory']
-    output_dir = Path(output_dir)
+    output_dir = Path(output_dir_name)
 
     mask = get_noise_channels(args['ephys_params']['ap_band_file'],
                               args['ephys_params']['num_channels'],
