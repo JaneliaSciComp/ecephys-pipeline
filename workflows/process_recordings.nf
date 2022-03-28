@@ -103,7 +103,7 @@ workflow process_all_recordings {
         ks_post_output = ks_post_input
     }
 
-    def noise_templates_input = ks_output
+    def noise_templates_input = ks_post_output
     def noise_templates_output
     if (steps.contains('noise_templates')) {
         noise_templates_output = noise_templates_input | run_noise_templates
@@ -124,7 +124,7 @@ workflow process_all_recordings {
     if (steps.contains('mean_waveforms')) {
         mean_waveforms_output = mean_waveforms_input | run_mean_waveforms
     } else {
-        mean_waveforms_output = psth_events_input
+        mean_waveforms_output = mean_waveforms_input
     }
 
     def quality_metrics_input = mean_waveforms_output
@@ -132,7 +132,7 @@ workflow process_all_recordings {
     if (steps.contains('quality_metrics')) {
         quality_metrics_output = quality_metrics_input | run_quality_metrics
     } else {
-        quality_metrics_output = psth_events_input
+        quality_metrics_output = quality_metrics_input
     }
 
     emit:

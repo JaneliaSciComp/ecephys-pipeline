@@ -167,7 +167,7 @@ workflow process_probes_for_all_runs {
         ks_post_output = ks_post_input
     }
 
-    def noise_templates_input = ks_output
+    def noise_templates_input = ks_post_output
     def noise_templates_output
     if (steps.contains('noise_templates')) {
         noise_templates_output = noise_templates_input | run_noise_templates
