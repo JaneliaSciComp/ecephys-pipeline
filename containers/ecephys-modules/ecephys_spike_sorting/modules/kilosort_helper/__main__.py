@@ -7,7 +7,6 @@ import shutil
 
 import numpy as np
 
-
 from pathlib import Path
 
 from scipy.signal import butter, filtfilt, medfilt
@@ -15,6 +14,7 @@ from scipy.signal import butter, filtfilt, medfilt
 from . import matlab_file_generator
 from ...common.SGLXMetaToCoords import MetaToCoords
 from ...common.utils import read_probe_json, get_repo_commit_date_and_hash, rms
+
 
 def run_kilosort(args):
 
@@ -28,8 +28,8 @@ def run_kilosort(args):
     input_file = args['ephys_params']['ap_band_file']
     input_file_forward_slash = input_file.replace('\\', '/')
 
-    output_dir = args['directories']['kilosort_output_directory']
-    output_dir_forward_slash = output_dir.replace('\\', '/')
+    output_dir_name = args['directories']['kilosort_output_directory']
+    output_dir = Path(output_dir)
 
     mask = get_noise_channels(args['ephys_params']['ap_band_file'],
                               args['ephys_params']['num_channels'],
@@ -85,7 +85,7 @@ def run_kilosort(args):
                                             args['kilosort_helper_params']['kilosort_params'])
     elif args['kilosort_helper_params']['kilosort_version'] == 2:
         matlab_file_generator.create_config2(args['kilosort_helper_params']['matlab_home_directory'], 
-                                             output_dir_forward_slash, 
+                                             str(output_dir), 
                                              input_file_forward_slash,
                                              args['ephys_params'], 
                                              args['kilosort_helper_params']['kilosort2_params'])
@@ -139,11 +139,11 @@ def run_kilosort(args):
         # make a new name for the processed file based on the original
         # binary and metadata files
         fp_save_name = metaName + '_ksproc.bin'
-        shutil.copy(fproc_path, os.path.join(Path(output_dir).parent, fp_save_name))
+        shutil.copy(fproc_path, os.path.join(output_dir.parent, fp_save_name))
         cm_path = os.path.join(output_dir, 'channel_map.npy')
         cm = np.load(cm_path)
         chan_phy_binary = cm.size
-        fix_phy_params(output_dir, Path(output_dir).parent, fp_save_name,
+        fix_phy_params(output_dir, output_dir.parent, fp_save_name,
                        chan_phy_binary, args['ephys_params']['sample_rate'])
     else:
         chan_phy_binary = args['ephys_params']['num_channels']
@@ -182,12 +182,24 @@ def run_kilosort(args):
     nTemplate = np.unique(spkTemplate).size
     nTot = spkTemplate.size
 
+    ks_tmp_output_dir_name = args['directories']['kilosort_output_tmp']
+    ks_tmp_output_dir = Path(ks_tmp_output_dir_name)
+    ks_tmp_output_dir.mkdir(parents=True, exist_ok=True)
+
+    if ks_tmp_output_dir != output_dir:
+        try:
+            print('Remove KS temporary dir %s' % ks_tmp_output_dir)
+            shutil.rmtree(ks_tmp_output_dir)
+        except OSError as e:
+            print('Error: %s : %s' % (ks_tmp_output_dir, e.strerror))
+
     return {"execution_time": execution_time,
             "kilosort_commit_date": commit_date,
             "kilosort_commit_hash": commit_time,
             "mask_channels": np.where(mask == False)[0],
             "nTemplate": nTemplate,
             "nTot": nTot}  # output manifest
+
 
 def get_noise_channels(raw_data_file, num_channels, sample_rate, bit_volts, noise_threshold=20):
 
@@ -228,6 +240,7 @@ def get_noise_channels(raw_data_file, num_channels, sample_rate, bit_volts, nois
           repr(sum(above_median > noise_threshold)))
 
     return above_median < noise_threshold
+
 
 def fix_phy_params(output_dir, dat_path, dat_name, chan_phy_binary, sample_rate):
 
