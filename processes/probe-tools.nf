@@ -644,9 +644,7 @@ def create_code_block(module_name,
             -m ecephys_spike_sorting.modules.${module_name} \
             --input_json ${module_input_file} \
             --output_json ${module_output_file}
-        if [[ -e "${module_output_file}" ]]
-            errors_found=false
-        fi
+        if [[ -e "${module_output_file}" ]]; then errors_found=false; fi
         """
         .stripIndent()
     } catch (Throwable t) {
