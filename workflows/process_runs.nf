@@ -365,6 +365,6 @@ def filterErrors() {
             triggers,
             errors_found
         ) = d
-        return errors_found == "true"
+        return errors_found != "true"
     }
 }

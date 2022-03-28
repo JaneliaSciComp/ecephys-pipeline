@@ -168,7 +168,7 @@ process run_catgt {
     container { params.catgt_container }
     cpus { params.catgt_cpus }
     memory { get_str_value_or_default(params, 'catgt_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'catgt_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'catgt_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -245,7 +245,7 @@ process run_depth_estimation {
     container { params.ecephys_modules_container }
     cpus { params.depth_estimation_cpus }
     memory { get_str_value_or_default(params, 'depth_estimation_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'depth_estimation_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'depth_estimation_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -294,7 +294,7 @@ process run_kilosort {
                     : params.kilosort_container }
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'kilosort_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'kilosort_errorStrategy', params.errorStrategy) }
 
     accelerator 1
     label 'withGPU'
@@ -346,7 +346,7 @@ process run_kilosort_post_process {
     container { params.cwaves_container }
     cpus { params.ks_post_cpus }
     memory { get_str_value_or_default(params, 'ks_post_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'ks_post_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'ks_post_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -392,7 +392,7 @@ process run_noise_templates {
     container { params.ecephys_modules_container }
     cpus { params.noise_cpus }
     memory { get_str_value_or_default(params, 'noise_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'noise_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'noise_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -438,7 +438,7 @@ process run_mean_waveforms {
     container { params.cwaves_container }
     cpus { params.waveforms_cpus }
     memory { get_str_value_or_default(params, 'waveforms_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'waveforms_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'waveforms_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -486,7 +486,7 @@ process run_psth_events {
     container { params.ecephys_modules_container }
     cpus { params.events_cpus }
     memory { get_str_value_or_default(params, 'events_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'events_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'events_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -532,7 +532,7 @@ process run_quality_metrics {
     container { params.ecephys_modules_container }
     cpus { params.metrics_cpus }
     memory { get_str_value_or_default(params, 'metrics_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'metrics_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'metrics_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -580,7 +580,7 @@ process run_tprime {
     container { params.tprime_container }
     cpus { params.tprime_cpus }
     memory { get_str_value_or_default(params, 'tprime_mem', '') }
-    errorStrategy { get_str_value_or_default(params, 'tprime_errorStrategy', params.errorStrategy) }
+    errorStrategy { get_value_or_default(params, 'tprime_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(run_config_file),
