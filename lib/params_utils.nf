@@ -180,10 +180,10 @@ def ecephys_modules_container_param(Map ps) {
 
 def kilosort_container_param(Map ps) {
     def kilosort_container = ps.kilosort_container
-    if (!kilosort_container)
+    if (!kilosort_container) {
         def ks_container_version = get_value_or_default(ps, 'containers_version', '1.0.2-tmp')
         "${ps.container_repo}/kilosort:${ks_containers_version}"
-    else
+    } else
         kilosort_container
 }
 
