@@ -137,7 +137,7 @@ def get_probe_data_filename(run_name, gate, probe, trigger, file_type) {
     "${run_folder_name}_t${trigger}.imec${probe}${file_type}"
 }
 
-def processingErrorsFoundClosure() {
+def processingErrorsFoundClosure(m) {
     return { d ->
         def (
             probe_index,
@@ -151,6 +151,7 @@ def processingErrorsFoundClosure() {
             triggers,
             errors_found
         ) = d
-        return errors_found != "true"
+        log.info "Check errors before running module $m: $d -> $errors_found"
+        return errors_found != 'true'
     }
 }

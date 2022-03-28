@@ -92,7 +92,7 @@ workflow process_all_recordings {
     def ks_output
     if (steps.contains('kilosort_helper')) {
         ks_output = ks_input 
-        | filter(processingErrorsFoundClosure())
+        | filter(processingErrorsFoundClosure('Kilosort'))
         | run_kilosort
     } else {
         ks_output = ks_input
@@ -102,7 +102,7 @@ workflow process_all_recordings {
     def ks_post_output
     if (steps.contains('kilosort_postprocessing')) {
         ks_post_output = ks_post_input
-        | filter(processingErrorsFoundClosure())
+        | filter(processingErrorsFoundClosure('Kilosort Postprocess'))
         | run_kilosort_post_process
     } else {
         ks_post_output = ks_post_input
@@ -112,7 +112,7 @@ workflow process_all_recordings {
     def noise_templates_output
     if (steps.contains('noise_templates')) {
         noise_templates_output = noise_templates_input
-        | filter(processingErrorsFoundClosure())
+        | filter(processingErrorsFoundClosure('Noise Templates'))
         | run_noise_templates
     } else {
         noise_templates_output = noise_templates_input
@@ -122,7 +122,7 @@ workflow process_all_recordings {
     def psth_events_output
     if (steps.contains('psth_events')) {
         psth_events_output = psth_events_input
-        | filter(processingErrorsFoundClosure())
+        | filter(processingErrorsFoundClosure('PSTH Events'))
         | run_psth_events
     } else {
         psth_events_output = psth_events_input
@@ -132,7 +132,7 @@ workflow process_all_recordings {
     def mean_waveforms_output
     if (steps.contains('mean_waveforms')) {
         mean_waveforms_output = mean_waveforms_input
-        | filter(processingErrorsFoundClosure())
+        | filter(processingErrorsFoundClosure('Mean Waveforms'))
         | run_mean_waveforms
     } else {
         mean_waveforms_output = mean_waveforms_input
@@ -142,7 +142,7 @@ workflow process_all_recordings {
     def quality_metrics_output
     if (steps.contains('quality_metrics')) {
         quality_metrics_output = quality_metrics_input
-        | filter(processingErrorsFoundClosure())
+        | filter(processingErrorsFoundClosure('Quality Metrics'))
         | run_quality_metrics
     } else {
         quality_metrics_output = quality_metrics_input
