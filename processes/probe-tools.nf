@@ -57,7 +57,8 @@ process create_probe_config {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def probe_config_dir = file(probe_config_file).parent
@@ -117,11 +118,13 @@ process create_probe_config {
     ]
     def args = args_list.join(' ')
     """
+    errors_found=true
     echo "Create ${probe_config_dir} for ${probe_config_file}"
     umask 002
     mkdir -p ${probe_config_dir}
     ls ${probe_config_dir.parent}
     python -m ecephys_spike_sorting.helpers.create_input_config ${args}
+    errors_found=false
     """
 }
 
@@ -138,7 +141,8 @@ process wait_for_config {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -149,11 +153,14 @@ process wait_for_config {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     """
+    errors_found=true
     SLEEP_SECS=${params.wait_for_config_sleep_secs} MAX_WAIT_SECS=${params.wait_for_config_max_secs} /app/scripts/waitforpaths.sh ${probe_config_file}
+    errors_found=false
     """
 }
 
@@ -161,6 +168,7 @@ process run_catgt {
     container { params.catgt_container }
     cpus { params.catgt_cpus }
     memory { get_str_value_or_default(params, 'catgt_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'catgt_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -171,7 +179,8 @@ process run_catgt {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
           
     output:
     tuple val(probe_index),
@@ -182,7 +191,8 @@ process run_catgt {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -235,6 +245,7 @@ process run_depth_estimation {
     container { params.ecephys_modules_container }
     cpus { params.depth_estimation_cpus }
     memory { get_str_value_or_default(params, 'depth_estimation_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'depth_estimation_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -245,7 +256,8 @@ process run_depth_estimation {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -256,7 +268,8 @@ process run_depth_estimation {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -281,6 +294,7 @@ process run_kilosort {
                     : params.kilosort_container }
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'kilosort_errorStrategy', params.errorStrategy) }
 
     accelerator 1
     label 'withGPU'
@@ -294,7 +308,8 @@ process run_kilosort {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -305,7 +320,8 @@ process run_kilosort {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def helper_module = params.with_pyks ? 'pykilosort_helper' : 'kilosort_helper'
@@ -330,6 +346,7 @@ process run_kilosort_post_process {
     container { params.cwaves_container }
     cpus { params.ks_post_cpus }
     memory { get_str_value_or_default(params, 'ks_post_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'ks_post_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -340,7 +357,8 @@ process run_kilosort_post_process {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -351,7 +369,8 @@ process run_kilosort_post_process {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -373,6 +392,7 @@ process run_noise_templates {
     container { params.ecephys_modules_container }
     cpus { params.noise_cpus }
     memory { get_str_value_or_default(params, 'noise_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'noise_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -383,7 +403,8 @@ process run_noise_templates {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -394,7 +415,8 @@ process run_noise_templates {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -416,6 +438,7 @@ process run_mean_waveforms {
     container { params.cwaves_container }
     cpus { params.waveforms_cpus }
     memory { get_str_value_or_default(params, 'waveforms_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'waveforms_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -426,7 +449,8 @@ process run_mean_waveforms {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -437,7 +461,8 @@ process run_mean_waveforms {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -461,6 +486,7 @@ process run_psth_events {
     container { params.ecephys_modules_container }
     cpus { params.events_cpus }
     memory { get_str_value_or_default(params, 'events_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'events_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -471,7 +497,8 @@ process run_psth_events {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -482,7 +509,8 @@ process run_psth_events {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -504,6 +532,7 @@ process run_quality_metrics {
     container { params.ecephys_modules_container }
     cpus { params.metrics_cpus }
     memory { get_str_value_or_default(params, 'metrics_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'metrics_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(probe_index),
@@ -514,7 +543,8 @@ process run_quality_metrics {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          val(errors_found)
 
     output:
     tuple val(probe_index),
@@ -525,7 +555,8 @@ process run_quality_metrics {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers)
+          val(triggers),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -549,6 +580,7 @@ process run_tprime {
     container { params.tprime_container }
     cpus { params.tprime_cpus }
     memory { get_str_value_or_default(params, 'tprime_mem', '') }
+    errorStrategy { get_str_value_or_default(params, 'tprime_errorStrategy', params.errorStrategy) }
 
     input:
     tuple val(run_config_file),
@@ -558,7 +590,8 @@ process run_tprime {
     output:
     tuple val(run_config_file),
           val(run_folder_name),
-          val(run_name)
+          val(run_name),
+          env(errors_found)
 
     script:
     def code = create_code_block(
@@ -599,7 +632,9 @@ def create_code_block(module_name,
         def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
         def ks_working_dir = config.directories.kilosort_output_tmp
         module_input_file.write(json_module_config)
+
         """
+        errors_found=true
         umask 000
         mkdir -p ${ks_working_dir}
 
@@ -609,6 +644,9 @@ def create_code_block(module_name,
             -m ecephys_spike_sorting.modules.${module_name} \
             --input_json ${module_input_file} \
             --output_json ${module_output_file}
+        if [[ -e "${module_output_file}" ]]
+            errors_found=false
+        fi
         """
         .stripIndent()
     } catch (Throwable t) {
