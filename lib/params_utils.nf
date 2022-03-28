@@ -81,7 +81,6 @@ def default_params() {
 
         catgt_cpus: 1,
         catgt_mem: '',
-        catgt_errorStrategy: 'terminate',
         depth_estimation_cpus: 1,
         depth_estimation_mem: '',
         ks_cpus: 1,
