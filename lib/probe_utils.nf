@@ -136,3 +136,21 @@ def get_probe_data_filename(run_name, gate, probe, trigger, file_type) {
     def run_folder_name = get_run_folder_name(run_name, gate)
     "${run_folder_name}_t${trigger}.imec${probe}${file_type}"
 }
+
+def processingErrorsFoundClosure() {
+    return { d ->
+        def (
+            probe_index,
+            probe_data_file,
+            probe_config_file,
+            run_folder_name,
+            probe_folder_name,
+            run_name,
+            gate,
+            probe,
+            triggers,
+            errors_found
+        ) = d
+        return errors_found != "true"
+    }
+}

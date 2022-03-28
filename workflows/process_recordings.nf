@@ -3,6 +3,7 @@ include {
     extract_gate;
     extract_probe;
     global_config;
+    processingErrorsFoundClosure;
 } from '../lib/probe_utils'
 
 include {
@@ -90,7 +91,9 @@ workflow process_all_recordings {
     def ks_input = config_output
     def ks_output
     if (steps.contains('kilosort_helper')) {
-        ks_output = ks_input | run_kilosort
+        ks_output = ks_input 
+        | filter(processingErrorsFoundClosure())
+        | run_kilosort
     } else {
         ks_output = ks_input
     }
@@ -98,7 +101,9 @@ workflow process_all_recordings {
     def ks_post_input = ks_output
     def ks_post_output
     if (steps.contains('kilosort_postprocessing')) {
-        ks_post_output = ks_post_input | run_kilosort_post_process
+        ks_post_output = ks_post_input
+        | filter(processingErrorsFoundClosure())
+        | run_kilosort_post_process
     } else {
         ks_post_output = ks_post_input
     }
@@ -106,7 +111,9 @@ workflow process_all_recordings {
     def noise_templates_input = ks_post_output
     def noise_templates_output
     if (steps.contains('noise_templates')) {
-        noise_templates_output = noise_templates_input | run_noise_templates
+        noise_templates_output = noise_templates_input
+        | filter(processingErrorsFoundClosure())
+        | run_noise_templates
     } else {
         noise_templates_output = noise_templates_input
     }
@@ -114,7 +121,9 @@ workflow process_all_recordings {
     def psth_events_input = noise_templates_output
     def psth_events_output
     if (steps.contains('psth_events')) {
-        psth_events_output = psth_events_input | run_psth_events
+        psth_events_output = psth_events_input
+        | filter(processingErrorsFoundClosure())
+        | run_psth_events
     } else {
         psth_events_output = psth_events_input
     }
@@ -122,7 +131,9 @@ workflow process_all_recordings {
     def mean_waveforms_input = psth_events_output
     def mean_waveforms_output
     if (steps.contains('mean_waveforms')) {
-        mean_waveforms_output = mean_waveforms_input | run_mean_waveforms
+        mean_waveforms_output = mean_waveforms_input
+        | filter(processingErrorsFoundClosure())
+        | run_mean_waveforms
     } else {
         mean_waveforms_output = mean_waveforms_input
     }
@@ -130,7 +141,9 @@ workflow process_all_recordings {
     def quality_metrics_input = mean_waveforms_output
     def quality_metrics_output
     if (steps.contains('quality_metrics')) {
-        quality_metrics_output = quality_metrics_input | run_quality_metrics
+        quality_metrics_output = quality_metrics_input
+        | filter(processingErrorsFoundClosure())
+        | run_quality_metrics
     } else {
         quality_metrics_output = quality_metrics_input
     }

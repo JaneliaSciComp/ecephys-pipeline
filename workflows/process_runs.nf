@@ -4,6 +4,7 @@ include {
     get_probe_folder_name;
     get_probe_data_filename;
     global_config;
+    processingErrorsFoundClosure;
 } from '../lib/probe_utils'
 
 include {
@@ -134,7 +135,7 @@ workflow process_probes_for_all_runs {
     def catgt_output
     if (steps.contains('catGT_helper')) {
         catgt_output = catgt_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_catgt
     } else {
         catgt_output = catgt_input
@@ -148,7 +149,7 @@ workflow process_probes_for_all_runs {
             depth_estimation_output = depth_estimation_input
         } else {
             depth_estimation_output = depth_estimation_input
-            | filter(filterErrors())
+            | filter(processingErrorsFoundClosure())
             | run_depth_estimation
         }
     } else {
@@ -159,7 +160,7 @@ workflow process_probes_for_all_runs {
     def ks_output
     if (steps.contains('kilosort_helper')) {
         ks_output = ks_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_kilosort
     } else {
         ks_output = ks_input
@@ -169,7 +170,7 @@ workflow process_probes_for_all_runs {
     def ks_post_output
     if (steps.contains('kilosort_postprocessing')) {
         ks_post_output = ks_post_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_kilosort_post_process
     } else {
         ks_post_output = ks_post_input
@@ -179,7 +180,7 @@ workflow process_probes_for_all_runs {
     def noise_templates_output
     if (steps.contains('noise_templates')) {
         noise_templates_output = noise_templates_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_noise_templates
     } else {
         noise_templates_output = noise_templates_input
@@ -189,7 +190,7 @@ workflow process_probes_for_all_runs {
     def psth_events_output
     if (steps.contains('psth_events')) {
         psth_events_output = psth_events_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_psth_events
     } else {
         psth_events_output = psth_events_input
@@ -199,7 +200,7 @@ workflow process_probes_for_all_runs {
     def mean_waveforms_output
     if (steps.contains('mean_waveforms')) {
         mean_waveforms_output = mean_waveforms_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_mean_waveforms
     } else {
         mean_waveforms_output = mean_waveforms_input
@@ -209,7 +210,7 @@ workflow process_probes_for_all_runs {
     def quality_metrics_output
     if (steps.contains('quality_metrics')) {
         quality_metrics_output = quality_metrics_input
-        | filter(filterErrors())
+        | filter(processingErrorsFoundClosure())
         | run_quality_metrics
     } else {
         quality_metrics_output = quality_metrics_input
@@ -349,22 +350,4 @@ def get_probe_trials(data_dir, run_name, gate, probe) {
         trials << (match_res[0][1] as int)
     }
     return trials
-}
-
-def filterErrors() {
-    return { d ->
-        def (
-            probe_index,
-            probe_data_file,
-            probe_config_file,
-            run_folder_name,
-            probe_folder_name,
-            run_name,
-            gate,
-            probe,
-            triggers,
-            errors_found
-        ) = d
-        return errors_found != "true"
-    }
 }
