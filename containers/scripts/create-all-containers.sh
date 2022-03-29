@@ -3,10 +3,10 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 source ${DIR}/container-versions.sh
 
 docker build \
-    -t matlab-centos8:2020b \
-    -t registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b \
+    -t matlab-oraclelinux8:2020b \
+    -t registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b \
     --build-arg LICENSE_SERVER=27000@e05u04.int.janelia.org \
-    containers/matlab-dockerfile-centos8
+    containers/matlab-oraclelinux8
 
 docker build \
     -t registry.int.janelia.org/janeliascicomp/ecephys-modules:${ECEPHYS_CONTAINERS_VERSION} \

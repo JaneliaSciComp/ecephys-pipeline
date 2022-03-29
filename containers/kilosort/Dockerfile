@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.2 as builder
+FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.2-tmp as builder
 
 WORKDIR /tmp
 RUN mkdir kilosort-1.0 && \
@@ -26,7 +26,7 @@ RUN mkdir kilosort-3.0 && \
 
 RUN git clone https://github.com/kwikteam/npy-matlab.git npy-matlab
 
-FROM registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b
+FROM registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b
 
 USER root
 

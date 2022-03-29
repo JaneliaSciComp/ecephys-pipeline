@@ -30,7 +30,7 @@ To [install Nextflow](https://www.nextflow.io/docs/latest/getstarted.html):
 ```
 Then add the next install directory to your PATH environment variable.
 
-To [install Singularity](https://sylabs.io/guides/3.7/admin-guide/installation.html) on CentOS Linux:
+To [install Singularity](https://sylabs.io/guides/3.7/admin-guide/installation.html) on Oracle Linux:
 
 ```
     sudo yum install singularity

@@ -49,7 +49,7 @@ class Directories(DefaultSchema):
         help='Location of Kilosort output files')
     extracted_data_directory = OutputDir(
         help='Location for NPX/CatGT processed files')
-    kilosort_output_tmp = OutputDir(validate=noOpValidate, help='Location for temporary KS output')
+    kilosort_output_tmp = OutputDir(validate=None, help='Location for temporary KS output')
 
 
 class CommonFiles(DefaultSchema):

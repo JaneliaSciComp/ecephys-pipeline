@@ -8,13 +8,13 @@ All containers used by the pipeline have been made available on the Janelia's in
 
 Kilosort step requires a full licensed matlab installation so in order to build the container for kilosort you will need first the full matlab container. To build a full matlab container
 image you can follow the instructions from Mathworks presented [here](https://github.com/mathworks-ref-arch/matlab-dockerfile).
-Mathworks' instructions are for building a docker image based on ubuntu:18 but we used a Centos 8 based installation that can be found in the `containers/matlab-centos8` subfolder. Once you download the full matlab following the Mathworks instructions and prepared `containers/matlab-centos8/matlab_installer_input.txt` you can run:
+Mathworks' instructions are for building a docker image based on ubuntu:18 but we used a Oracle Linux 8 based installation that can be found in the `containers/matlab-oraclelinux8` subfolder. Once you download the full matlab following the Mathworks instructions and prepared `containers/matlab-oraclelinux8/matlab_installer_input.txt` you can run:
 ```
 docker build \
-    -t matlab-centos8:2020b \
-    -t registry.int.janelia.org/janeliascicomp/matlab-centos8:2020b \
+    -t matlab-oraclelinux8:2020b \
+    -t registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b \
     --build-arg LICENSE_SERVER=27000@e05u04.int.janelia.org \
-    containers/matlab-dockerfile-centos8
+    containers/matlab-dockerfile-oraclelinux8
 ```
 
 ### Kilosort container

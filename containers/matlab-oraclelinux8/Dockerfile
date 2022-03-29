@@ -1,6 +1,6 @@
-FROM centos:8 as prebuilder
+FROM oraclelinux:8 as prebuilder
 
-# This is a centos-8 based container 
+# This is a oraclelinux-8 based container 
 # prepared for a full matlab install
 
 #### Get Dependencies ####
