@@ -5,6 +5,7 @@ include {
 } from '../lib/probe_utils'
 
 include {
+    get_value_or_default;
     get_str_value_or_default;
 } from '../lib/params_utils'
 
@@ -647,8 +648,10 @@ def create_code_block(module_name,
             : ''
 
         """
-        errors_found=true
         ${create_working_dir}
+
+        function exitHandler() { if [[ -e "${module_output_file}" ]]; then errors_found=false; else errors_found=true; fi }
+        trap exitHandler EXIT
 
         umask 002
         # run module
@@ -656,7 +659,6 @@ def create_code_block(module_name,
             -m ecephys_spike_sorting.modules.${module_name} \
             --input_json ${module_input_file} \
             --output_json ${module_output_file}
-        if [[ -e "${module_output_file}" ]]; then errors_found=false; fi
         """
         .stripIndent()
     } catch (Throwable t) {
