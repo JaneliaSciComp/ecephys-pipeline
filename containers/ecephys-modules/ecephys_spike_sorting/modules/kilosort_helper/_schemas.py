@@ -1,7 +1,7 @@
 from argschema import ArgSchema, ArgSchemaParser 
 from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, String, Float, Dict, Int, Bool, NumpyArray
-from ...common.schemas import EphysParams, Directories, CommonFiles
+from ...common.schemas import EphysParams, Directories, CommonFiles, noOpValidate
 
 
 class KilosortParameters(DefaultSchema):
@@ -56,7 +56,7 @@ class KilosortHelperParameters(DefaultSchema):
     spikeGLX_data = Bool(required=True, default=False, help='If true, use SpikeGLX metafile to build chanMap')
     ks_make_copy = Bool(required=False, default=False, help='If true, make a copy of the original KS output')
     surface_channel_buffer = Int(required=False, default=15, help='Number of channels above brain surface to include in spike sorting')
-    matlab_home_directory = InputDir(validate=False, help='Location from which Matlab files can be copied and run.')
+    matlab_home_directory = InputDir(validate=noOpValidate, help='Location from which Matlab files can be copied and run.')
     kilosort_repository = InputDir(help='Local directory for the Kilosort source code repository.')
     npy_matlab_repository = InputDir(help='Local directory for the npy_matlab repo for writing phy output')
     kilosort_params = Nested(KilosortParameters, required=False, help='Parameters used to auto-generate a Kilosort config file')

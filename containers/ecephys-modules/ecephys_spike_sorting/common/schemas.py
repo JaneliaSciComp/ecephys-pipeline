@@ -2,6 +2,12 @@ from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, OutputDir, String, Float, Dict, Int, NumpyArray, Bool
 
 
+def noOpValidate(value):
+    # This is a no-op validator because Schema tries to validate inputDir types 
+    # even if validate is set to None
+    None
+
+
 class EphysParams(DefaultSchema):
     sample_rate = Float(required=True, default=30000.0,
                         help='Sample rate of Neuropixels AP band continuous data')
@@ -43,7 +49,7 @@ class Directories(DefaultSchema):
         help='Location of Kilosort output files')
     extracted_data_directory = OutputDir(
         help='Location for NPX/CatGT processed files')
-    kilosort_output_tmp = OutputDir(validate=False, help='Location for temporary KS output')
+    kilosort_output_tmp = OutputDir(validate=noOpValidate, help='Location for temporary KS output')
 
 
 class CommonFiles(DefaultSchema):
