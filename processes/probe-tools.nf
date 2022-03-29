@@ -650,7 +650,14 @@ def create_code_block(module_name,
         """
         ${create_working_dir}
 
-        function exitHandler() { if [[ -e "${module_output_file}" ]]; then errors_found=false; else errors_found=true; fi }
+        function exitHandler() {
+            if [[ -e "${module_output_file}" ]]; then
+                errors_found=false
+            else
+                errors_found=true
+            fi
+        }
+
         trap exitHandler EXIT
 
         umask 002
