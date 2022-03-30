@@ -2,11 +2,14 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 
 source ${DIR}/container-versions.sh
 
-docker build \
-    -t matlab-oraclelinux8:2020b \
-    -t registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b \
-    --build-arg LICENSE_SERVER=27000@e05u04.int.janelia.org \
-    containers/matlab-oraclelinux8
+if [[ "$1" == "--include-matlab" ]] ; then
+    echo "Build Matlab docker image"
+    docker build \
+        -t matlab-oraclelinux8:2020b \
+        -t registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b \
+        --build-arg LICENSE_SERVER=27000@e05u04.int.janelia.org \
+        containers/matlab-oraclelinux8
+fi
 
 docker build \
     -t registry.int.janelia.org/janeliascicomp/ecephys-modules:${ECEPHYS_CONTAINERS_VERSION} \
