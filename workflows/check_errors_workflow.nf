@@ -1,6 +1,6 @@
 include {
     check_module_output;
-} from '../processes/probe-tools'
+} from '../processes/probe_tools'
 
 workflow check_errors {
     take:

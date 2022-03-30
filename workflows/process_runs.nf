@@ -19,7 +19,7 @@ include {
     run_quality_metrics;
     run_tprime;
     wait_for_config;
-} from '../processes/probe-tools'
+} from '../processes/probe_tools'
 
 include {
     get_hyphenated_value_param;
