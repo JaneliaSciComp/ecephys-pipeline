@@ -15,7 +15,7 @@ include {
     run_psth_events;
     run_quality_metrics;
     wait_for_config;
-} from '../processes/probe-tools'
+} from '../processes/probe_tools'
 
 include {
     get_key_value_or_default_key;
