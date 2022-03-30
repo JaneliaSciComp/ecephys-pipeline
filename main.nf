@@ -91,12 +91,28 @@ workflow {
         // read and proccess the run specs from the speccifed runs file
         def runs = prepare_run_specs(read_json(file(final_params.runs)))
         // process all probes
-        def probe_results = process_probes_for_all_runs(
+        def (probe_results, probe_errors) = process_probes_for_all_runs(
             data_dir,
             results_dir,
             config_dir,
             runs,
             probe_steps)
+
+	probe_errors.subscribe {
+	    def (
+                probe_index,
+                probe_data_file,
+                probe_config_file,
+                run_folder_name,
+                probe_folder_name,
+                run_name,
+                gate,
+                probe,
+                triggers,
+                errors_found
+            ) = it
+            log.error "!!!!!!!!!!!!Errors while processing ${run_name}:${probe_data_file} using ${probe_config_file}"
+	}
 
         if (probe_steps.contains('tPrime_helper')) {
             def tprime_inputs = probe_results

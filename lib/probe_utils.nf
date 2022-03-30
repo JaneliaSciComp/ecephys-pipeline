@@ -137,6 +137,10 @@ def get_probe_data_filename(run_name, gate, probe, trigger, file_type) {
     "${run_folder_name}_t${trigger}.imec${probe}${file_type}"
 }
 
+def get_kilosort_helper_module() {
+    return params.with_pyks ? 'pykilosort_helper' : 'kilosort_helper'
+}
+
 def processingErrorsFoundClosure(m) {
     return { d ->
         def (
@@ -151,7 +155,7 @@ def processingErrorsFoundClosure(m) {
             triggers,
             errors_found
         ) = d
-        log.info "Check errors before running module $m: $d -> $errors_found"
+        log.debug "Check errors before running module $m: $d -> $errors_found"
         return errors_found != 'true'
     }
 }

@@ -1,6 +1,7 @@
 include {
     config_file;
     filter_config;
+    get_kilosort_helper_module;
     get_probe_data_filename;
 } from '../lib/probe_utils'
 
@@ -327,14 +328,14 @@ process run_kilosort {
           env(errors_found)
 
     script:
-    def helper_module = params.with_pyks ? 'pykilosort_helper' : 'kilosort_helper'
-    def helper_module_params = params.with_pyks ? 'pykilosort_helper_params' : 'kilosort_helper_params'
+    def helper_module = get_kilosort_helper_module()
+    def helper_module_params = "${helper_module}_params"
     def code = create_code_block(
         helper_module,
         probe_config_file,
         probe_folder_name,
         [
-            helper_module_params,
+            helper_module_params.toString(),
             'directories',
             'ephys_params',
             'common_files'
@@ -619,6 +620,52 @@ process run_tprime {
     """
 }
 
+process check_module_output {
+    container { params.ecephys_modules_container }
+    cpus 1
+    executor 'Local'
+
+    input:
+    val(module_name)
+    tuple val(probe_index),
+          val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers),
+          val(errors_found)
+
+    output:
+    tuple val(probe_index),
+          val(probe_data_file),
+          val(probe_config_file),
+          val(run_folder_name),
+          val(probe_folder_name),
+          val(run_name),
+          val(gate),
+          val(probe),
+          val(triggers),
+          env(errors_found)
+
+   script:
+   def config_dir = file("${probe_config_file}").parent
+   def module_output_file = config_file(config_dir, probe_folder_name, module_name, 'output')
+
+   """
+   echo "Check output ${module_output_file} for ${module_name}: ${probe_data_file}"
+   if [[ -e "${module_output_file}" ]]; then
+      echo "Found ${module_output_file}"
+      errors_found=false
+   else
+      echo "No output found for ${module_name}: ${probe_data_file}"
+      errors_found=true
+   fi
+   """
+}
+
 def create_arg(arg_flag, arg_value) {
     arg_value == null || "${arg_value}" == ''
         ? ''
@@ -641,24 +688,23 @@ def create_code_block(module_name,
         def json_module_config = to_json(module_config)
         def module_input_file = config_file(config_dir, module_config_folder_name, module_name, 'input')
         def module_output_file = config_file(config_dir, module_config_folder_name, module_name, 'output')
-        def ks_working_dir = config.directories.kilosort_output_tmp
+	def create_working_dir
+	if (with_ks_working_dir) {
+	    def ks_working_dir = config.directories.kilosort_output_tmp	
+	    create_working_dir =
+	    """
+	    umask 000
+	    mkdir -p ${ks_working_dir}
+	    """
+	    .stripIndent()
+        } else {
+	    create_working_dir = ""
+        }
         module_input_file.write(json_module_config)
-        def create_working_dir = with_ks_working_dir
-            ? "umask 000 && mkdir -p ${ks_working_dir}"
-            : ''
 
         """
+        errors_found=true
         ${create_working_dir}
-
-        function exitHandler() {
-            if [[ -e "${module_output_file}" ]]; then
-                errors_found=false
-            else
-                errors_found=true
-            fi
-        }
-
-        trap exitHandler EXIT
 
         umask 002
         # run module
@@ -666,6 +712,7 @@ def create_code_block(module_name,
             -m ecephys_spike_sorting.modules.${module_name} \
             --input_json ${module_input_file} \
             --output_json ${module_output_file}
+        errors_found=false
         """
         .stripIndent()
     } catch (Throwable t) {

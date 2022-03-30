@@ -1,5 +1,5 @@
-
 include {
+    get_kilosort_helper_module;
     get_run_folder_name;
     get_probe_folder_name;
     get_probe_data_filename;
@@ -29,6 +29,13 @@ include {
 include {
     index_channel;
 } from '../lib/utils'
+
+include {
+    check_errors as check_catgt_errors;
+    check_errors as check_depth_estimation_errors;
+    check_errors as check_ks_errors;
+    check_errors as check_ks_post_errors;
+} from './check_errors_workflow'
 
 /**
 * Process all probes from all given runs
@@ -133,10 +140,12 @@ workflow process_probes_for_all_runs {
 
     def catgt_input = probe_config_output 
     def catgt_output
+    def errors_output
     if (steps.contains('catGT_helper')) {
-        catgt_output = catgt_input
-        | filter(processingErrorsFoundClosure('CatGT'))
-        | run_catgt
+        def process_input = catgt_input | filter(processingErrorsFoundClosure('CatGT'))
+        def process_output = process_input | run_catgt
+
+        (catgt_output, errors_output) = check_catgt_errors('catGT_helper', process_input, process_output)
     } else {
         catgt_output = catgt_input
     }
@@ -148,9 +157,10 @@ workflow process_probes_for_all_runs {
             log.warn "Depth estimation requires CatGT to process the low frequency stream - set --process_lf to true to process depth estimation"
             depth_estimation_output = depth_estimation_input
         } else {
-            depth_estimation_output = depth_estimation_input
-            | filter(processingErrorsFoundClosure('Depth Estimation'))
-            | run_depth_estimation
+            def process_input = depth_estimation_input | filter(processingErrorsFoundClosure('Depth Estimation'))
+            def process_output = process_input | run_depth_estimation
+
+            (depth_estimation_output, errors_output) = check_depth_estimation_errors('depth_estimation', process_input, process_output)
         }
     } else {
         depth_estimation_output = depth_estimation_input
@@ -159,9 +169,10 @@ workflow process_probes_for_all_runs {
     def ks_input = depth_estimation_output
     def ks_output
     if (steps.contains('kilosort_helper')) {
-        ks_output = ks_input
-        | filter(processingErrorsFoundClosure('Kilosort'))
-        | run_kilosort
+        def process_input = ks_input | filter(processingErrorsFoundClosure('Kilosort'))
+        def process_output = process_input | run_kilosort
+
+        (ks_output, errors_output) = check_ks_errors(get_kilosort_helper_module(), process_input, process_output)
     } else {
         ks_output = ks_input
     }
@@ -169,9 +180,10 @@ workflow process_probes_for_all_runs {
     def ks_post_input = ks_output
     def ks_post_output
     if (steps.contains('kilosort_postprocessing')) {
-        ks_post_output = ks_post_input
-        | filter(processingErrorsFoundClosure('Kilosort PostProcess'))
-        | run_kilosort_post_process
+        def process_input = ks_post_input | filter(processingErrorsFoundClosure('Kilosort PostProcess'))
+        def process_output = process_input | run_kilosort_post_process
+
+	(ks_post_output, errors_output) = check_ks_post_errors('kilosort_postprocessing', process_input, process_output)
     } else {
         ks_post_output = ks_post_input
     }
@@ -218,6 +230,7 @@ workflow process_probes_for_all_runs {
 
     emit:
     res = quality_metrics_output
+    errors = errors_output
 }
 
 workflow process_tprime {
