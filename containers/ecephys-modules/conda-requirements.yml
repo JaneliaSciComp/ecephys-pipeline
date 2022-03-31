@@ -24,6 +24,7 @@ dependencies:
   - pip:
     - tox
     - sphinx-gallery
+    - marshmallow
     - argschema
     - xmljson
     - bumpversion

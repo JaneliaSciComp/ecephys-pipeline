@@ -1,6 +1,5 @@
 from argschema import ArgSchemaParser
 import os
-import logging
 import subprocess
 import time
 import shutil

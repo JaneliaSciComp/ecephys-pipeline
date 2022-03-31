@@ -1,7 +1,8 @@
 from argschema import ArgSchema, ArgSchemaParser 
 from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, String, Float, Dict, Int, Bool, NumpyArray
-from ...common.schemas import EphysParams, Directories, CommonFiles, NoValidation
+from marshmallow import validates
+from ...common.schemas import EphysParams, Directories, CommonFiles
 
 
 class KilosortParameters(DefaultSchema):
@@ -57,12 +58,16 @@ class KilosortHelperParameters(DefaultSchema):
     ks_make_copy = Bool(required=False, default=False, help='If true, make a copy of the original KS output')
     surface_channel_buffer = Int(required=False, default=15,
                                  help='Number of channels above brain surface to include in spike sorting')
-    matlab_home_directory = InputDir(required=False, validate=NoValidation,
+    matlab_home_directory = InputDir(load_only=True,
                                      help='Location from which Matlab files can be copied and run.')
     kilosort_repository = InputDir(help='Local directory for the Kilosort source code repository.')
     npy_matlab_repository = InputDir(help='Local directory for the npy_matlab repo for writing phy output')
     kilosort_params = Nested(KilosortParameters, required=False, help='Parameters used to auto-generate a Kilosort config file')
     kilosort2_params = Nested(Kilosort2Parameters, required=False, help='Parameters used to auto-generate a Kilosort2 config file')
+
+    @validates('matlab_home_directory')
+    def _no_validation(self, v):
+        print('Validate matlab_home_directory:', v)
 
 
 class InputParameters(ArgSchema):    

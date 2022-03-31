@@ -1,18 +1,7 @@
 from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, OutputDir, String, Float, Dict, Int, NumpyArray, Bool
 
-from marshmallow.validate import Validator
-
-
-class NoValidation(Validator):
-    """Validator which succeeds all the time
-    """
-
-    def __init__(self, value=None):
-        self.value = value
-
-    def __call__(self, value):
-        return True
+from marshmallow import validates
 
 
 class EphysParams(DefaultSchema):
@@ -56,7 +45,11 @@ class Directories(DefaultSchema):
         help='Location of Kilosort output files')
     extracted_data_directory = OutputDir(
         help='Location for NPX/CatGT processed files')
-    kilosort_output_tmp = OutputDir(validate=NoValidation, help='Location for temporary KS output')
+    kilosort_output_tmp = OutputDir(help='Location for temporary KS output')
+
+    @validates('kilosort_output_tmp')
+    def _no_validation(self, v):
+        print('Validate ks_output_tmp:', v)
 
 
 class CommonFiles(DefaultSchema):
