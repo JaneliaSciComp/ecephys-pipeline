@@ -252,6 +252,8 @@ workflow process_probes_for_all_runs {
         quality_metrics_output = quality_metrics_input
     }
 
+    errors_output | view
+
     emit:
     res = quality_metrics_output
     errors = errors_output

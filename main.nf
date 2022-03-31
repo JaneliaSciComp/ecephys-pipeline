@@ -98,24 +98,45 @@ workflow {
             runs,
             probe_steps)
 
-	probe_errors.subscribe {
-	    def (
-                probe_index,
-                probe_data_file,
-                probe_config_file,
-                run_folder_name,
-                probe_folder_name,
-                run_name,
-                gate,
-                probe,
-                triggers,
-                errors_found
-            ) = it
-            log.error "!!!!!!!!!!!!Errors while processing ${run_name}:${probe_data_file} using ${probe_config_file}"
-	}
-
         if (probe_steps.contains('tPrime_helper')) {
+            def excluded_probes = probe_errors
+            | map {
+                def (
+                    probe_index,
+                    probe_data_file,
+                    probe_config_file,
+                    run_folder_name,
+                    probe_folder_name,
+                    run_name,
+                    gate,
+                    probe,
+                    triggers,
+                    errors_found
+                ) = it
+                log.error "!!!!!!!!!!!!Errors while processing ${run_name}:${probe_data_file} using ${probe_config_file}"
+                return [ run_folder_name, run_name, gate ]
+            }
+            | unique
+            | collect
+
+            log.error "Runs for which tPrime will not be done because of previous errors: ", excluded_probes
+
             def tprime_inputs = probe_results
+            | filter {
+                def (
+                    probe_index,
+                    probe_data_file,
+                    probe_config_file,
+                    run_folder_name,
+                    probe_folder_name,
+                    run_name,
+                    gate,
+                    probe,
+                    triggers,
+                    errors_found
+                ) = it
+                return !([ run_folder_name, run_name, gate ] in excluded_probes)
+            }
             | groupTuple(by: [3,5,6,8]) // group by run_folder, run_name, gate, triggers
 
             tprime_inputs.subscribe { log.debug "TPrime input: $it" }
