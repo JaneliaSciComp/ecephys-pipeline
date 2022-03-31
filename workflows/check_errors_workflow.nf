@@ -22,21 +22,8 @@ workflow check_errors {
       def errors_found = it[-1]
       return errors_found == 'true';
     }
-
-    errors_output.subscribe onNext: {
-        def (
-            probe_index,
-            probe_data_file,
-            probe_config_file,
-            run_folder_name,
-            probe_folder_name,
-            run_name,
-            gate,
-            probe,
-            triggers,
-            errors_found
-        ) = it
-        log.error "CatGT errors while processing ${run_name}:${probe_data_file} using ${probe_config_file}"
+    | map {
+      it + [ module_name ]
     }
 
     emit:
