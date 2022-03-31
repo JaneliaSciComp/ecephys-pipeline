@@ -119,7 +119,7 @@ workflow {
             | unique
             | collect
 
-            if (!excluded_probes.empty) log.error "Runs for which tPrime will not be done because of previous errors: ", excluded_probes
+            if (!excluded_probes.empty()) log.error "Runs for which tPrime will not be done because of previous errors: ", excluded_probes
 
             def tprime_inputs = probe_results
             | filter {
