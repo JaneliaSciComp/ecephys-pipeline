@@ -151,7 +151,7 @@ workflow process_probes_for_all_runs {
         def process_errors
 
         (catgt_output, process_errors) = check_catgt_errors('catGT_helper', process_input, process_output)
-        errors_output.concat(process_errors)
+        errors_output = errors_output.concat(process_errors)
     } else {
         catgt_output = catgt_input
     }
@@ -168,7 +168,7 @@ workflow process_probes_for_all_runs {
             def process_errors
 
             (depth_estimation_output, process_errors) = check_depth_estimation_errors('depth_estimation', process_input, process_output)
-            errors_output.concat(process_errors)
+            errors_output = errors_output.concat(process_errors)
         }
     } else {
         depth_estimation_output = depth_estimation_input
@@ -182,7 +182,7 @@ workflow process_probes_for_all_runs {
         def process_errors
 
         (ks_output, process_errors) = check_ks_errors(get_kilosort_helper_module(), process_input, process_output)
-        errors_output.concat(process_errors)
+        errors_output = errors_output.concat(process_errors)
     } else {
         ks_output = ks_input
     }
@@ -194,8 +194,8 @@ workflow process_probes_for_all_runs {
         def process_output = process_input | run_kilosort_post_process
         def process_errors
 
-    	(ks_post_output, process_errors) = check_ks_post_errors('kilosort_postprocessing', process_input, process_output)
-        errors_output.concat(process_errors)
+        (ks_post_output, process_errors) = check_ks_post_errors('kilosort_postprocessing', process_input, process_output)
+        errors_output = errors_output.concat(process_errors)
     } else {
         ks_post_output = ks_post_input
     }
@@ -208,7 +208,7 @@ workflow process_probes_for_all_runs {
         def process_errors
 
         (noise_templates_output, process_errors) = check_noise_errors('noise_templates', process_input, process_output)
-        errors_output.concat(process_errors)
+        errors_output = errors_output.concat(process_errors)
     } else {
         noise_templates_output = noise_templates_input
     }
@@ -221,7 +221,7 @@ workflow process_probes_for_all_runs {
         def process_errors
 
         (psth_events_output, process_errors) = check_psth_errors('psth_events', process_input, process_output)
-        errors_output.concat(process_errors)
+        errors_output = errors_output.concat(process_errors)
     } else {
         psth_events_output = psth_events_input
     }
@@ -234,7 +234,7 @@ workflow process_probes_for_all_runs {
         def process_errors
 
         (mean_waveforms_output, process_errors) = check_mean_waveforms_errors('mean_waveforms', process_input, process_output)
-        errors_output.concat(process_errors)
+        errors_output = errors_output.concat(process_errors)
     } else {
         mean_waveforms_output = mean_waveforms_input
     }
@@ -247,7 +247,7 @@ workflow process_probes_for_all_runs {
         def process_errors
 
         (quality_metrics_output, process_errors) = check_quality_errors('quality_metrics', process_input, process_output)
-        errors_output.concat(process_errors)
+        errors_output = errors_output.concat(process_errors)
     } else {
         quality_metrics_output = quality_metrics_input
     }

@@ -15,9 +15,9 @@ workflow check_errors {
         def (probe_index, probe_data_file) = it
         return probe_data_file // use probe_data_file as the unique key
     }
-    def checked_output = check_module_output(module_name, error_check_input)
+    checked_output = check_module_output(module_name, error_check_input)
 
-    def errors_output = checked_output
+    errors_output = checked_output
     | filter {
       def errors_found = it[-1]
       return errors_found == 'true';
@@ -27,7 +27,7 @@ workflow check_errors {
     }
 
     emit:
-    done = checked_output
-    errors = errors_output
+    checked_output
+    errors_output
 
 }
