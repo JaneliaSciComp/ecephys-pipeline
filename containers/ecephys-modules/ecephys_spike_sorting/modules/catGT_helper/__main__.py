@@ -24,6 +24,9 @@ def run_CatGT(args):
     else:
         print('unknown system, cannot run CatGt')
 
+    # if args['catGT_helper_params']['probe_string'] == '1':
+    #     raise RuntimeError("!!!!!!!! THIS IS ARTIFICIAL")
+
     cmd_parts = list()
 
     cmd_parts.append(catGTexe_fullpath)

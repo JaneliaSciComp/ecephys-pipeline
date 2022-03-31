@@ -144,7 +144,7 @@ workflow process_probes_for_all_runs {
 
     def catgt_input = probe_config_output 
     def catgt_output
-    def errors_output = Channel.empty()
+    def errors_output = Channel.of()
     if (steps.contains('catGT_helper')) {
         def process_input = catgt_input | filter(processingErrorsFoundClosure('CatGT'))
         def process_output = process_input | run_catgt
