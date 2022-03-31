@@ -35,6 +35,10 @@ include {
     check_errors as check_depth_estimation_errors;
     check_errors as check_ks_errors;
     check_errors as check_ks_post_errors;
+    check_errors as check_noise_errors;
+    check_errors as check_psth_errors;
+    check_errors as check_mean_waveforms_errors;
+    check_errors as check_quality_errors;
 } from './check_errors_workflow'
 
 /**
@@ -140,12 +144,14 @@ workflow process_probes_for_all_runs {
 
     def catgt_input = probe_config_output 
     def catgt_output
-    def errors_output
+    def errors_output = Channel.empty()
     if (steps.contains('catGT_helper')) {
         def process_input = catgt_input | filter(processingErrorsFoundClosure('CatGT'))
         def process_output = process_input | run_catgt
+        def process_errors
 
-        (catgt_output, errors_output) = check_catgt_errors('catGT_helper', process_input, process_output)
+        (catgt_output, process_errors) = check_catgt_errors('catGT_helper', process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         catgt_output = catgt_input
     }
@@ -159,8 +165,10 @@ workflow process_probes_for_all_runs {
         } else {
             def process_input = depth_estimation_input | filter(processingErrorsFoundClosure('Depth Estimation'))
             def process_output = process_input | run_depth_estimation
+            def process_errors
 
-            (depth_estimation_output, errors_output) = check_depth_estimation_errors('depth_estimation', process_input, process_output)
+            (depth_estimation_output, process_errors) = check_depth_estimation_errors('depth_estimation', process_input, process_output)
+            errors_output.concat(process_errors)
         }
     } else {
         depth_estimation_output = depth_estimation_input
@@ -171,8 +179,10 @@ workflow process_probes_for_all_runs {
     if (steps.contains('kilosort_helper')) {
         def process_input = ks_input | filter(processingErrorsFoundClosure('Kilosort'))
         def process_output = process_input | run_kilosort
+        def process_errors
 
-        (ks_output, errors_output) = check_ks_errors(get_kilosort_helper_module(), process_input, process_output)
+        (ks_output, process_errors) = check_ks_errors(get_kilosort_helper_module(), process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         ks_output = ks_input
     }
@@ -182,8 +192,10 @@ workflow process_probes_for_all_runs {
     if (steps.contains('kilosort_postprocessing')) {
         def process_input = ks_post_input | filter(processingErrorsFoundClosure('Kilosort PostProcess'))
         def process_output = process_input | run_kilosort_post_process
+        def process_errors
 
-	(ks_post_output, errors_output) = check_ks_post_errors('kilosort_postprocessing', process_input, process_output)
+    	(ks_post_output, process_errors) = check_ks_post_errors('kilosort_postprocessing', process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         ks_post_output = ks_post_input
     }
@@ -191,9 +203,12 @@ workflow process_probes_for_all_runs {
     def noise_templates_input = ks_post_output
     def noise_templates_output
     if (steps.contains('noise_templates')) {
-        noise_templates_output = noise_templates_input
-        | filter(processingErrorsFoundClosure('Noise templates'))
-        | run_noise_templates
+        def process_input = noise_templates_input | filter(processingErrorsFoundClosure('Noise templates'))
+        def process_output = process_input | run_noise_templates
+        def process_errors
+
+        (noise_templates_output, process_errors) = check_noise_errors('noise_templates', process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         noise_templates_output = noise_templates_input
     }
@@ -201,9 +216,12 @@ workflow process_probes_for_all_runs {
     def psth_events_input = noise_templates_output
     def psth_events_output
     if (steps.contains('psth_events')) {
-        psth_events_output = psth_events_input
-        | filter(processingErrorsFoundClosure('PSTH Events'))
-        | run_psth_events
+        def process_input = psth_events_input | filter(processingErrorsFoundClosure('PSTH Events'))
+        def process_output = process_input | run_psth_events
+        def process_errors
+
+        (psth_events_output, process_errors) = check_psth_errors('psth_events', process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         psth_events_output = psth_events_input
     }
@@ -211,9 +229,12 @@ workflow process_probes_for_all_runs {
     def mean_waveforms_input = psth_events_output
     def mean_waveforms_output
     if (steps.contains('mean_waveforms')) {
-        mean_waveforms_output = mean_waveforms_input
-        | filter(processingErrorsFoundClosure('Mean Waveforms'))
-        | run_mean_waveforms
+        def process_input = mean_waveforms_input | filter(processingErrorsFoundClosure('Mean Waveforms'))
+        def process_output = process_input | run_mean_waveforms
+        def process_errors
+
+        (mean_waveforms_output, process_errors) = check_mean_waveforms_errors('mean_waveforms', process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         mean_waveforms_output = mean_waveforms_input
     }
@@ -221,9 +242,12 @@ workflow process_probes_for_all_runs {
     def quality_metrics_input = mean_waveforms_output
     def quality_metrics_output
     if (steps.contains('quality_metrics')) {
-        quality_metrics_output = quality_metrics_input
-        | filter(processingErrorsFoundClosure('Quality Metrics'))
-        | run_quality_metrics
+        def process_input = quality_metrics_input | filter(processingErrorsFoundClosure('Quality Metrics'))
+        def process_output = process_input | run_quality_metrics
+        def process_errors
+
+        (quality_metrics_output, process_errors) = check_quality_errors('quality_metrics', process_input, process_output)
+        errors_output.concat(process_errors)
     } else {
         quality_metrics_output = quality_metrics_input
     }
