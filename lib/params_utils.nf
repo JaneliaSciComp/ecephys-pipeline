@@ -8,7 +8,7 @@ def default_params() {
         containers_version: '1.0.2-tmp',
         runtime_opts: '',
         lsf_opts: '',
-        errorStrategy: 'terminate', // the default nextflow strategy
+        errorStrategy: 'ignore', // the default nextflow strategy use ignore instead of terminate
 
         probe_config_json: '', // config template used for probe processing
         tprime_config_json: '', // config template used for tprime which aggregates all probes
