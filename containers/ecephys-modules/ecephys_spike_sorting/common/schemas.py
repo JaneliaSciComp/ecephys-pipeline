@@ -4,6 +4,14 @@ from argschema.fields import Nested, InputDir, OutputDir, String, Float, Dict, I
 from marshmallow import validates
 
 
+class NonValidatedInputDir(InputDir):
+    """non validated InputDir
+    """
+
+    def _validate(self, value):
+        print('Input dir that does not have to exist', value)
+
+
 class EphysParams(DefaultSchema):
     sample_rate = Float(required=True, default=30000.0,
                         help='Sample rate of Neuropixels AP band continuous data')
