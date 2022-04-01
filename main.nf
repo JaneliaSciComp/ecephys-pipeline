@@ -99,7 +99,7 @@ workflow {
             probe_steps)
 
         if (probe_steps.contains('tPrime_helper')) {
-            def excluded_probes = probe_errors
+            def collected_errors = probe_errors
             | map {
                 def (
                     probe_index,
@@ -113,15 +113,14 @@ workflow {
                     triggers,
                     errors_found
                 ) = it
-                log.error "!!!!!!!!!!!!Errors while processing ${run_name}:${probe_data_file} using ${probe_config_file}"
-                return [ run_folder_name, run_name, gate ]
+                log.debug "Excluded from tPrime: $it"
+                return [run_folder_name, run_name, gate]
             }
             | unique
-            | collect
-
-            if (!excluded_probes.empty()) log.error "Runs for which tPrime will not be done because of previous errors: ", excluded_probes
+            | toList
 
             def tprime_inputs = probe_results
+            | combine(collected_errors.map { [it] }) // map collected errors so that they show as a single list
             | filter {
                 def (
                     probe_index,
@@ -133,9 +132,17 @@ workflow {
                     gate,
                     probe,
                     triggers,
-                    errors_found
+                    errors_found,
+                    excluded_probes
                 ) = it
-                return !([ run_folder_name, run_name, gate ] in excluded_probes)
+                def checked = [ run_folder_name, run_name, gate ]
+                def excluded = checked in excluded_probes
+                log.debug "Check $checked from $it against $excluded_probes -> $excluded"
+                if (excluded) {
+                    log.error "Exclude $it from tPrime"
+                    return false
+                } else
+                    return true
             }
             | groupTuple(by: [3,5,6,8]) // group by run_folder, run_name, gate, triggers
 
