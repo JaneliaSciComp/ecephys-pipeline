@@ -98,6 +98,8 @@ workflow {
             runs,
             probe_steps)
 
+        probe_errors.subscribe { log.error "Run processing error: $it" }
+
         if (probe_steps.contains('tPrime_helper')) {
             def collected_errors = probe_errors
             | map {
@@ -165,13 +167,14 @@ workflow {
         // if the recordings parameter is specified
         // read and process the recording specs from the specified file
         def recordings = prepare_recording_specs(read_json(file(final_params.recordings)))
-        def recording_results = process_all_recordings(
+        def (recording_results, recording_errors) = process_all_recordings(
             results_dir,
             config_dir,
             recordings,
             recording_steps)
         
         recording_results | view
+        recording_errors.subscribe { log.error "Recording processing error: $it" }
     }
 
 }
