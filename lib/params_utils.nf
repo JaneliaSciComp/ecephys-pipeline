@@ -5,7 +5,7 @@ include {
 def default_params() {
     [
         container_repo: 'registry.int.janelia.org/janeliascicomp',
-        containers_version: '1.0.2-tmp',
+        containers_version: '1.0.3',
         runtime_opts: '',
         lsf_opts: '',
         errorStrategy: 'ignore', // the default nextflow strategy use ignore instead of terminate
