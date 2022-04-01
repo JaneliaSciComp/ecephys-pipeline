@@ -2,6 +2,7 @@ include {
     extract_basename;
     extract_gate;
     extract_probe;
+    get_kilosort_helper_module;
     global_config;
     processingErrorsFoundClosure;
 } from '../lib/probe_utils'
