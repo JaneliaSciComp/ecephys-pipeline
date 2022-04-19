@@ -30,7 +30,7 @@ class PyKilosortHelperParameters(DefaultSchema):
     deterministic_mode =Bool(required=False, default=True, help='make output deterministic by sorting spikes before applying kernels')
     output_filename = String(required=False, allow_none=True, help='optionally save registered data to a new binary file')
     nblocks = Int(required=False, default=5, help='number of blocks used to segment the probe when tracking drift, 0 == do not track, 1 == rigid, > 1 == non-rigid')
-    doFilter = Int(required=False, default=1, help='filter if = 1, skip bp filtering if = 0')
+    doFilter = Int(required=False, default=0, help='filter if = 1, skip bp filtering if = 0')
 
 
 class InputParameters(ArgSchema):
