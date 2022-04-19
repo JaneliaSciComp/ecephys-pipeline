@@ -455,7 +455,8 @@ def CoordsToJRCString(chans, xCoord, yCoord, connected, shankInd, shankSep, base
         outFile.write(siteMapStr)
 
 
-def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd, shankSep, baseName, savePath, buildPath):
+def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd,
+                      NchanTOT, shankSep, baseName, savePath, buildPath):
 
     if buildPath:
         newName = baseName + '_kilosortChanMap.mat'
@@ -491,6 +492,7 @@ def CoordsToKSChanMap(chans, xCoord, yCoord, connected, shankInd, shankSep, base
         'xcoords': xCoord,
         'ycoords': yCoord,
         'kcoords': kcoords,
+        'NchanTOT': NchanTOT,
     }
     scipy.io.savemat(saveFullPath, mdict)
 
@@ -582,6 +584,7 @@ def MetaToCoords(metaFullPath,
             meta, elecInd, bankMask, shankInd, showPlot)
 
     baseName = metaFullPath.stem
+    NchanTOT = meta['nSavedChans']
 
     if outType > 0:
         if len(destFullPath) == 0:
@@ -597,10 +600,10 @@ def MetaToCoords(metaFullPath,
         }
 
         writeFunc = outputSwitch.get(outType)
-        writeFunc(chans, xCoord, yCoord, connected, shankInd,
+        writeFunc(chans, xCoord, yCoord, connected, shankInd, NchanTOT,
                   shankSep, baseName, savePath, buildPath)
 
-    return xCoord, yCoord, shankInd, connected
+    return xCoord, yCoord, shankInd, connected, NchanTOT
 
 
 # Sample calling program to get a metadata file from the user,

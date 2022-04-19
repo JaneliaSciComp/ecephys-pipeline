@@ -22,7 +22,7 @@ class PyKilosortHelperParameters(DefaultSchema):
     momentum = String(required=False, default='[20 400]', help='number of samples to average over (annealed from first to second value)')
     sig_datashift = Float(required=True, default=20.0, help='sigma for the Gaussian process smoothing')
     sigmaMask = Float(required=False, default=30, help='spatial constant in um for computing residual variance of spike')
-    fshigh = Float(required=False, default=300, help='high pass filter frequency')
+    fshigh = Float(required=False, allow_none=True, default=300, help='high pass filter frequency')
     fslow = Float(required=False, allow_none=True, help='low pass filter frequency')
     minfr_goodchannels = Float(required=False, default=0.1, help='minimum firing rate on a "good" channel (0 to skip)')
     whiteningRange = Int(required=False, default=32, help='number of channels to use for whitening each channel')
@@ -30,6 +30,7 @@ class PyKilosortHelperParameters(DefaultSchema):
     deterministic_mode =Bool(required=False, default=True, help='make output deterministic by sorting spikes before applying kernels')
     output_filename = String(required=False, allow_none=True, help='optionally save registered data to a new binary file')
     nblocks = Int(required=False, default=5, help='number of blocks used to segment the probe when tracking drift, 0 == do not track, 1 == rigid, > 1 == non-rigid')
+    doFilter = Int(required=False, default=1, help='filter if = 1, skip bp filtering if = 0')
 
 
 class InputParameters(ArgSchema):

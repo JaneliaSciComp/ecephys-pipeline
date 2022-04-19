@@ -26,12 +26,12 @@ def run_depth_estimation(args):
     
     metaName, binExt = os.path.splitext(args['ephys_params']['ap_band_file'])
     metaFullPath = Path(metaName + '.meta')  
-    
-    [xCoord, yCoord, shankInd, _] = MetaToCoords(metaFullPath,
-                                                 -1,
-                                                badChan=np.zeros((0), dtype='int'),
-                                                destFullPath='',
-                                                showPlot=False)
+
+    [xCoord, yCoord, shankInd, conn, nc] = MetaToCoords(metaFullPath,
+                                                        -1,
+                                                        badChan=np.zeros((0), dtype='int'),
+                                                        destFullPath='',
+                                                        showPlot=False)
 
     print('Computing surface channel...', repr(rawDataLfp.shape), repr(dataLfp.shape))
 

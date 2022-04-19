@@ -23,7 +23,7 @@ class Kilosort2Parameters(DefaultSchema):
     saveRez = Int(required=False, default=1, help='KS2 save rez.mat file')
     copy_fproc = Int(required=False, default=1, help='Copy processed binary to output directory')
     chanMap = String(required=False, default="'chanMap.mat'", help='path to channel map .mat file')
-    doFilter = Int(required=False, default=1, help='filter if = 1, skip bp filetering and CAR if = 0')
+    doFilter = Int(required=False, default=1, help='filter if = 1, skip bp filtering and CAR if = 0')
     fshigh = Float(required=False, default=150, help='frequency for high pass filtering')
     minfr_goodchannels = Float(required=False, default=0.1, help='minimum firing rate on a "good" channel (0 to skip)')
     Th = String(required=False, default='[10 4]', help='threshold (last pass can be lower')

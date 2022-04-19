@@ -229,7 +229,7 @@ def createInputJson(default_config,
             'whiteningRange': ks_whiteningRange,
             'nNeighbors': ks_nNeighbors,
             'doFilter': ks_doFilter,
-            'CAR': 1 if ks_car else 0
+            'CAR': 1 if ks_car else 0,
         }
     }
     dictionary['pykilosort_helper_params'] = default_config['pykilosort_helper_params'] | {
@@ -250,6 +250,7 @@ def createInputJson(default_config,
         'save_temp_files': ks_save_temp_files,
         'deterministic_mode': ks_deterministic,
         'nblocks': ks_nblocks,
+        'doFilter': ks_doFilter,
     }
     dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
         "include_pcs": include_pcs,

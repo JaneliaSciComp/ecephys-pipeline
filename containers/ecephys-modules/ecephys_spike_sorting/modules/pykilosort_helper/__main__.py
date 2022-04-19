@@ -22,22 +22,13 @@ def _string_as_list_param(dict, param, default_val):
         return ast.literal_eval(v if ',' in v else v.replace(' ', ',', 1))
 
 
-def _get_ks_params(meta_file, chanmap_file, params_dict):
+def _get_ks_params(meta_file, params_dict):
     """
     Create kilosort parameters from the probe metadata and
     from the input JSON
     """
-    probe = Bunch()
     probe_meta = readMeta(meta_file)
-    probe.xc, probe.yc, probe.kcoords, connected = MetaToCoords(
-        metaFullPath=meta_file,
-        outType=1,
-        destFullPath=str(chanmap_file))
-    probe.NchanTOT = int(probe_meta.get('nSavedChans'))
-    probe.chanMap = np.arange(np.size(connected))
-
     params = KilosortParams()
-    params.probe = probe
 
     params.preprocessing_function = params_dict.get('preprocessing_function', False)
     params.seed = params_dict.get('seed', 42)
@@ -47,10 +38,15 @@ def _get_ks_params(meta_file, chanmap_file, params_dict):
     params.do_whitening = True
     params.car = params_dict.get('car', False)
     params.fs = probe_meta.get('imSampRate', 30000)  # sample rate
-    params.n_channels = probe.NchanTOT
+    params.n_channels = int(probe_meta.get('nSavedChans'))
     params.save_temp_files = params_dict.get('save_temp_files', True)
-    params.fshigh = params_dict.get('fshigh')
-    params.fslow = params_dict.get('fslow', )
+    if params_dict.get('doFilter'):
+        params.fshigh = params_dict.get('fshigh')
+        params.fslow = params_dict.get('fslow')
+    else:
+        # skip filtering
+        params.fshigh = None
+        params.fslow = None
     params.minfr_goodchannels = params_dict.get('minfr_goodchannels', 0.1)
     params.genericSpkTh = params_dict.get('ThPre', 8.0)
     params.nblocks = params_dict.get('nblocks', 5)
@@ -129,12 +125,16 @@ def run_kilosort(args):
     meta_name = meta_file.stem
     chanmap_filename = meta_name + '_chanMap.mat'
     chanmap_file = os.path.join(ks_output_dir, chanmap_filename)
+    # generate chanMap file
+    MetaToCoords(metaFullPath=meta_file, outType=1,
+                 destFullPath=str(chanmap_file))
 
     pyks_params = args['pykilosort_helper_params']
-    ks_params = _get_ks_params(meta_file, chanmap_file, pyks_params)
+    ks_params = _get_ks_params(meta_file, pyks_params)
     run(input_file,
         output_dir=ks_output_dir,
         dir_path=ks_tmp_output_dir,
+        probe_path=str(chanmap_file),
         **ks_params)
 
     if pyks_params.get('copy_fproc'):

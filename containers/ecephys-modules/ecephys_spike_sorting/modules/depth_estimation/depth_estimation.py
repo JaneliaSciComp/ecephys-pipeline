@@ -68,7 +68,6 @@ def compute_channel_offsets(ap_data, ephys_params, params, xCoord, yCoord):
         'offsets' : np.median(offsets,1).astype('int16'),
         'vertical_pos' : 20*(np.floor(np.arange(0,numChannels)/2)+1).astype('int'),
         'horizontal_pos' : np.array([43,11,59,27] * int(numChannels / 4))
-
     }
 
     return output_dict
