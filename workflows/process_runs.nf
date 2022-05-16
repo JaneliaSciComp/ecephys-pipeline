@@ -64,7 +64,7 @@ workflow process_probes_for_all_runs {
         def first_trigger = probe_input[5]
         def last_trigger = probe_input[6]
         def triggers = "${first_trigger},${last_trigger}"
-        def prbfld = probe_input[7]
+        def no_prbfld = probe_input[7]
         def probe_type = params.probe_type
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
@@ -83,10 +83,10 @@ workflow process_probes_for_all_runs {
             '.ap.meta'
         )
         def probe_data_dir
-        if (prbfld == 1) {
-            probe_data_dir = "${data_dir}/${run_folder_name}/${probe_folder_name}"
-        } else {
+        if (no_prbfld == 1) {
             probe_data_dir = "${data_dir}/${run_folder_name}"
+        } else {
+            probe_data_dir = "${data_dir}/${run_folder_name}/${probe_folder_name}"
         }
         def probe_data_file = "${probe_data_dir}/${probe_data_name}"
         def probe_meta_file = "${probe_data_dir}/${probe_meta_name}"
@@ -354,9 +354,9 @@ def prepare_probes_inputs(data_dir, runs) {
         def run_folder_name = "${run_spec.name}_g${run_spec.gate}"
         def first_trigger = run_spec.triggers_range[0]
         def last_trigger = run_spec.triggers_range[1]
-        def prbfld = run_spec.prbfld
+        def no_prbfld = run_spec.no_prbfld
         if (first_trigger == -1 || last_trigger == -1) {
-            def trials = get_probe_trials(data_dir, run_spec.name, run_spec.gate, run_spec.probe_list.first(), prbfld)
+            def trials = get_probe_trials(data_dir, run_spec.name, run_spec.gate, run_spec.probe_list.first(), no_prbfld)
             if (first_trigger == -1) {
                 first_trigger = trials.min()
             }
@@ -379,21 +379,21 @@ def prepare_probes_inputs(data_dir, runs) {
                     region, // region
                     first_trigger, // first trigger
                     last_trigger, // last trigger
-                    run_spec.prbfld  // probe folders or not
+                    run_spec.no_prbfld  // probe folders or not
                 ]
             }
     }
 }
 
-def get_probe_trials(data_dir, run_name, gate, probe, prbfld) {
+def get_probe_trials(data_dir, run_name, gate, probe, no_prbfld) {
     def run_folder_name = "${run_name}_g${gate}"
     def probe_folder_name = "${run_folder_name}_imec${probe}"
 
     def probe_trials_dir
-    if (prbfld == 1) {
-       probe_trials_dir = file("${data_dir}/${run_folder_name}/${probe_folder_name}")
-    } else {
+    if (no_prbfld == 1) {
        probe_trials_dir = file("${data_dir}/${run_folder_name}")
+    } else {
+       probe_trials_dir = file("${data_dir}/${run_folder_name}/${probe_folder_name}")
     }
 
     def pfile_pattern = java.util.regex.Pattern.compile("${run_folder_name}_t(\\d+).imec${probe}.ap.bin")
