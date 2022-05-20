@@ -64,7 +64,7 @@ workflow process_probes_for_all_runs {
         def first_trigger = probe_input[5]
         def last_trigger = probe_input[6]
         def triggers = "${first_trigger},${last_trigger}"
-        def no_prbfld = probe_input[7]
+        def no_prbfld = probe_input[7] || params.no_prbfld
         def probe_type = params.probe_type
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
@@ -354,7 +354,7 @@ def prepare_probes_inputs(data_dir, runs) {
         def run_folder_name = "${run_spec.name}_g${run_spec.gate}"
         def first_trigger = run_spec.triggers_range[0]
         def last_trigger = run_spec.triggers_range[1]
-        def no_prbfld = run_spec.no_prbfld
+        def no_prbfld = run_spec.no_prbfld || params.no_prbfld
         if (first_trigger == -1 || last_trigger == -1) {
             def trials = get_probe_trials(data_dir, run_spec.name, run_spec.gate, run_spec.probe_list.first(), no_prbfld)
             if (first_trigger == -1) {

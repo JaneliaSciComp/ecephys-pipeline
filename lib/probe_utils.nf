@@ -61,13 +61,16 @@ def filter_config(config, fields) {
 //   probes to process, as a string, e.g. '0', '0,3', '0:3'
 //   brain regions, list of strings, one per probe, to set region specific params
 //           these strings must match a key in the param dictionaries above.
+//   no_prbfld: Set to 1 for old runs with no probe folders,
+//              set to 0 or leave it out for runs with probe folders
 // [
 //    {
 //       "name": "SC024_092319_NP1.0_Midbrain",
 //       "gateIndex": "0",
 //       "triggers": "0,9",
 //       "probes": "0,1",
-//       "regions": [ "cortex", "medulla" ]
+//       "regions": [ "cortex", "medulla" ],
+//       "no_prbfld": 1
 //    }
 // ]
 def prepare_run_specs(run_specs) {
@@ -78,6 +81,7 @@ def prepare_run_specs(run_specs) {
             probe_list: parse_probe_list(run_entry.probes),
             triggers_range: parse_triggers(run_entry.triggers),
             probe_region_list: run_entry.regions, // there must be one region for each entry from probe_list
+            no_prbfld: run_entry.no_prbfld
         ]
     }
 }

@@ -33,9 +33,12 @@ def default_params() {
 
         wait_for_config_sleep_secs: 2,
         wait_for_config_max_secs: 120,
+        wait_for_output_sleep_secs: 5,
+        wait_for_output_max_secs: 60,
 
         probe_type: 'NP1',
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
+        no_prbfld: false,
 
         with_pyks: true,
         with_ks_filter: false, // by default skip the filtering done by kilosort

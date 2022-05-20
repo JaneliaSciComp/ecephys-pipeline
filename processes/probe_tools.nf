@@ -161,7 +161,11 @@ process wait_for_config {
     script:
     """
     errors_found=true
-    SLEEP_SECS=${params.wait_for_config_sleep_secs} MAX_WAIT_SECS=${params.wait_for_config_max_secs} /app/scripts/waitforpaths.sh ${probe_config_file}
+
+    SLEEP_SECS=${params.wait_for_config_sleep_secs} \
+    MAX_WAIT_SECS=${params.wait_for_config_max_secs} \
+    /app/scripts/waitforpaths.sh ${probe_config_file}
+
     errors_found=false
     """
 }
@@ -632,20 +636,25 @@ process check_module_output {
           val(triggers),
           env(errors_found)
 
-   script:
-   def config_dir = file("${probe_config_file}").parent
-   def module_output_file = config_file(config_dir, probe_folder_name, module_name, 'output')
+    script:
+    def config_dir = file("${probe_config_file}").parent
+    def module_output_file = config_file(config_dir, probe_folder_name, module_name, 'output')
 
-   """
-   echo "Check output ${module_output_file} for ${module_name}: ${probe_data_file}"
-   if [[ -e "${module_output_file}" ]]; then
-      echo "Found ${module_output_file}"
-      errors_found=false
-   else
-      echo "No output found for ${module_name}: ${probe_data_file}"
-      errors_found=true
-   fi
-   """
+    """
+    echo "Check output ${module_output_file} for ${module_name}: ${probe_data_file}"
+
+    SLEEP_SECS=${params.wait_for_output_sleep_secs} \
+    MAX_WAIT_SECS=${wait_for_output_max_secs} \
+    /app/scripts/waitforpaths.sh ${module_output_file} || true
+
+    if [[ -e "${module_output_file}" ]]; then
+        echo "Found ${module_output_file}"
+        errors_found=false
+    else
+        echo "No output found for ${module_name}: ${probe_data_file}"
+        errors_found=true
+    fi
+    """
 }
 
 def create_arg(arg_flag, arg_value) {
