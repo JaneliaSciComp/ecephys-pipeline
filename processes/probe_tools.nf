@@ -644,7 +644,7 @@ process check_module_output {
     echo "Check output ${module_output_file} for ${module_name}: ${probe_data_file}"
 
     SLEEP_SECS=${params.wait_for_output_sleep_secs} \
-    MAX_WAIT_SECS=${wait_for_output_max_secs} \
+    MAX_WAIT_SECS=${params.wait_for_output_max_secs} \
     /app/scripts/waitforpaths.sh ${module_output_file} || true
 
     if [[ -e "${module_output_file}" ]]; then
