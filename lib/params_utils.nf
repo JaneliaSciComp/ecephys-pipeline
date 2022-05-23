@@ -5,7 +5,7 @@ include {
 def default_params() {
     [
         container_repo: 'registry.int.janelia.org/janeliascicomp',
-        containers_version: '1.0.3',
+        containers_version: '1.0.4',
         runtime_opts: '',
         lsf_opts: '',
         errorStrategy: 'ignore', // the default nextflow strategy use ignore instead of terminate
@@ -47,7 +47,7 @@ def default_params() {
         ks_csb_seed: 1,
         ks_lt_seed: 1,
         ks_copy_results: false,
-        ks_ver: '3.0',
+        ks_ver: '2.0',
         ks_remove_dups: 0,
         ks_save_rez: 1,
         ks_copy_fproc: 0,
