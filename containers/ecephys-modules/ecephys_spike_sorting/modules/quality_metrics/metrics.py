@@ -337,16 +337,8 @@ def calculate_pc_metrics(spike_clusters,
         chan_dist = np.sqrt(np.square(channel_pos[:,0] - channel_pos[peak_channel,0]) + \
                             np.square(channel_pos[:,1] - channel_pos[peak_channel,1]) )
 
-# OLDER calculatioon assuming linear array
-#        half_spread_down = peak_channel \
-#            if peak_channel < half_spread \
-#            else half_spread
-#
-#        half_spread_up = np.max(pc_feature_ind) - peak_channel \
-#            if peak_channel + half_spread > np.max(pc_feature_ind) \
-#            else half_spread
-
         # which templates have pcs on the peak channel of the current unit?
+        # channel index -- which of the channel swithin the set for a single template -- i snot used
         templates_for_channel, channel_index = np.unravel_index(np.where(pc_feature_ind.flatten() == peak_channel)[0], pc_feature_ind.shape)
 
 
@@ -354,13 +346,7 @@ def calculate_pc_metrics(spike_clusters,
         units_for_channel = np.zeros((0,),dtype='uint16')
         for j in templates_for_channel:
             units_for_channel = np.append(units_for_channel, np.where(template_ids==j))
-                  
-               
-# OLDER calculatioon assuming linear array        
-#        units_in_range = (peak_channels[units_for_channel] >= peak_channel - half_spread_down) * \
-#                       (peak_channels[units_for_channel] <= peak_channel + half_spread_up)
-                        
-        
+
         # of those units that have pc overlap, which have their peak channel 
         # within range of the current unit?              
         units_in_range = np.where( chan_dist[peak_channels[units_for_channel]] < max_radius_um )[0]
@@ -372,33 +358,27 @@ def calculate_pc_metrics(spike_clusters,
         if len(units_in_range) > 1 :
 
             units_for_channel = np.asarray(units_for_channel[units_in_range])
-            
-            channel_index = channel_index[units_in_range]
-    
-# OLDER calculatioon assuming linear array
-#           channels_to_use = np.arange(peak_channel - half_spread_down, peak_channel + half_spread_up + 1)
-            
+
             channels_to_use = np.where(chan_dist < max_radius_um)[0]
-    
-    
+
             spike_counts = np.zeros(units_for_channel.shape, dtype = 'int')
-    
+
             for idx2, cluster_id2 in enumerate(units_for_channel):
                 spike_counts[idx2] = np.sum(spike_clusters == cluster_id2)
-                
+
             this_unit_idx = np.where(units_for_channel == cluster_id)[0]
-    
+
             # calculate how many spikes from this unit will be used
             if spike_counts[this_unit_idx] > max_spikes_for_cluster:
                 relative_counts = spike_counts / spike_counts[this_unit_idx] * max_spikes_for_cluster
             else:
                 relative_counts = spike_counts
-            
+
             all_pcs = np.zeros((0, pc_features.shape[1], channels_to_use.size)) # dtype = default, double
             all_labels = np.zeros((0,), dtype='int')
-                
+
             for idx2, cluster_id2 in enumerate(units_for_channel):
-                
+
                 subsample = int(relative_counts[idx2]) # how many spikes to use from this unit
                 index_mask = make_index_mask(spike_clusters, cluster_id2, min_num = 0, max_num = subsample)
                 pcs = get_unit_pcs(pc_features, index_mask, spike_templates, channels_to_use, pc_feature_ind)
@@ -406,7 +386,7 @@ def calculate_pc_metrics(spike_clusters,
 
                 all_pcs = np.concatenate((all_pcs, pcs),0)
                 all_labels = np.concatenate((all_labels, labels),0) 
-                
+
             all_pcs = np.reshape(all_pcs, (all_pcs.shape[0], pc_features.shape[1]*channels_to_use.size))
             num_pcs = all_pcs.shape[0]
             pcs_for_this_unit = all_pcs[all_labels == cluster_id,:].shape[0]   
@@ -416,12 +396,10 @@ def calculate_pc_metrics(spike_clusters,
             num_pcs = 0
             pcs_for_this_unit = 0
             pcs_for_other_units = 0
-        
+
         if num_pcs > 10 and pcs_for_this_unit > 5 and pcs_for_other_units > 5:
             isolation_distances[cluster_id], l_ratios[cluster_id] = mahalanobis_metrics(all_pcs, all_labels, cluster_id)
-
             d_primes[cluster_id] = lda_metrics(all_pcs, all_labels, cluster_id)
-
             nn_hit_rates[cluster_id], nn_miss_rates[cluster_id] = nearest_neighbors_metrics(all_pcs, all_labels, cluster_id, max_spikes_for_nn, n_neighbors)
         else:
             isolation_distances[cluster_id] = np.nan
@@ -440,7 +418,6 @@ def calculate_silhouette_score(spike_clusters,
                                  total_spikes):
     
     # total_spikes = number of spikes to sample, given in the metrics params
-
     random_spike_inds = np.random.permutation(spike_clusters.size)
     random_spike_inds = random_spike_inds[:total_spikes]
     num_pc_features = pc_features.shape[1]
