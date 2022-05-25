@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.3 as builder
+FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.4 as builder
 
 WORKDIR /tmp
 RUN git clone \
