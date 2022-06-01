@@ -36,7 +36,7 @@ def default_params() {
             cortex: '0.4,0.1,0.02',
             medulla: '0.4,0.1,0.02',
             thalamus: '0.4,0.1,0.02',
-        ]
+        ],
 
         wait_for_config_sleep_secs: 2,
         wait_for_config_max_secs: 120,
