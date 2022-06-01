@@ -31,6 +31,13 @@ def default_params() {
             thalamus: '[9,9]',
         ],
 
+        gfix_by_region: [
+            default_value: '0.4,0.1,0.02',
+            cortex: '0.4,0.1,0.02',
+            medulla: '0.4,0.1,0.02',
+            thalamus: '0.4,0.1,0.02',
+        ]
+
         wait_for_config_sleep_secs: 2,
         wait_for_config_max_secs: 120,
         wait_for_output_sleep_secs: 5,
@@ -38,7 +45,7 @@ def default_params() {
 
         probe_type: 'NP1',
         probe_sync_ch_values: '-1,6,500', // used for building extract string for SYNC channel
-        no_prbfld: false,
+        no_prbfld: 0,
 
         with_pyks: true,
         with_ks_filter: false, // by default skip the filtering done by kilosort
@@ -78,6 +85,7 @@ def default_params() {
         catgt_cmd_args: '-prb_fld -out_prb_fld -apfilter=butter,12,300,10000 -gfix=0,0.10,0.02',
         catgt_loccar_min: 40,
         catgt_loccar_max: 160,
+        catgt_do_gfix: false,
 
         event_ex_cmd_arg: 'XD=4,1,50',
         c_waves_snr_um: 160,

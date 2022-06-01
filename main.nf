@@ -35,6 +35,7 @@ process_params = final_params +
     [
         ks_thresholds_by_region: get_map_or_default(final_params, 'ks_thresholds_by_region', [default_value: '[9,9]']),
         ref_per_ms_by_region: get_map_or_default(final_params, 'ref_per_ms_by_region', [default_value: 2.0]),
+        gfix_by_region: get_map_or_default(final_params, 'gfix_by_region', [default_value: '0.4,0.1,0.02']),
         catgt_container: catgt_modules_container_param(final_params),
         cwaves_container: cwaves_modules_container_param(final_params),
         ecephys_modules_container: ecephys_modules_container_param(final_params),

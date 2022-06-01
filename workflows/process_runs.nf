@@ -64,7 +64,7 @@ workflow process_probes_for_all_runs {
         def first_trigger = probe_input[5]
         def last_trigger = probe_input[6]
         def triggers = "${first_trigger},${last_trigger}"
-        def no_prbfld = probe_input[7] || params.no_prbfld
+        def no_prbfld = probe_input[7] == 1 || params.no_prbfld == 1 ? 1 : 0
         def probe_type = params.probe_type
         def run_folder_name = get_run_folder_name(run_name, gate)
         def probe_folder_name = get_probe_folder_name(run_name, gate, probe)
@@ -93,6 +93,7 @@ workflow process_probes_for_all_runs {
         def probe_config_file = global_config("${config_dir}/${run_folder_name}/${probe_folder_name}", probe_folder_name)
         def probe_ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def probe_ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
+        def probe_gfix = "'${get_key_value_or_default_key(params.gfix_by_region, region, 'default_value')}'"
         def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_ks2"
         def probe_ks_working_dir = "${params.ks_working_dir}/${probe_folder_name}"
         def probe_stream_params
@@ -110,7 +111,12 @@ workflow process_probes_for_all_runs {
             probe_catgt_extract_string = "'${probe_sync_extract_flags}'"
         }
         def catgt_cmd_args = get_hyphenated_value_param(params, 'catgt_cmd_args')
-        def probe_catgt_cmd = "'${catgt_cmd_args}'"
+        def probe_catgt_cmd
+        if (params.catgt_do_gfix) {
+            probe_catgt_cmd = "'${catgt_cmd_args} -gfix=${probe_gfix}'"
+        } else {
+            probe_catgt_cmd = "'${catgt_cmd_args}'"
+        }
         def im_ex_list = ''
         def ni_ex_list = "'${ni_extract_cmd_args}'"
         def to_stream_sync_params = params.to_stream_sync_cmd_args
@@ -354,7 +360,7 @@ def prepare_probes_inputs(data_dir, runs) {
         def run_folder_name = "${run_spec.name}_g${run_spec.gate}"
         def first_trigger = run_spec.triggers_range[0]
         def last_trigger = run_spec.triggers_range[1]
-        def no_prbfld = run_spec.no_prbfld || params.no_prbfld
+        def no_prbfld = run_spec.no_prbfld == 1 || params.no_prbfld == 1 ? 1 : 0
         if (first_trigger == -1 || last_trigger == -1) {
             def trials = get_probe_trials(data_dir, run_spec.name, run_spec.gate, run_spec.probe_list.first(), no_prbfld)
             if (first_trigger == -1) {
@@ -379,7 +385,7 @@ def prepare_probes_inputs(data_dir, runs) {
                     region, // region
                     first_trigger, // first trigger
                     last_trigger, // last trigger
-                    run_spec.no_prbfld  // probe folders or not
+                    no_prbfld  // probe folders or not
                 ]
             }
     }
