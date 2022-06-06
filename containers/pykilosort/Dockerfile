@@ -1,11 +1,11 @@
-FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.4 as builder
+ARG ECEPHYS_VERSION
+FROM registry.int.janelia.org/ecephys/ecephys-modules:${ECEPHYS_VERSION} as builder
 
 WORKDIR /tmp
-RUN git clone \
-    https://github.com/jenniferColonell/pykilosort.git \
-    --branch ibl_prod \
-    --single-branch \
-    pykilosort
+RUN mkdir pykilosort && \
+    cd pykilosort && \
+    git clone https://github.com/jenniferColonell/pykilosort.git --branch ibl_prod  . && \
+    git checkout -b pyks-latest 6f8cc73
 
 FROM oraclelinux:8
 

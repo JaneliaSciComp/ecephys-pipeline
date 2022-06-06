@@ -2,9 +2,15 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 
 source ${DIR}/container-versions.sh
 
-docker push registry.int.janelia.org/janeliascicomp/ecephys-modules:${ECEPHYS_CONTAINERS_VERSION}
-docker push registry.int.janelia.org/janeliascicomp/catgt:${ECEPHYS_CONTAINERS_VERSION}
-docker push registry.int.janelia.org/janeliascicomp/cwaves:${ECEPHYS_CONTAINERS_VERSION}
-docker push registry.int.janelia.org/janeliascicomp/tprime:${ECEPHYS_CONTAINERS_VERSION}
-docker push registry.int.janelia.org/janeliascicomp/kilosort:${ECEPHYS_CONTAINERS_VERSION}
-docker push registry.int.janelia.org/janeliascicomp/pykilosort:${ECEPHYS_CONTAINERS_VERSION}
+RUNCMD=
+if [[ "$1" == "-n" ]]; then
+    RUNCMD=echo
+fi
+
+
+$RUNCMD docker push registry.int.janelia.org/ecephys/ecephys-modules:${ECEPHYS_VERSION}
+$RUNCMD docker push registry.int.janelia.org/ecephys/catgt:${CATGT_VERSION}
+$RUNCMD docker push registry.int.janelia.org/ecephys/cwaves:${CWAVES_VERSION}
+$RUNCMD docker push registry.int.janelia.org/ecephys/tprime:${TPRIME_VERSION}
+$RUNCMD docker push registry.int.janelia.org/ecephys/kilosort:${KILOSORT_VERSION}
+$RUNCMD docker push registry.int.janelia.org/ecephys/pykilosort:${PYKILOSORT_VERSION}

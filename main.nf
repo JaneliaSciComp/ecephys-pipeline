@@ -16,12 +16,6 @@ include {
     get_value_or_default;
     get_list_or_default;
     get_map_or_default;
-    catgt_modules_container_param;
-    cwaves_modules_container_param;
-    ecephys_modules_container_param;
-    kilosort_container_param;
-    pykilosort_container_param;
-    tprime_modules_container_param
 } from './lib/params_utils'
 
 include {
@@ -36,12 +30,6 @@ process_params = final_params +
         ks_thresholds_by_region: get_map_or_default(final_params, 'ks_thresholds_by_region', [default_value: '[9,9]']),
         ref_per_ms_by_region: get_map_or_default(final_params, 'ref_per_ms_by_region', [default_value: 2.0]),
         gfix_by_region: get_map_or_default(final_params, 'gfix_by_region', [default_value: '0.4,0.1,0.02']),
-        catgt_container: catgt_modules_container_param(final_params),
-        cwaves_container: cwaves_modules_container_param(final_params),
-        ecephys_modules_container: ecephys_modules_container_param(final_params),
-        kilosort_container: kilosort_container_param(final_params),
-        pykilosort_container: pykilosort_container_param(final_params),
-        tprime_container: tprime_modules_container_param(final_params),
     ]
 
 probe_steps = get_list_or_default(

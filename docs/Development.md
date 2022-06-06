@@ -12,8 +12,8 @@ Mathworks' instructions are for building a docker image based on ubuntu:18 but w
 ```
 docker build \
     -t matlab-oraclelinux8:2020b \
-    -t registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b \
-    --build-arg LICENSE_SERVER=27000@e05u04.int.janelia.org \
+    -t registry.int.janelia.org/ecephys/matlab-oraclelinux8:2020b \
+    --build-arg LICENSE_SERVER=27000@vm7142.int.janelia.org \
     containers/matlab-dockerfile-oraclelinux8
 ```
 
@@ -21,7 +21,7 @@ docker build \
 This is the container used for running Kilosort module and it requires a Matlab license to run it
 ```
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/kilosort:1.0 \
+    -t registry.int.janelia.org/ecephys/kilosort:1.0 \
     -t kilosort:1.0 \
     containers/kilosort
 ```
@@ -34,7 +34,7 @@ This is used for running CatGT module and it contains the CatGT tool developed b
 
 ```
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/catgt:1.0 \
+    -t registry.int.janelia.org/ecephys/catgt:1.0 \
     -t catgt:1.0 \
     containers/catgt
 ```
@@ -43,7 +43,7 @@ docker build \
 This is used for running mean waveforms module and it contains the C_Wave tool developed by Bill Kharsh available [here](https://billkarsh.github.io/SpikeGLX/)
 ```
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/cwaves:1.0 \
+    -t registry.int.janelia.org/ecephys/cwaves:1.0 \
     -t cwaves:1.0 \
     containers/cwaves
 ```
@@ -52,7 +52,7 @@ docker build \
 This is used for running TPrime module and it contains the TPrime tool developed by Bill Kharsh available [here](https://billkarsh.github.io/SpikeGLX/)
 ```
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/tprime:1.0 \
+    -t registry.int.janelia.org/ecephys/tprime:1.0 \
     -t tprime:1.0 \
     containers/tprime
 ```
@@ -61,7 +61,7 @@ docker build \
 This is a generic container that contains all Ecephys modules but no other non-python based tools
 ```
 docker build \
-    -t registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0 \
+    -t registry.int.janelia.org/ecephys/ecephys-modules:1.0 \
     -t ecephys-modules:1.0 \
     containers/ecephys-modules
 ```

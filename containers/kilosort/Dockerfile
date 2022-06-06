@@ -1,15 +1,18 @@
-FROM registry.int.janelia.org/janeliascicomp/ecephys-modules:1.0.4 as builder
+ARG ECEPHYS_VERSION
+FROM registry.int.janelia.org/ecephys/ecephys-modules:${ECEPHYS_VERSION} as builder
 
 WORKDIR /tmp
 RUN mkdir kilosort-1.0 && \
     cd kilosort-1.0 && \
     git clone https://github.com/cortex-lab/KiloSort.git . && \
+    git checkout -b 1.0 cd040da && \
     cd ..
 
 # Checkout the modified version of kilosort2
 RUN mkdir kilosort-2.0 && \
     cd kilosort-2.0 && \
     git clone https://github.com/jenniferColonell/KS20_for_preprocessed_data.git . && \
+    git checkout -b 2.0 6e0df82 && \
     cd ..
 
 # Checkout tag 2.5 from Kilosort2 repo
@@ -22,11 +25,12 @@ RUN mkdir kilosort-2.5 && \
 RUN mkdir kilosort-3.0 && \
     cd kilosort-3.0 && \
     git clone https://github.com/jenniferColonell/Kilosort2.git . && \
+    git checkout -b 3.0 f16dda7 && \
     cd ..
 
 RUN git clone https://github.com/kwikteam/npy-matlab.git npy-matlab
 
-FROM registry.int.janelia.org/janeliascicomp/matlab-oraclelinux8:2020b
+FROM janeliascicomp/matlab-oraclelinux8:2020b
 
 USER root
 
