@@ -12,7 +12,7 @@ RUN mkdir kilosort-1.0 && \
 RUN mkdir kilosort-2.0 && \
     cd kilosort-2.0 && \
     git clone https://github.com/jenniferColonell/KS20_for_preprocessed_data.git . && \
-    git checkout -b 2.0 6e0df82 && \
+    git checkout -b 2.0 9aa7829 && \
     cd ..
 
 # Checkout tag 2.5 from Kilosort2 repo
