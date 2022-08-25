@@ -73,6 +73,7 @@ def main(argv):
     parser.add_argument('--sync_period', type=float)
     parser.add_argument('--to_stream_sync_params')
     parser.add_argument('--ni_stream_sync_params')
+    parser.add_argument('--ks_output_tag')
 
     args = parser.parse_args()
 
@@ -161,6 +162,7 @@ def main(argv):
         sync_period=args.sync_period,
         toStream_sync_params=args.to_stream_sync_params,
         niStream_sync_params=args.ni_stream_sync_params,
+        ks_output_tag=args.ks_output_tag,
         tPrime_3A=False,
         toStream_path_3A=' ',
         fromStream_list_3A=list()

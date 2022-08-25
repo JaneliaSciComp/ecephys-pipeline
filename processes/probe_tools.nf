@@ -48,7 +48,8 @@ process create_probe_config {
           val(im_ex_list),
           val(ni_ex_list),
           val(to_stream_sync_params),
-          val(ni_stream_sync_params)
+          val(ni_stream_sync_params),
+	  val(ks_output_tag)
 
     output:
     tuple val(probe_index),
@@ -59,7 +60,7 @@ process create_probe_config {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers),
+          val(triggers),	  
           env(errors_found)
 
     script:
@@ -108,7 +109,7 @@ process create_probe_config {
         create_arg('--catgt_loccar_max', params.catgt_loccar_max),
         create_arg('--catgt_cmd', probe_catgt_cmd),
         create_arg('--catgt_extract_string', probe_catgt_extract_string),
-        create_arg('--catgt_output_dir', catgt_output_dir),
+        create_arg('--catgt_output_dir', catgt_output_dir),	
         create_arg('--event_ex_param_str', params.event_ex_cmd_arg),
         create_arg('--c_waves_snr_um', params.c_waves_snr_um),
         create_arg('--ref_per_ms', probe_ref_per_ms),
@@ -116,7 +117,8 @@ process create_probe_config {
         create_arg('--ni_ex_list', ni_ex_list),
         create_arg('--sync_period', params.sync_period),
         create_arg("--to_stream_sync_params", to_stream_sync_params),
-        create_arg("--ni_stream_sync_params", ni_stream_sync_params)
+        create_arg("--ni_stream_sync_params", ni_stream_sync_params),
+	create_arg("--ks_output_tag", ks_output_tag)
     ]
     def args = args_list.join(' ')
     """
@@ -197,7 +199,7 @@ process run_catgt {
           val(run_name),
           val(gate),
           val(probe),
-          val(triggers),
+          val(triggers),	  
           env(errors_found)
 
     script:
@@ -239,11 +241,21 @@ process run_catgt {
     def json_all_config = to_json(catgt_input_config)
     after_catgt_input_config_file.write(json_all_config)
 
-    """
-    ${code}
-    mv ${probe_config_file} ${catgt_input_config_file}
-    mv ${after_catgt_input_config_file} ${probe_config_file}
-    """
+    if (params.catgt_skip) {
+ 	"""
+	echo 'skipping catgt'
+	mv ${probe_config_file} ${catgt_input_config_file}
+    	mv ${after_catgt_input_config_file} ${probe_config_file}
+	errors_found=false
+        """
+    }
+    else {  
+    	"""
+        ${code}	
+    	mv ${probe_config_file} ${catgt_input_config_file}
+    	mv ${after_catgt_input_config_file} ${probe_config_file}
+    	"""
+    }
 }
 
 process run_depth_estimation {

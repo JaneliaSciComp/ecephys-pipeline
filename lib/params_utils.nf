@@ -58,6 +58,7 @@ def default_params() {
         pyks_alf: '',
         ks_csb_seed: 1,
         ks_lt_seed: 1,
+	ks_output_tag: 'ks2',
         ks_copy_results: false,
         ks_ver: '2.0',
         ks_remove_dups: 0,
@@ -86,6 +87,7 @@ def default_params() {
         ni_present: true,
         ni_extract_cmd_args: '-XA=0,1,3,500 -XA=1,3,3,0 -XD=4,1,50 -XD=4,2,1.7 -XD=4,3,5',
 
+	catgt_skip: false, //when true, skip creation of catgt output (for rerunning)
         catgt_car_mode: 'gblcar', // must be 'None', 'gblcar', or 'loccar'
         catgt_cmd_args: '-prb_fld -out_prb_fld -apfilter=butter,12,300,10000 -gfix=0,0.10,0.02',
         catgt_loccar_min: 40,
@@ -163,12 +165,20 @@ def get_map_or_default(Map ps, String param, Map default_map) {
 
 def get_hyphenated_value_param(Map ps, String param) {
     def value = ps[param]
-    if (value && value[0] != '-') {
-        "-${value}"
-    } else {
-        value
+    if (value instanceof String) {
+        if (value.size() > 0 {
+            if (value[0] != '-')
+                "-${value}"
+            else
+                value
+        }
+        else
+            value
     }
+    else
+        value
 }
+
 
 def get_key_value_or_default_key(Map m, Object k, Object default_key) {
     if (m.containsKey(k)) {
