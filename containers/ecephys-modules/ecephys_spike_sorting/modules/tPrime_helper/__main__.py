@@ -38,20 +38,26 @@ def call_TPrime(args):
     
     run_directory = os.path.join(catGT_dest, run_dir_name) # extracted edge files for aux data reside in run directory
 
-    output_tag = args['tPrime_helper_params']['ks_output_tag']
+    output_tag = '_' + args['tPrime_helper_params']['ks_output_tag']
 
     # build list of from streams
     #   all streams for which sync edges have been extracted
 
     toStream_params = args['tPrime_helper_params']['toStream_sync_params']
-    ni_sync_params = args['tPrime_helper_params']['ni_sync_params']
-    
+   
     sync_period = args['tPrime_helper_params']['sync_period']
-
-    ni_ex_string = args['tPrime_helper_params']['ni_ex_list']       
+    
+    ni_sync_params = args['tPrime_helper_params']['ni_sync_params']
+    ni_ex_string = args['tPrime_helper_params']['ni_ex_list']   
+    if ('X' in ni_sync_params or 'x' in ni_sync_params) and ('X' in ni_ex_string or 'x' in ni_ex_string):
+        ni_valid = True
+    else:
+        ni_valid = False
+    
     ni_ex_list = list()
     
-    if ni_ex_string != '':
+    
+    if ni_valid:
         # find start points all instances of '-X' in ni_ex_string
         ni_str_list = ni_ex_string.split(' ')
         nstr = len(ni_str_list)
@@ -79,8 +85,9 @@ def call_TPrime(args):
     im_ex_string = args['tPrime_helper_params']['im_ex_list']
     im_ex_list = list()
     
-    if im_ex_string != '':
-        # find start points all instances of '-X' in ni_ex_string
+    if ('SY' in im_ex_string) or ('sy' in im_ex_string):
+        # if im_ex_string is valid (neither empty nor 'None')
+        # find substrings staring with -
         im_str_list = im_ex_string.split(' ')
         nstr = len(im_str_list)
         for i in range(nstr):
@@ -96,8 +103,6 @@ def call_TPrime(args):
     events_list = list()     # list of files of event times to translate to reference
     from_stream_index = list()     # list of indicies matching event files to a from stream
     out_list = list()    # list of paths for output files, one per event file
-    
-    c_type, c_prb, ni_sync_ex_name = catGT_ex_params_from_str(ni_sync_params)
 
     if toStream_type == 'SY':
         
@@ -119,7 +124,7 @@ def call_TPrime(args):
         toStream_path = os.path.join(run_directory, prb_dir, toStream_name)
         
         # convert events in the toStream to sec; they will not be adjusted
-        ks_outdir = 'imec' + str(toStream_prb) + '_' + output_tag
+        ks_outdir = 'imec' + str(toStream_prb) + output_tag
         st_file = os.path.join(run_directory, prb_dir, ks_outdir, 'spike_times.npy')
         # convert to seconds; if bNPY = True, returned file is an npy file
         # otherwise, text.
@@ -166,10 +171,14 @@ def call_TPrime(args):
             out_file = os.path.join(run_directory, prb_dir,ks_outdir, out_name)
             out_list.append(out_file)
     
-        # get index for sync channel in NI. If none or not found, no ni
-        # edge files will be added to events_list
-        matchI = [i for i, value in enumerate(ni_ex_list) if ni_sync_params in value]
+        # valid_ni => there is valid ni_sync_params string (contains X or x)
+        # if valid_ni, check if ni_sync_params is included in ni_ex_list
+        # If not, or if valid_ni is False, skip all NI alignment
+        matchI = list()
+        if (ni_valid):
+            matchI = [i for i, value in enumerate(ni_ex_list) if ni_sync_params in value]
         
+        print('length of list of matches: ' + repr(len(matchI)))
         if len(matchI) == 1:
             # get params
             # build match string to find file of NI sync edges
@@ -203,7 +212,7 @@ def call_TPrime(args):
                 out_file = os.path.join(run_directory, c_output_name)
                 out_list.append(out_file) 
         else:
-            print('No NI sync channel found')
+            print('No NI alignment')
 
                 
     else:

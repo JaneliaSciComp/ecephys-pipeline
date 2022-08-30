@@ -186,7 +186,8 @@
         "tPrime_3A": false,
         "tPrime_path": "/app/TPrime",
         "toStream_path_3A": " ",
-        "toStream_sync_params": "SY=0,-1,6,500"
+        "toStream_sync_params": "SY=0,-1,6,500",
+        "ks_output_tag": "ks2"
     },
     "waveform_metrics": {
         "waveform_metrics_file": "waveform_metrics.csv"

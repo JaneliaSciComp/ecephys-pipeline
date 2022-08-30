@@ -6,7 +6,7 @@ def default_params() {
     [
         catgt_container: 'registry.int.janelia.org/ecephys/catgt:2.5',
         cwaves_container: 'registry.int.janelia.org/ecephys/cwaves:1.9',
-        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.4',
+        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.5',
         kilosort_container: 'registry.int.janelia.org/ecephys/kilosort:1.0.4',
         pykilosort_container: 'registry.int.janelia.org/ecephys/pykilosort:1.0.4',
         tprime_container: 'registry.int.janelia.org/ecephys/tprime:1.7',
@@ -166,7 +166,7 @@ def get_map_or_default(Map ps, String param, Map default_map) {
 def get_hyphenated_value_param(Map ps, String param) {
     def value = ps[param]
     if (value instanceof String) {
-        if (value.size() > 0 {
+        if (value.size() > 0) {
             if (value[0] != '-')
                 "-${value}"
             else

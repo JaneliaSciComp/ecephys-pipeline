@@ -99,7 +99,7 @@ workflow process_probes_for_all_runs {
         def probe_stream_params
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
         def probe_catgt_extract_string
-        def ni_extract_cmd_args = get_hyphenated_value_param(params, 'ni_extract_cmd_args')
+	def ni_extract_cmd_args = params.ni_present ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
         def lf_flag = params.process_lf ? '-lf' : ''
         if (probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
@@ -118,9 +118,9 @@ workflow process_probes_for_all_runs {
             probe_catgt_cmd = "'${catgt_cmd_args}'"
         }
         def im_ex_list = ''
-        def ni_ex_list = "'${ni_extract_cmd_args}'"
+        def ni_ex_list = params.has_aux_data ? "'${ni_extract_cmd_args}'" : 'None'
         def to_stream_sync_params = params.to_stream_sync_cmd_args
-        def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
+        def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : 'None'
 	def catgt_skip = params.catgt_skip
         def ks_output_tag = params.ks_output_tag
         def r = [
@@ -149,7 +149,7 @@ workflow process_probes_for_all_runs {
             ni_ex_list,
             to_stream_sync_params,
             ni_stream_sync_params,
-	    ks_output_tag
+	    ks_output_tag,
         ]
         log.debug "Probe config params: $r"
         r
@@ -306,9 +306,10 @@ workflow process_tprime {
             }
             .join(' ')
         def im_ex_list = "'${probes_sync_ch_args}'"
-        def ni_ex_list = "'${params.ni_extract_cmd_args}'"
+        def ni_ex_list = params.has_aux_data ? "'${ni_extract_cmd_args}'" : 'None'
         def to_stream_sync_params = params.to_stream_sync_cmd_args
-        def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : ''
+        def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : 'None'
+        def ks_output_tag = params.ks_output_tag
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
 
         def r = [
@@ -337,6 +338,7 @@ workflow process_tprime {
             ni_ex_list, // ni_ex_list
             to_stream_sync_params,
             ni_stream_sync_params,
+	    ks_output_tag,
         ]
         log.debug "TPrime config params: $r"
         r
