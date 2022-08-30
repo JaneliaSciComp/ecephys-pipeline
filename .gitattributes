@@ -1,5 +1,5 @@
-# Check all text files in with lf and out with crlf endings
-* text eol=crlf
+# Check all text files in and out with lf endings
+* text eol=lf
 
 # These are explicitly not text
 *.png binary
