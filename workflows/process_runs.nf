@@ -306,6 +306,7 @@ workflow process_tprime {
             }
             .join(' ')
         def im_ex_list = "'${probes_sync_ch_args}'"
+	def ni_extract_cmd_args = params.ni_present ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
         def ni_ex_list = params.has_aux_data ? "'${ni_extract_cmd_args}'" : 'None'
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : 'None'
