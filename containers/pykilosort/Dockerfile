@@ -5,7 +5,7 @@ WORKDIR /tmp
 RUN mkdir pykilosort && \
     cd pykilosort && \
     git clone https://github.com/jenniferColonell/pykilosort.git --branch ibl_prod  . && \
-    git checkout -b pyks-latest 6f8cc73
+    git checkout -b pyks-latest c50828f
 
 FROM oraclelinux:8
 

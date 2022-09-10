@@ -61,9 +61,10 @@ workflow process_all_recordings {
         def gate = extract_gate(recording_name)
         def probe = extract_probe(recording_name)
         def ks_output_dir = "${results_dir}/${recording_basename}/imec${probe}_ks2"
-        def ks_working_dir = "${params.ks_working_dir}/${recording_basename}_imec${probe}_ks2"
+        def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_${params.ks_output_tag}"
         def ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
+	def ks_output_tag = params.ks_output_tag
 
         def r = [
             -1,  // there's no probe index
@@ -91,6 +92,7 @@ workflow process_all_recordings {
             '', // ni_ex_list
             '', // to_stream_sync_params
             '', // ni_stream_sync_params
+	    ks_output_tag, 
         ]
         log.debug "Recording config params: $r"
         r
