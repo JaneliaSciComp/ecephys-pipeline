@@ -60,8 +60,8 @@ workflow process_all_recordings {
         def recording_config_file = global_config(config_dir, recording_basename)
         def gate = extract_gate(recording_name)
         def probe = extract_probe(recording_name)
-        def ks_output_dir = "${results_dir}/${recording_basename}/imec${probe}_ks2"
-        def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_${params.ks_output_tag}"
+        def ks_output_dir = "${results_dir}/${recording_basename}/imec${probe}_${params.ks_output_tag}"
+        //def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_${params.ks_output_tag}"
         def ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
 	def ks_output_tag = params.ks_output_tag
@@ -83,7 +83,7 @@ workflow process_all_recordings {
             ks_th,
             ref_per_ms,
             ks_output_dir,
-            ks_working_dir,
+            params.ks_working_dir,
             results_dir, //  catgt_output_dir
             '', // probe_stream_params
             '', // probe_catgt_cmd

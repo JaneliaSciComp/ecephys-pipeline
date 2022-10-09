@@ -4,7 +4,7 @@ include {
 
 def default_params() {
     [
-        catgt_container: 'registry.int.janelia.org/ecephys/catgt:2.5',
+        catgt_container: 'registry.int.janelia.org/ecephys/catgt:2.6.1',
         cwaves_container: 'registry.int.janelia.org/ecephys/cwaves:1.9',
         ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.5',
         kilosort_container: 'registry.int.janelia.org/ecephys/kilosort:1.0.4',
