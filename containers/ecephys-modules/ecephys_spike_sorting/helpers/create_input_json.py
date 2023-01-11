@@ -55,6 +55,7 @@ def createInputJson(default_config,
                     fromStream_list_3A=None,
                     ks_ver='2.0',  # must equal '3.0', '2.5' or '2.0', and match the kiilosort_repository
                     ks_doFilter=0,
+                    ks_mask_bad_channels=True,
                     ks_mode=False,
                     ks_drift_registration=True,
                     ks_sigma_mask=30,
@@ -211,6 +212,7 @@ def createInputJson(default_config,
         'kilosort_repository': kilosort_repository,
         'spikeGLX_data': spikeGLX_data,
         'ks_make_copy': ks_make_copy,
+        'ks_mask_bad_channels': ks_mask_bad_channels,
         'kilosort2_params': default_config['kilosort_helper_params']['kilosort2_params'] | {
             'KSver': ks_ver,
             # these are expressed as int rather than Bool for matlab compatability

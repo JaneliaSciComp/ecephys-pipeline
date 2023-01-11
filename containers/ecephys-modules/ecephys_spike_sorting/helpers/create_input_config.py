@@ -25,6 +25,7 @@ def main(argv):
     parser.add_argument('--output_config_file', help='Output config file path')
     parser.add_argument('--kilosort_output_dir', help='Kilosort output directory')
     parser.add_argument('--ks_working_dir', default='/tmp/kilosort_datatemp', help='Kilosort working dir')
+    parser.add_argument('--ks_mask_bad_channels', action='store_true', help='set to true to remove noisy channels')
     parser.add_argument('--ks_ver', default='2.0', help='Kilosort version')
     parser.add_argument('--with_ks_filter', action='store_true', help='If set kilosort will perform LF filter')
     parser.add_argument('--ks_copy_results', action='store_true',
@@ -114,6 +115,7 @@ def main(argv):
         ks_working_dir=args.ks_working_dir,
         ks_ver=args.ks_ver,
         ks_doFilter=(1 if args.with_ks_filter else 0),
+        ks_mask_bad_channels=args.ks_mask_bad_channels,
         ks_make_copy=args.ks_copy_results,
         ks_remDup=args.ks_remove_dups,
         ks_finalSplits=1,
