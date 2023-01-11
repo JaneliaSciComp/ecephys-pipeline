@@ -56,6 +56,7 @@ class KilosortHelperParameters(DefaultSchema):
     kilosort_version = Int(required=True, default=2, help='Kilosort version to use (1 or 2)')
     spikeGLX_data = Bool(required=True, default=False, help='If true, use SpikeGLX metafile to build chanMap')
     ks_make_copy = Bool(required=False, default=False, help='If true, make a copy of the original KS output')
+    mask_bad_channels = Bool(required=False, default=True, help='If true, skip high noise channels')
     surface_channel_buffer = Int(required=False, default=15,
                                  help='Number of channels above brain surface to include in spike sorting')
     matlab_home_directory = NonValidatedInputDir(help='Location from which Matlab files can be copied and run.')
