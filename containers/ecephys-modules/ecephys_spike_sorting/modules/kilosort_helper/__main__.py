@@ -50,7 +50,7 @@ def run_kilosort(args):
 
         destFullPath = os.path.join(
            args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
-        if args['kilosort_helper_params']['mask_bad_channels']:
+        if args['kilosort_helper_params']['ks_mask_bad_channels']:
             MaskChannels = np.where(mask == False)[0]
         else:
             MaskChannels = []

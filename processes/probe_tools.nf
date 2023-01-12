@@ -76,7 +76,7 @@ process create_probe_config {
         create_arg('--ks_working_dir', probe_ks_working_dir),
         create_arg('--ks_ver', params.ks_ver),
         create_bool_arg('--ks_copy_results', params.ks_copy_results),
-        create_bool_arg('--mask_bad_channels', params.ks_mask_bad_channels),
+        create_bool_arg('--ks_mask_bad_channels', params.ks_mask_bad_channels),
         create_arg('--ks_remove_dups', params.ks_remove_dups),
         create_arg('--ks_save_rez', params.ks_save_rez),
         create_arg('--ks_copy_fproc', params.ks_copy_fproc),

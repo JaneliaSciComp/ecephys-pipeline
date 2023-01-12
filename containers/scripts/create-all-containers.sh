@@ -1,4 +1,5 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
+# to build without cache, add option --no-cache
 
 source ${DIR}/container-versions.sh
 
