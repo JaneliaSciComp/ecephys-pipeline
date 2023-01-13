@@ -30,11 +30,11 @@ def run_kilosort(args):
 
     output_dir_name = args['directories']['kilosort_output_directory']
     output_dir = Path(output_dir_name)
-
+  
     mask = get_noise_channels(args['ephys_params']['ap_band_file'],
-                              args['ephys_params']['num_channels'],
-                              args['ephys_params']['sample_rate'],
-                              args['ephys_params']['bit_volts'])
+                               args['ephys_params']['num_channels'],
+                               args['ephys_params']['sample_rate'],
+                               args['ephys_params']['bit_volts'])
 
     if args['kilosort_helper_params']['spikeGLX_data']:
         # SpikeGLX data, will build KS chanMap based on the metadata file plus 
@@ -50,11 +50,12 @@ def run_kilosort(args):
 
         destFullPath = os.path.join(
            args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
-        # if args['kilosort_helper_params']['ks_mask_bad_channels']:
-        #     MaskChannels = np.where(mask == False)[0]
-        # else:
-        #     MaskChannels = []
-        MaskChannels = []
+        if args['kilosort_helper_params']['ks_mask_bad_channels']:
+            MaskChannels = np.where(mask == False)[0]
+        else:
+            print('not omitting noisy channels')
+            MaskChannels = []
+                
         MetaToCoords(metaFullPath=metaFullPath, outType=1, badChan=MaskChannels, destFullPath=destFullPath)
         # end of SpikeGLX block
 
