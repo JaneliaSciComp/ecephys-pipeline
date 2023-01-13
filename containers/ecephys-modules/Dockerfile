@@ -17,6 +17,7 @@ RUN bash miniconda-install.sh -b -p /miniconda
 COPY conda-requirements.yml /ecephys-install/
 
 ENV PATH=/miniconda/bin:${PATH}
+# ENV LD_LIBRARY_PATH=/miniconda/lib:${LD_LIBRARY_PATH}
 
 WORKDIR /app/ecephys_spike_sorting
 
