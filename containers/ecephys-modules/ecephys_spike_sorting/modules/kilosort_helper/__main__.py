@@ -50,13 +50,13 @@ def run_kilosort(args):
 
         destFullPath = os.path.join(
            args['kilosort_helper_params']['matlab_home_directory'], 'chanMap.mat')
-        if args['kilosort_helper_params']['ks_mask_bad_channels']:
-            MaskChannels = np.where(mask == False)[0]
-        else:
-            MaskChannels = []
-        MetaToCoords(metaFullPath=metaFullPath, outType=1,
-                     badChan=MaskChannels, destFullPath=destFullPath)
-       # end of SpikeGLX block
+        # if args['kilosort_helper_params']['ks_mask_bad_channels']:
+        #     MaskChannels = np.where(mask == False)[0]
+        # else:
+        #     MaskChannels = []
+        MaskChannels = []
+        MetaToCoords(metaFullPath=metaFullPath, outType=1, badChan=MaskChannels, destFullPath=destFullPath)
+        # end of SpikeGLX block
 
     else:
         # Open Ephys data, specifically finding the tissue surface and creating a chanMap to 
