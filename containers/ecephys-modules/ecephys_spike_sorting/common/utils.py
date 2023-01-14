@@ -1,11 +1,9 @@
-import pandas as pd
+
 import os
 import numpy as np
 import json
-import glob
 import sys
 import time
-import psutil
 import pathlib
 
 from git import Repo
@@ -159,11 +157,19 @@ def write_cluster_group_tsv(IDs, quality, output_directory, filename='cluster_gr
 
     """
 
-    df = pd.DataFrame(data={'cluster_id': IDs, 'group': quality})
-
     print('Saving data...')
+    
+    #df = pd.DataFrame(data={'cluster_id': IDs, 'group': quality})
+    #df.to_csv(os.path.join(output_directory, filename), sep='\t', index=False)
+    
+    # changed from the pandas implementation to cut down on dependencies in kilosort_helper module
+    with open(os.path.join(output_directory, filename), 'w') as file:
+        file.write('cluster_ids' + '\t' + 'group' + '\n')
+        for i in range(len(quality)):
+            file.write(repr(IDs[i]) + '\t' + quality[i] + '\n');
+            
+            
 
-    df.to_csv(os.path.join(output_directory, filename), sep='\t', index=False)
 
 
 def read_cluster_group_tsv(filename):
