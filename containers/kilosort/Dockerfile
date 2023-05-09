@@ -46,6 +46,7 @@ RUN bash miniconda-install.sh -b -p /miniconda && \
     rm miniconda-install.sh
 
 ENV PATH=/miniconda/bin:${PATH}
+ENV LD_LIBRARY_PATH=/miniconda/lib:${LD_LIBRARY_PATH}
 
 RUN conda config --set always_yes yes && \
     conda update -q conda && \

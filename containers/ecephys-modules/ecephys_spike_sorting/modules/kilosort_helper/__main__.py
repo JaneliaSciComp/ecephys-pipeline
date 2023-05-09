@@ -54,7 +54,7 @@ def run_kilosort(args):
             MaskChannels = np.where(mask == False)[0]
         else:
             print('not omitting noisy channels')
-            MaskChannels = []
+            MaskChannels = np.asarray([],dtype='int64')
                 
         MetaToCoords(metaFullPath=metaFullPath, outType=1, badChan=MaskChannels, destFullPath=destFullPath)
         # end of SpikeGLX block
