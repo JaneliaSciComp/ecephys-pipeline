@@ -2,43 +2,50 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 # to build without cache, add option --no-cache
 
 source ${DIR}/container-versions.sh
+source ${DIR}/set-args.sh
 
-RUNCMD=
-if [[ "$1" == "-n" ]]; then
-    RUNCMD=echo
-fi
-
+echo "Build containers/ecephys-modules"
 $RUNCMD docker build \
-    -t ecephys-modules:${ECEPHYS_VERSION} \
-    -t registry.int.janelia.org/ecephys/ecephys-modules:${ECEPHYS_VERSION} \
+    ${PLATFORM_ARG} \
+    -t ${REGISTRY}/ecephys-modules:${ECEPHYS_VERSION} \
     containers/ecephys-modules
 
+echo "Build containers/catgt"
 $RUNCMD docker build \
+    --build-arg ECEPHYS_CONTAINER_REPO=${REGISTRY} \
     --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
-    -t registry.int.janelia.org/ecephys/catgt:${CATGT_VERSION} \
-    -t catgt:${CATGT_VERSION} \
+    ${PLATFORM_ARG} \
+    -t ${REGISTRY}/catgt:${CATGT_VERSION} \
     containers/catgt
 
+echo "Build containers/cwaves"
 $RUNCMD docker build \
+    --build-arg ECEPHYS_CONTAINER_REPO=${REGISTRY} \
     --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
-    -t registry.int.janelia.org/ecephys/cwaves:${CWAVES_VERSION} \
-    -t cwaves:${CWAVES_VERSION} \
+    ${PLATFORM_ARG} \
+    -t ${REGISTRY}/cwaves:${CWAVES_VERSION} \
     containers/cwaves
 
+echo "Build containers/tprime"
 $RUNCMD docker build \
+    --build-arg ECEPHYS_CONTAINER_REPO=${REGISTRY} \
     --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
-    -t registry.int.janelia.org/ecephys/tprime:${TPRIME_VERSION} \
-    -t tprime:${TPRIME_VERSION} \
+    ${PLATFORM_ARG} \
+    -t ${REGISTRY}/tprime:${TPRIME_VERSION} \
     containers/tprime
 
+echo "Build containers/kilosort"
 $RUNCMD docker build \
+    --build-arg ECEPHYS_CONTAINER_REPO=${REGISTRY} \
     --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
-    -t registry.int.janelia.org/ecephys/kilosort:${KILOSORT_VERSION} \
-    -t kilosort:${KILOSORT_VERSION} \
+    ${PLATFORM_ARG} \
+    -t ${REGISTRY}/kilosort:${KILOSORT_VERSION} \
     containers/kilosort
 
+echo "Build containers/pykilosort"
 $RUNCMD docker build \
+    --build-arg ECEPHYS_CONTAINER_REPO=${REGISTRY} \
     --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
-    -t registry.int.janelia.org/ecephys/pykilosort:${PYKILOSORT_VERSION} \
-    -t pykilosort:${PYKILOSORT_VERSION} \
+    ${PLATFORM_ARG} \
+    -t ${REGISTRY}/pykilosort:${PYKILOSORT_VERSION} \
     containers/pykilosort

@@ -4,12 +4,12 @@ include {
 
 def default_params() {
     [
-        catgt_container: 'registry.int.janelia.org/ecephys/catgt:2.6.1',
-        cwaves_container: 'registry.int.janelia.org/ecephys/cwaves:1.9',
-        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.5',
-        kilosort_container: 'registry.int.janelia.org/ecephys/kilosort:1.0.4',
-        pykilosort_container: 'registry.int.janelia.org/ecephys/pykilosort:1.0.4',
-        tprime_container: 'registry.int.janelia.org/ecephys/tprime:1.7',
+        catgt_container: 'public.ecr.aws/janeliascicomp/ecephys/catgt:2.6.1',
+        cwaves_container: 'public.ecr.aws/janeliascicomp/ecephys/cwaves:1.9',
+        ecephys_modules_container: 'public.ecr.aws/janeliascicomp/ecephys/ecephys-modules:1.0.5',
+        kilosort_container: 'public.ecr.aws/janeliascicomp/ecephys/kilosort:1.0.4',
+        pykilosort_container: 'public.ecr.aws/janeliascicomp/ecephys/pykilosort:1.0.4',
+        tprime_container: 'public.ecr.aws/janeliascicomp/ecephys/tprime:1.7',
 
         runtime_opts: '',
         lsf_opts: '',

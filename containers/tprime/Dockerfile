@@ -1,5 +1,6 @@
+ARG ECEPHYS_CONTAINER_REPO=public.ecr.aws/janeliascicomp/ecephys
 ARG ECEPHYS_VERSION
-FROM registry.int.janelia.org/ecephys/ecephys-modules:${ECEPHYS_VERSION} as builder
+FROM ${ECEPHYS_CONTAINER_REPO}/ecephys-modules:${ECEPHYS_VERSION} as builder
 
 WORKDIR /tmp
 
