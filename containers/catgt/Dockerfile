@@ -3,7 +3,7 @@ FROM registry.int.janelia.org/ecephys/ecephys-modules:${ECEPHYS_VERSION} as buil
 
 WORKDIR /tmp
 
-ENV TOOL_DOWNLOAD_URL=https://billkarsh.github.io/SpikeGLX/Support/CatGTLnx26App.zip
+ENV TOOL_DOWNLOAD_URL=https://billkarsh.github.io/SpikeGLX/Support/CatGTLnx40App.zip
 RUN wget ${TOOL_DOWNLOAD_URL} -O tool.zip
 
 RUN unzip tool.zip
