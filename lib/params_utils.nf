@@ -6,7 +6,7 @@ def default_params() {
     [
         catgt_container: 'registry.int.janelia.org/ecephys/catgt:4.0',
         cwaves_container: 'registry.int.janelia.org/ecephys/cwaves:1.9',
-        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.5',
+        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.6',
         kilosort_container: 'registry.int.janelia.org/ecephys/kilosort:1.0.4',
         pykilosort_container: 'registry.int.janelia.org/ecephys/pykilosort:1.0.4',
         tprime_container: 'registry.int.janelia.org/ecephys/tprime:1.7',
@@ -119,8 +119,8 @@ def default_params() {
 
         sync_period: 1.0,
         has_aux_data: true,
-        to_stream_sync_cmd_args: 'SY=0,-1,6,500', // SY=${probe_sync_ch_values}
-        ni_stream_sync_cmd_args: 'XA=0,1,3,500',
+        to_stream_sync_cmd_args: 'imec0', // SY=${probe_sync_ch_values}
+        ni_stream_sync_cmd_args: 'None',
     ]
 }
 
