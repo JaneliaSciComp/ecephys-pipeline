@@ -3,7 +3,6 @@ from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, String, Float, Dict, Int, List, Boolean
 from ...common.schemas import EphysParams, Directories
 
-
 class tPrimeParams(DefaultSchema):
     tPrime_path = InputDir(help='directory containing the TPrime executable.')
     sync_period = Float(default=1.0, help='Period of sync waveform (sec).')
