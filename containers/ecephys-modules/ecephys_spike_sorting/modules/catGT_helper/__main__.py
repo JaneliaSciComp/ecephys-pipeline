@@ -55,8 +55,11 @@ def run_CatGT(args):
         args['catGT_helper_params']['gate_string']
     catgt_runDir = os.path.join(
             args['directories']['extracted_data_directory'], catgt_runName)
-    catgt_prbName = catgt_runName + '_imec' + args['catGT_helper_params']['probe_string']   
+    print(catgt_runDir)
+    catgt_prbName = catgt_runName + '_imec' + args['catGT_helper_params']['probe_string']
+    print(catgt_prbName)
     catgt_prbDir = os.path.join( catgt_runDir, catgt_prbName)
+    print(catgt_prbDir)
     
     # create the catgt run dirctory if it does not exist
     if not ( os.path.isdir(catgt_runDir) ):
