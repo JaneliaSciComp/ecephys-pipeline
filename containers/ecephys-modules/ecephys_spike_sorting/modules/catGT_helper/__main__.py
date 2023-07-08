@@ -46,8 +46,27 @@ def run_CatGT(args):
     elif car_mode == 'gblcar':
         cmd_parts.append('-gblcar')
     cmd_parts.append(args['catGT_helper_params']['cmdStr'])
-    cmd_parts.append('-dest=' + args['directories']
-                     ['extracted_data_directory'])
+    
+    # To avoid potential collisions of different jobs writeing to the _ct_offsets and _fyi files
+    # call CatGT WITHOUT the -out_prb_fld option, and create a destination folder with 
+    # the probe name
+    catgt_runName = 'catgt_' + \
+        args['catGT_helper_params']['run_name'] + '_g' + \
+        args['catGT_helper_params']['gate_string']
+    catgt_runDir = os.path.join(
+            args['directories']['extracted_data_directory'], catgt_runName)
+    catgt_prbName = catgt_runName + '_imec' + args['catGT_helper_params']['probe_string']   
+    catgt_prbDir = os.path.join( catgt_runDir, catgt_prbName)
+    
+    # create the catgt run dirctory if it does not exist
+    if not ( os.path.isdir(catgt_runDir) ):
+        os.mkdir(catgt_runDir)
+    
+    # create the probe directory if it does not exist, and set as catgt destination
+    if not ( os.path.isdir(catgt_prbDir) ):
+        os.mkdir(catgt_prbDir)
+    
+    cmd_parts.append('-dest=' + catgt_prbDir)
 
     print('CatGT command line:',  cmd_parts)
 
@@ -61,9 +80,6 @@ def run_CatGT(args):
     logPath = os.getcwd()
     logName = 'CatGT.log'
 
-    catgt_runName = 'catgt_' + \
-        args['catGT_helper_params']['run_name'] + '_g' + \
-        args['catGT_helper_params']['gate_string']
 
     # build name for log copy
     catgt_logName = catgt_runName
@@ -74,31 +90,34 @@ def run_CatGT(args):
         catgt_logName = catgt_logName + '_ni'
     catgt_logName = catgt_logName + '_CatGT.log'
 
-    catgt_runDir = os.path.join(
-        args['directories']['extracted_data_directory'], catgt_runName)
     shutil.copyfile(os.path.join(logPath, logName),
-                    os.path.join(catgt_runDir, catgt_logName))
+                    os.path.join(catgt_prbDir, catgt_logName))
     
-    # if an fyi file was created, check if there is aleady an 'all_fyi.txt'
-    run_name = args['catGT_helper_params']['run_name'] + '_g' + args['catGT_helper_params']['gate_string']
-    fyi_path = os.path.join(catgt_runDir, (run_name + '_fyi.txt'))
-    all_fyi_path =  os.path.join(catgt_runDir, (run_name + '_all_fyi.txt'))
-    temp_path = os.path.join(catgt_runDir, 'temp.txt')
-    if Path(fyi_path).is_file():        
-        if Path(all_fyi_path).is_file():
-            # append current fyi
-            if os_str == 'linux':
-                cat_fyi_cmd = 'cat ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
-            else:
-                cat_fyi_cmd = 'type ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
-            print(cat_fyi_cmd)
-            subprocess.Popen(cat_fyi_cmd, shell='False').wait()
-            os.remove(all_fyi_path)
-            shutil.copyfile(temp_path, all_fyi_path)
-            os.remove(temp_path)
-        else:
-            # copy current fyi to all_fyi
-            shutil.copyfile(fyi_path, all_fyi_path)                    
+
+    # run_name = args['catGT_helper_params']['run_name'] + '_g' + args['catGT_helper_params']['gate_string']
+    # fyi_path = os.path.join(catgt_runDir, (run_name + '_fyi.txt'))
+    # if Path(fyi_path).is_file():
+    #     new_name = run_name + '_prb' + prb_title + '_fyi.txt'
+    #     new_path = os.path.join(catgt_runDir, new_name)
+    #     shutil.copyfile(fyi_path, new_path)
+    
+    # all_fyi_path =  os.path.join(catgt_runDir, (run_name + '_all_fyi.txt'))
+    # temp_path = os.path.join(catgt_runDir, 'temp.txt')
+    # if Path(fyi_path).is_file():        
+    #     if Path(all_fyi_path).is_file():
+    #         # append current fyi
+    #         if os_str == 'linux':
+    #             cat_fyi_cmd = 'cat ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
+    #         else:
+    #             cat_fyi_cmd = 'type ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
+    #         print(cat_fyi_cmd)
+    #         subprocess.Popen(cat_fyi_cmd, shell='False').wait()
+    #         os.remove(all_fyi_path)
+    #         shutil.copyfile(temp_path, all_fyi_path)
+    #         os.remove(temp_path)
+    #     else:
+    #         # copy current fyi to all_fyi
+    #         shutil.copyfile(fyi_path, all_fyi_path)                    
             
 
     print('total time: ' + str(np.around(execution_time, 2)) + ' seconds')

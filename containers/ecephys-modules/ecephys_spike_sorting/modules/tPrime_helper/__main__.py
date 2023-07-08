@@ -1,5 +1,6 @@
 from argschema import ArgSchemaParser
 import os
+import fnmatch
 import shutil
 import sys
 import subprocess
@@ -22,6 +23,17 @@ def call_TPrime(args):
         outSuffix = '.npy'
     else:
         outSuffix = '.txt'
+        
+    # path to the 'runit.bat' executable that calls TPrime.
+    # Essential in linux where TPrime executable is only callable through runit
+    if sys.platform.startswith('win'):
+        os_str = 'win'
+        exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit.bat')
+    elif sys.platform.startswith('linux'):
+        os_str = 'linux'
+        exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit.sh')
+    else:
+        print('unknown system, cannot run TPrime')   
 
     print('ecephys spike sorting: TPrime helper module')
     start = time.time()
@@ -35,6 +47,34 @@ def call_TPrime(args):
     run_directory = os.path.join( catGT_dest, run_dir_name ) # extracted edge files for aux data reside in run directory
     sync_period = args['tPrime_helper_params']['sync_period']
     
+    # loop over the probe directories, looking for fyi files
+   
+    prb_fld_wild = run_name + '_imec*'
+    all_fyi_path = os.path.join(run_directory, run_name + '_all_fyi.txt')
+    with open(all_fyi_path, 'w') as fp:
+        pass
+    temp_path = os.path.join(run_directory, 'temp.txt')
+    
+    for pdir in os.listdir(run_directory):
+        if fnmatch.fnmatch(pdir,prb_fld_wild):
+            # check for an fyi file in the probe folder
+            for file in os.listdir(pdir):
+                if fnmatch.fnmatch(file,'*fyi.txt'):
+                    # append current fyi
+                    fyi_path = os.path.join(run_directory,pdir,file)
+                    if os_str == 'linux':
+                        cat_fyi_cmd = 'cat ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
+                    else:
+                        cat_fyi_cmd = 'type ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
+                    print(cat_fyi_cmd)
+                    subprocess.Popen(cat_fyi_cmd, shell='False').wait()
+                    os.remove(all_fyi_path)
+                    shutil.copyfile(temp_path, all_fyi_path)
+                    os.remove(temp_path)                  # concatenate 
+                    
+            
+   
+  
     # check for presence of an fyi file, indicating run with catgt 3.0 or later
     fyi_path = run_directory.replace('\\', '/') + '/' + run_name + '_all_fyi.txt'
     all_fyi_exists = Path(fyi_path).is_file()
@@ -109,14 +149,6 @@ def call_TPrime(args):
     for op in out_list:
         print(op)
         
-    # path to the 'runit.bat' executable that calls TPrime.
-    # Essential in linux where TPrime executable is only callable through runit
-    if sys.platform.startswith('win'):
-        exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit.bat')
-    elif sys.platform.startswith('linux'):
-        exe_path = os.path.join(args['tPrime_helper_params']['tPrime_path'], 'runit.sh')
-    else:
-        print('unknown system, cannot run TPrime')   
         
     # Print out command for help with debugging
     tcmd_parts = list()
