@@ -50,16 +50,13 @@ def run_CatGT(args):
     # To avoid potential collisions of different jobs writeing to the _ct_offsets and _fyi files
     # call CatGT WITHOUT the -out_prb_fld option, and create a destination folder with 
     # the probe name
-    catgt_runName = 'catgt_' + \
-        args['catGT_helper_params']['run_name'] + '_g' + \
-        args['catGT_helper_params']['gate_string']
+    runName_gate = args['catGT_helper_params']['run_name'] + '_g' + \
+            args['catGT_helper_params']['gate_string']
+    catgt_runName = 'catgt_' + runName_gate
     catgt_runDir = os.path.join(
-            args['directories']['extracted_data_directory'], catgt_runName)
-    print(catgt_runDir)
-    catgt_prbName = catgt_runName + '_imec' + args['catGT_helper_params']['probe_string']
-    print(catgt_prbName)
-    catgt_prbDir = os.path.join( catgt_runDir, catgt_prbName)
-    print(catgt_prbDir)
+            args['directories']['extracted_data_directory'], catgt_runName)    
+    prbName = runName_gate + '_imec' + args['catGT_helper_params']['probe_string']   
+    catgt_prbDir = os.path.join(catgt_runDir, prbName)
     
     # create the catgt run dirctory if it does not exist
     if not ( os.path.isdir(catgt_runDir) ):

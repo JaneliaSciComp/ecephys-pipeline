@@ -7,6 +7,7 @@ import subprocess
 import time
 from pathlib import Path
 import numpy as np
+from ...common.utils import catGT_ex_params_from_str
 
 def call_TPrime(args):
 
@@ -70,7 +71,7 @@ def call_TPrime(args):
                     subprocess.Popen(cat_fyi_cmd, shell='False').wait()
                     os.remove(all_fyi_path)
                     shutil.copyfile(temp_path, all_fyi_path)
-                    os.remove(temp_path)                  # concatenate 
+                    os.remove(temp_path)                  # concatenate and remove temp
                     
             
    
@@ -324,6 +325,49 @@ def parse_catgt_fyi(fyi_path, toStream_id):
             line = reader.readline()   
          
     return toStream_path, from_list, from_list_ids, events_list, from_stream_index, out_list
+
+
+def create_PSTH_events( events_list, prbDir_list, extract_str, sort_name ):
+    # For a user specified event set, create a csv file and copy to all kilosort
+    # output folders. Get a search string based on the extract_str provided by the user
+    ex_type, stream_index, prb_index, ex_name_str = catGT_ex_params_from_str(extract_str)
+    
+    # loop over events_list list of paths
+    found = False
+    nE = len(events_list)
+    n = 0
+    while not found and n < nE:
+        eventPath = events_list[n]
+        if fnmatch.fnmatch(eventPath, ex_name_str):
+            found = 1
+        else:
+            n = n + 1
+    
+    # the CatGT extracted edge files are a single column with </n>
+    # event viewer needs .csv
+    edgeTimes = np.zeros((0), dtype='float')
+    with open(eventPath, 'r') as inFile:
+        line = inFile.readline()
+        while line != '':  # The EOF char is an empty string
+            currEdge = float(line)
+            edgeTimes = np.append(edgeTimes, currEdge)
+            line = inFile.readline()
+
+    # The output should be saved with the phy output, where the event viewer
+    # plugin can read it
+    if found:
+        for pDir in prbDir_list:       
+            phy_dir = os.path.join(pDir, sort_name)
+            event_path = os.path.join(phy_dir, 'events.csv')
+            nEvent = len(edgeTimes)
+            with open(event_path, 'w') as outfile:
+                for i in range(0, nEvent-1):
+                    outfile.write(f'{edgeTimes[i]:.6f},')
+                outfile.write(f'{edgeTimes[nEvent-1]:.6f}')
+
+    return
+        
+    
 
 
 def main():

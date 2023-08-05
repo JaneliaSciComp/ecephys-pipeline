@@ -19,57 +19,72 @@ def get_psth_events(args):
     # reside in the directory with the binary data and extracted NI edges
     # reside in the parent of that folder
 
-    input_file = args['ephys_params']['ap_band_file']
+    # TODO -- this function needst to be moved to TPrime_helper
+    # Can't run safely before all probes are run.
+    print('ecephys spike sorting: PSTH events module')
+
+    input_file = args['ephys_params']['ap_band_file']  # this is the CatGT processed file
     extract_str = args['psth_events']['event_ex_param_str']
 
+    # stream names for each js
+    stream_name = []
+    stream_name.append('nidq')
+    stream_name.append('obx')
+    stream_name.append('imec')
+    stream_fileid = []
+    stream_fileid.append('.nidq.')
+    stream_fileid.append('.obx.')
+    stream_fileid.append('.ap.')
+    
     # get extraction parameters, build name for output file
-    ex_type, prb_index, ex_name_str = catGT_ex_params_from_str(extract_str)
+    ex_type, stream_index, prb_index, ex_name_str = catGT_ex_params_from_str(extract_str)
     prb = str(prb_index)
 
-    # build path to the CatGT edge extraction file
-    if args['ephys_params']['probe_type'] == '3A':
-        # no probe folders, so path is catGT_output/catGT_run_name/run_name.bin
-        if 'X' in extract_str:
-            # nidq channel -- these are hard to parse, because it could be
-            # associated with any of the probes, and the folder organization
-            # isn't known
-            print('3A + nidq not supported by psth_events module\n')
-        else:
-            # SY channel. will be on this probe, with probe index = 0
-            # no probe folder, no probe string in ex_file_name
-            run_fld, bin_name = os.path.split(input_file)
-            run_name = bin_name[0:bin_name.find('ap.bin')]
-            ex_file_name = run_name + ex_name_str + '.txt'
-            ex_path = os.path.join(run_fld, ex_file_name)
-    else:
-        # 3B/NP1.0/NP2.0, assume run and probe folders
+    prb_fld, bin_name = os.path.split(input_file)
+    run_fld, prb_fld_name = os.path.split(prb_fld)
+    parent_fld, run_fld_name = os.path.split(run_fld)
+    
+    # scan through the probe folders to get the probe indicies
+    run_name = args['ephys_params']['run_name'] + '_g' + args['ephys_params']['gate_string']
+    prb_fld_wild = run_name + '_imec*'
+    lowest_prb_index = -1
+    for pdir in os.listdir(run_fld):
+        if fnmatch.fnmatch(pdir,prb_fld_wild):
+            im_pos = pdir.find('_imec')
+            curr_prb_str = pdir[im_pos+5:len(pdir)]
+            curr_prb_index = int(curr_prb_str)
+            if curr_prb_index > lowest_prb_index:
+                lowest_prb_index = curr_prb_index
+    
+            
+    #scan through the probe folders to get the probe indicies
 
-        # since these data have been through CatGT, the name of the run folder
-        catGT_dest = args['directories']['extracted_data_directory']
-        run_name = args['ephys_params']['run_name'] + '_g' + args['ephys_params']['gate_string']
-        run_dir_name = 'catgt_' + run_name
-        prb = str(prb_index)
-        run_directory = os.path.join(catGT_dest, run_dir_name)
-        if 'X' in extract_str:
-            # nidq channel
+    if 'x' in extract_str:
+        # edge file from CatGT 3.0 or later
+        # params for analog: js, ip, word, thresh1, thresh2, duration
+        # params for digital: js, ip, word (or -1)
+        if stream_index == 0:
+            # nidq stream, extracted edge folders in lowest index probe folder
             ex_file_name = run_name + '_tcat.nidq.' + ex_name_str + '.txt'
-            file_list = os.listdir(run_directory)
-            flt_list = fnmatch.filter(file_list, ex_file_name)
+            file_list = os.listdir(run_fld)
+            flt_list = fnmatch.filter(file_list, ex_file_name)      
             if len(flt_list) != 1:
-                print('No edge file or multiple files for psth evens')
-                return {'message': 'nidq channel: No edge file or multiple files for psth evens'}
-            ex_path = os.path.join(run_directory, flt_list[0])
+                print('No edge file or multiple files for psth events\n' )
+                return 
+            ex_path = os.path.join(run_fld, flt_list[0])
         else:
-            # SY channel. could be on any probe, so get the probe string
-            match_str = run_name + '_tcat.imec' + prb + '.ap.SY_*_6_*.txt'
-            ex_prb_fld_name = run_name + '_imec' + prb
-            file_list = os.listdir(os.path.join(run_directory, ex_prb_fld_name))
-            flt_list = fnmatch.filter(file_list, match_str)
+            # for other streams, the extract files are assumed to be in probe folders
+            match_str = run_name + '_tcat.' + stream_name[stream_index] + prb + stream_fileid[stream_index] + ex_name_str + '.txt'
+            ex_prb_fld_name = run_name + '_' + stream_name[stream_index] + prb
+            file_list = os.listdir(os.path.join(run_fld, ex_prb_fld_name))
+            flt_list = fnmatch.filter(file_list,match_str)
             if len(flt_list) != 1:
-                print('No edge file or multiple files for psth evens')
-                return {'message': 'SY channel: No edge file or multiple files for psth evens'}
-            ex_file_name = flt_list[0]
-            ex_path = os.path.join(run_directory, ex_prb_fld_name, ex_file_name)
+                print('No edge file or multiple files for psth events\n' )
+                return              
+            ex_file_name = flt_list[0]                       
+            ex_path = os.path.join(run_fld, ex_prb_fld_name, ex_file_name)
+            
+
 
     # the CatGT extracted edge files are a single column with </n>
     # event viewer needs .csv
