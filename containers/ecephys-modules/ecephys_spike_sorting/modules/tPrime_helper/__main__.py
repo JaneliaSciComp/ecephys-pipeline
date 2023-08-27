@@ -59,15 +59,15 @@ def call_TPrime(args):
     for pdir in os.listdir(run_directory):
         if fnmatch.fnmatch(pdir,prb_fld_wild):
             # check for an fyi file in the probe folder
-            for file in os.listdir(pdir):
+            curr_pdir = os.path.join(run_directory, pdir)
+            for file in os.listdir(curr_pdir):
                 if fnmatch.fnmatch(file,'*fyi.txt'):
                     # append current fyi
-                    fyi_path = os.path.join(run_directory,pdir,file)
+                    fyi_path = os.path.join(curr_pdir,file)
                     if os_str == 'linux':
                         cat_fyi_cmd = 'cat ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
                     else:
-                        cat_fyi_cmd = 'type ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
-                    print(cat_fyi_cmd)
+                        cat_fyi_cmd = 'type ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path                    
                     subprocess.Popen(cat_fyi_cmd, shell='False').wait()
                     os.remove(all_fyi_path)
                     shutil.copyfile(temp_path, all_fyi_path)
@@ -76,24 +76,17 @@ def call_TPrime(args):
             
    
   
-    # check for presence of an fyi file, indicating run with catgt 3.0 or later
-    fyi_path = run_directory.replace('\\', '/') + '/' + run_name + '_all_fyi.txt'
-    all_fyi_exists = Path(fyi_path).is_file()
+    # check if the all_fyi file is empty
+    all_fyi_size = os.stat(all_fyi_path).st_size
     
-    if not all_fyi_exists:
-        # check for an fyi file -- assume that CatGT was run directly from
-        # a batch file for all probes, and use that, but also print message
-        print('No _all_fyi.txt file found.')
-        print('Checking for _fyi.txt file from CatGT run outside ecephys pipeline.')
-        fyi_path = run_directory.replace('\\', '/') + '/' + run_name + '_fyi.txt'
-        fyi_exists = Path(fyi_path).is_file()
     
-    if all_fyi_exists or fyi_exists:
+    if all_fyi_size > 0:
         
         toStream_params = args['tPrime_helper_params']['toStream_sync_params']
         toStream_js, toStream_ip = parse_stream(toStream_params)
         toStream_id = (toStream_js, toStream_ip)
-        toStream_path, from_list, from_list_ids, events_list, from_stream_index, out_list = parse_catgt_fyi(fyi_path, toStream_id)
+        toStream_path, from_list, from_list_ids, events_list, from_stream_index, out_list, all_list \
+            = parse_catgt_fyi(all_fyi_path, toStream_id)
         
         if toStream_js == 2:
             # if toStream is an imec probe, create the file of spike times in sec
@@ -167,12 +160,18 @@ def call_TPrime(args):
     # make the TPrime call
     subprocess.call(tcmd_parts)
 
-    # convert output files were text, convert to npy
+    # if output files were text, convert to npy
     if not bNPY:
         for op in out_list:
             spike_times_sec_to_npy(op)
 
     execution_time = time.time() - start
+    
+    extract_str = args['tPrime_helper_params']['psth_ex_str']
+    if len(extract_str) > 0:
+        prbDir_list = create_prbDir_list(run_directory, prb_dir_prefix)
+        create_PSTH_events( all_list, out_list, prbDir_list, extract_str, \
+                           args['tPrime_helper_params']['ks_output_tag'] )
 
     print('total time: ' + str(np.around(execution_time, 2)) + ' seconds')
 
@@ -293,18 +292,22 @@ def parse_catgt_fyi(fyi_path, toStream_id):
     events_list = []
     from_stream_index = []
     out_list = []
-   
+    all_list = []
+
     with open(fyi_path, 'r') as reader:
         line = reader.readline()
+       
         while line != '':  # The EOF char is an empty string
-            
+
             stream_str, eq, curr_path = line.partition("=")
             stream_str = stream_str.partition('_')[2]
             
-            if line.find('sync') == 0:                
+            if line.find('sync') == 0:
+               
                 # this is the path to a file of sync edges
                 curr_path = curr_path[0:len(curr_path)-1] # trim off cr on end
                 js, ip = parse_stream(stream_str)
+                
                 if (js,ip) == toStream_id:
                     toStream_path = curr_path
                 else:
@@ -315,6 +318,7 @@ def parse_catgt_fyi(fyi_path, toStream_id):
                 # this is the path to a file of event edges
                 # if it is not from the toStream, add to events, and out_list
                 curr_path = curr_path[0:len(curr_path)-1] # trim off cr on end
+                all_list.append(curr_path) # also keep a list of all event files, to find all spike times files
                 js, ip = parse_stream(stream_str)
                 if (js,ip) != toStream_id:
                     events_list.append(curr_path)
@@ -324,46 +328,80 @@ def parse_catgt_fyi(fyi_path, toStream_id):
                     out_list.append(os.path.join(cp.parent, curr_output_name))
             line = reader.readline()   
          
-    return toStream_path, from_list, from_list_ids, events_list, from_stream_index, out_list
+    return toStream_path, from_list, from_list_ids, events_list, from_stream_index, out_list, all_list
 
 
-def create_PSTH_events( events_list, prbDir_list, extract_str, sort_name ):
+def create_prbDir_list(run_directory, prb_dir_prefix):
+    # Make a list of all probe directories in run_directory
+    # used by create_PSTH_events to copy teh events file to each probe directory
+    
+    prb_fld_wild = prb_dir_prefix + '*'
+    prbDir_list = list()
+    for pDir in os.listdir(run_directory):
+        if fnmatch.fnmatch(pDir, prb_fld_wild):
+            prbDir_list.append(os.path.join(run_directory, pDir))
+
+    return prbDir_list
+
+
+def create_PSTH_events( all_list, out_list, prbDir_list, extract_str, sort_name ):
     # For a user specified event set, create a csv file and copy to all kilosort
     # output folders. Get a search string based on the extract_str provided by the user
     ex_type, stream_index, prb_index, ex_name_str = catGT_ex_params_from_str(extract_str)
-    
-    # loop over events_list list of paths
+    search_pat_adj = '*' + ex_name_str + '.adj.txt'
+    search_pat_orig = '*' + ex_name_str + '.txt'
+      
+    # check out_list for adjusted file of the event times
     found = False
-    nE = len(events_list)
+    n_out = len(out_list)
     n = 0
-    while not found and n < nE:
-        eventPath = events_list[n]
-        if fnmatch.fnmatch(eventPath, ex_name_str):
-            found = 1
+    while not found and n < n_out:       
+        eventPath = out_list[n]
+        print(repr(n) + ': ' + eventPath)
+        if fnmatch.fnmatch(eventPath, search_pat_adj):
+            found = True
         else:
             n = n + 1
+    # if there isn't an adjusted file, the events were in the tostream
+    # get the events from the list of all extracted times
+    n = 0
+    n_all = len(all_list)
+    while not found and n < n_all:
+        eventPath = all_list[n]
+        print(repr(n) + ': ' + eventPath)
+        if fnmatch.fnmatch(eventPath, search_pat_orig):
+            found = True
+        else:
+            n = n + 1 
     
+    if found:
     # the CatGT extracted edge files are a single column with </n>
     # event viewer needs .csv
-    edgeTimes = np.zeros((0), dtype='float')
-    with open(eventPath, 'r') as inFile:
-        line = inFile.readline()
-        while line != '':  # The EOF char is an empty string
-            currEdge = float(line)
-            edgeTimes = np.append(edgeTimes, currEdge)
+        print('found eventPath: ' + eventPath)
+        edgeTimes = np.zeros((0), dtype='float')
+        with open(eventPath, 'r') as inFile:
             line = inFile.readline()
+            while line != '':  # The EOF char is an empty string
+                currEdge = float(line)
+                edgeTimes = np.append(edgeTimes, currEdge)
+                line = inFile.readline()
 
     # The output should be saved with the phy output, where the event viewer
-    # plugin can read it
-    if found:
-        for pDir in prbDir_list:       
-            phy_dir = os.path.join(pDir, sort_name)
+    # plugin can read it   
+        for pDir in prbDir_list: 
+            print(pDir)
+            im_pos = pDir.find('_imec')
+            prbStr = pDir[im_pos+5:len(pDir)]
+            phy_name = 'imec' + prbStr + '_' + sort_name
+            phy_dir = os.path.join(pDir, phy_name)
             event_path = os.path.join(phy_dir, 'events.csv')
             nEvent = len(edgeTimes)
             with open(event_path, 'w') as outfile:
                 for i in range(0, nEvent-1):
                     outfile.write(f'{edgeTimes[i]:.6f},')
                 outfile.write(f'{edgeTimes[nEvent-1]:.6f}')
+        else:
+            print('Event path for PSTH events not found')
 
     return
         

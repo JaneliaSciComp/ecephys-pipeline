@@ -153,8 +153,7 @@ def main(argv):
         catGT_loccar_min_um=args.catgt_loccar_min,
         catGT_loccar_max_um=args.catgt_loccar_max,
         catGT_cmd_string=catGT_cmd_string,
-        # C_Waves args
-        event_ex_param_str=args.event_ex_param_str,
+        # C_Waves args       
         c_Waves_snr_um=args.c_waves_snr_um,
         qm_isi_thresh=qm_isi_thresh,
         include_pcs=args.include_pcs,
@@ -165,6 +164,7 @@ def main(argv):
         toStream_sync_params=args.to_stream_sync_params,
         niStream_sync_params=args.ni_stream_sync_params,
         ks_output_tag=args.ks_output_tag,
+	event_ex_param_str=args.event_ex_param_str,
         tPrime_3A=False,
         toStream_path_3A=' ',
         fromStream_list_3A=list()

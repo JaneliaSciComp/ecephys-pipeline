@@ -86,7 +86,7 @@ def default_params() {
         process_lf: true, // this must be true if depth_estimation is run
 
         ni_present: true,
-        ni_extract_cmd_args: '-XA=0,1,3,500 -XA=1,3,3,0 -XD=4,1,50 -XD=4,2,1.7 -XD=4,3,5',
+        ni_extract_cmd_args: '-xa=0,0,0,1,3,500 -xia=0,0,1,3,3,0 -xd=0,0,-1,1,50 -xid=0,0,-1,2,1.7 -xid=0,0,-1,3,5 -xid=0,0,-1,3,5',
 
 	catgt_skip: false, //when true, skip creation of catgt output (for rerunning)
         catgt_car_mode: 'gblcar', // must be 'None', 'gblcar', or 'loccar'
@@ -95,7 +95,7 @@ def default_params() {
         catgt_loccar_max: 160,
         catgt_do_gfix: false,
 
-        event_ex_cmd_arg: 'XD=4,1,50',
+        event_ex_cmd_arg: 'xd=0,0,-1,1,50',
         c_waves_snr_um: 160,
 
         catgt_cpus: 1,
