@@ -2,5 +2,11 @@
     "default_value": "[9,9]",
     "cortex": "[9,9]",
     "medulla": "[9,9]",
-    "thalamus": "[9,9]"
+    "thalamus": "[9,9]",
+    "midbrain": "[9,9]",
+    "striatum": "[9,9]",
+    "alm": "[9,9]",
+    "AUD": "[9,9]",
+    "BLA": "[9,9]",
+    "Ect": "[9,9]",
 }

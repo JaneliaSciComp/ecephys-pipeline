@@ -2,5 +2,12 @@
     "default_value": "[10, 4]",
     "cortex": "[10, 4]",
     "medulla": "[10, 4]",
-    "thalamus": "[10, 4]"
+    "thalamus": "[10, 4]",
+    "midbrain": "[10,4]",
+    "striatum": "[10,4]",
+    "alm": "[10,4]",
+    "AUD": "[10,4]",
+    "BLA": "[10,4]",
+    "Ect": "[10,4]",
+
 }

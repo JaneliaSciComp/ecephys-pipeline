@@ -21,7 +21,14 @@ focus mostly on the nextflow pipeline implementation.
 
 ## Quick Start
 
-The only software requirements for running this pipeline are [Nextflow](https://www.nextflow.io) (version 20.10.0 or greater) and [Singularity](https://sylabs.io) (version 3.5 or greater). If you are running in an HPC cluster, ask your system administrator to install Singularity on all the cluster nodes.
+The only software requirements for running this pipeline are:
+
+*Java
+*[Nextflow](https://www.nextflow.io) (version 20.10.0 or greater)
+*[Singularity](https://sylabs.io) (version 3.5 or greater) or [apptainer](https://apptainer.org/docs/admin/main/installation.html) (version 1.1.9 or greater). 
+
+If you are running in an HPC cluster, ask your system administrator to install Singularity on all the cluster nodes.
+
 
 To [install Nextflow](https://www.nextflow.io/docs/latest/getstarted.html):
 
@@ -35,6 +42,21 @@ To [install Singularity](https://sylabs.io/guides/3.7/admin-guide/installation.h
 ```
     sudo yum install singularity
 ```
+
+When installing in Ubuntu, use apt:
+
+Java install (for example, on a newly build workstation):
+```
+    sudo apt openjdk-17-jre-headless
+```
+Nextflow install:
+```
+    curl -s https://get.nextflow.io | bash 
+```
+Follow the instructions to install [apptainer](https://apptainer.org/docs/admin/main/installation.html) 
+
+Install docker:
+sudo apt install docker.io
 
 Clone the ecephys-pipeline repository:
 ```
@@ -68,7 +90,6 @@ The pipeline includes the following modules:
 * **kilosort_helper** - run spike sorting
 * **kilosort_postprocessing** - cleanup Kilosort outputs
 * **noise_templates** - identify noise units
-* **psth_events** - extract events for the psth plots
 * **mean_waveforms** - extract mean waveforms and compute waveform metrics from raw data, given spike times and cluster IDs.
 * **quality_metrics** - compute quality metrics for sorted units
 * **tPrime_helper** - map times from one SpikeGLX stream to another

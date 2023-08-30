@@ -2,5 +2,11 @@
     "default_value": 2.0,
     "cortex": 2.0,
     "medulla": 1.5,
-    "thalamus": 1.0
+    "thalamus": 1.5,
+    "midbrain": 1.5,
+    "striatum": 2.0,
+    "alm": 2.0,
+    "AUD": 2.0,
+    "BLA": 2.0,
+    "Ect": 2.0,
 }

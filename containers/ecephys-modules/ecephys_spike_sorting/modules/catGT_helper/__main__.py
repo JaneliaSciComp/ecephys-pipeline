@@ -66,6 +66,7 @@ def run_CatGT(args):
     if not ( os.path.isdir(catgt_prbDir) ):
         os.mkdir(catgt_prbDir)
     
+    cmd_parts.append('-no_catgt_fld')
     cmd_parts.append('-dest=' + catgt_prbDir)
 
     print('CatGT command line:',  cmd_parts)
