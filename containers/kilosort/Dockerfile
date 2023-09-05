@@ -30,12 +30,14 @@ RUN mkdir kilosort-3.0 && \
 
 RUN git clone https://github.com/kwikteam/npy-matlab.git npy-matlab
 
-FROM janeliascicomp/matlab-oraclelinux8:2020b
+FROM janeliascicomp/matlab-oraclelinux8:2022 
 
 USER root
 
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
+ARG LICENSE_SERVER
+ENV MLM_LICENSE_FILE=${LICENSE_SERVER}
 
 WORKDIR /tmp-install
 
@@ -78,3 +80,5 @@ WORKDIR /app/ecephys_spike_sorting
 COPY --from=builder /ecephys-install/ecephys_spike_sorting ecephys_spike_sorting
 
 ENV PYTHONPATH=/app/ecephys_spike_sorting:${PYTHONPATH}
+ENV LD_PRELOAD=/miniconda/lib/libstdc++.so.6
+ENV MLM_LICENSE_FILE=

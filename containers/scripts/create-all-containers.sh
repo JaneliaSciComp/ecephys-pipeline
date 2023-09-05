@@ -33,6 +33,7 @@ $RUNCMD docker build \
 
 $RUNCMD docker build \
     --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
+    --build-arg LICENSE_SERVER=27000@vm7142.int.janelia.org \
     -t registry.int.janelia.org/ecephys/kilosort:${KILOSORT_VERSION} \
     -t kilosort:${KILOSORT_VERSION} \
     containers/kilosort

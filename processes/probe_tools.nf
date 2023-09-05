@@ -309,6 +309,7 @@ process run_kilosort {
     container { params.with_pyks
                     ? params.pykilosort_container
                     : params.kilosort_container }
+    env { MLM_LICENSE_FILE='27000@vm7142.int.janelia.org' }
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }
     errorStrategy { get_key_value_or_default_key(params, 'kilosort_errorStrategy', 'errorStrategy') }

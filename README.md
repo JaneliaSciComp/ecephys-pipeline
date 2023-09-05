@@ -53,7 +53,7 @@ Nextflow install:
 ```
     curl -s https://get.nextflow.io | bash 
 ```
-Follow the instructions to install [apptainer](https://apptainer.org/docs/admin/main/installation.html) 
+Follow the instructions to install apptainer for Ubuntu [here](https://apptainer.org/docs/admin/main/installation.html#install-ubuntu-packages).
 
 Install docker:
 sudo apt install docker.io
@@ -83,7 +83,7 @@ You can now launch the pipeline using:
 
 ## Pipeline Overview
 
-This pipeline is containerized and portable across the various platforms supported by [Nextflow](https://www.nextflow.io). So far it has been tested on a standalone Linnux workstation and the Janelia compute cluster (IBM Platform LSF).
+This pipeline is containerized and portable across the various platforms supported by [Nextflow](https://www.nextflow.io). So far it has been tested on standalone Linux workstations running Oracle Ubuntu, and the Janelia compute cluster (IBM Platform LSF).
 
 The pipeline includes the following modules:
 * **catGT_helper** - run CatGT preprocessor
