@@ -91,7 +91,7 @@ NXF_VER=20.10.0  nextflow run ${WORKFLOW_DIR}/main.nf \
     --catgt_car_mode 'loccar' \
     --catgt_loccar_min 50 \
     --catgt_loccar_max 200 \
-    --catgt_skip true \
+    --catgt_skip false \
     --has_aux_data true \
     --ni_present true \
     --ni_extract_cmd_args '-xa=0,0,0,1,3,500 -xia=0,0,1,3,3,0 -xd=0,0,-1,1,50 -xid=0,0,-1,2,1.7 -xid=0,0,-1,3,5 -xid=0,0,-1,3,5' \
