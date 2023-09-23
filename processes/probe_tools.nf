@@ -49,7 +49,7 @@ process create_probe_config {
           val(ni_ex_list),
           val(to_stream_sync_params),
           val(ni_stream_sync_params),
-	  val(ks_output_tag)
+	  val(sort_out_tag)
 
     output:
     tuple val(probe_index),
@@ -119,7 +119,7 @@ process create_probe_config {
         create_arg('--sync_period', params.sync_period),
         create_arg("--to_stream_sync_params", to_stream_sync_params),
         create_arg("--ni_stream_sync_params", ni_stream_sync_params),
-    	create_arg("--ks_output_tag", ks_output_tag)
+    	create_arg("--sort_out_tag", sort_out_tag)
     ]
     def args = args_list.join(' ')
     """

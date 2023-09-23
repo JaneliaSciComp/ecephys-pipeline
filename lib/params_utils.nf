@@ -58,7 +58,7 @@ def default_params() {
         pyks_alf: '',
         ks_csb_seed: 1,
         ks_lt_seed: 1,
-    	ks_output_tag: 'ks2',
+    	sort_out_tag: 'ks2',
         ks_copy_results: false,
         ks_mask_bad_channels: true,
         ks_ver: '2.0',

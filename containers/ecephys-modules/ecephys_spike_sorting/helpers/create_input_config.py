@@ -74,10 +74,10 @@ def main(argv):
     parser.add_argument('--sync_period', type=float)
     parser.add_argument('--to_stream_sync_params')
     parser.add_argument('--ni_stream_sync_params')
-    parser.add_argument('--ks_output_tag')
+    parser.add_argument('--sort_out_tag')
 
     args = parser.parse_args()
-
+    print(args.default_config_template)
     with open(args.default_config_template) as default_config_file:
         default_config = json.load(default_config_file)
 
@@ -163,7 +163,7 @@ def main(argv):
         sync_period=args.sync_period,
         toStream_sync_params=args.to_stream_sync_params,
         niStream_sync_params=args.ni_stream_sync_params,
-        ks_output_tag=args.ks_output_tag,
+        sort_out_tag=args.sort_out_tag,
 	event_ex_param_str=args.event_ex_param_str,
         tPrime_3A=False,
         toStream_path_3A=' ',

@@ -56,7 +56,9 @@ Nextflow install:
 Follow the instructions to install apptainer for Ubuntu [here](https://apptainer.org/docs/admin/main/installation.html#install-ubuntu-packages).
 
 Install docker:
-sudo apt install docker.io
+```
+    sudo apt install docker.io
+```
 
 Clone the ecephys-pipeline repository:
 ```
@@ -132,7 +134,7 @@ The recordings specs JSON file looks like this:
 
 ## Pipeline execution
 
-Nextflow supports many different execution engines for portability across platforms and schedulers. We have tested the pipeline using local execution and using the cluster at Janelia Research Campus (running IBM Platform LSF). 
+Nextflow supports many different execution engines for portability across platforms and schedulers. We have tested the pipeline using local execution and using the cluster at Janelia Research Campus (running IBM Platform LSF). To run on a different cluster with a different scheduler, add a new profile type to nextflow.config to set up the calling command.
 
 To run this pipeline on a cluster, all input and output paths must be mounted and accessible on all the cluster nodes. 
 
@@ -148,9 +150,9 @@ This example also sets the project flag to demonstrate how to set LSF options.
 
     ./main.nf -profile lsf --lsf_opts "-P <lsf_project_code>" [arguments]
 
-Concrete examples for running the pipeline are provided in the `examples` folder
+Concrete examples for running the pipeline are provided in the `examples` folder. In practice, becuase there are so many parameters, it is easiest to run from a shell script. examples/process_runs.sh and examples/process_recordings.sh demonstrate calling in LSF environment; examples/process_runs_std is for running in on a standalone workstation.
 
-On the Janalia's LSF cluster the best way to run the pipeline, would be to run the main.nf either in an interactive job or by simply submitting `main.nf` to the cluster. The reason for this is that nextflow must run on a submit host in order to be able to submit jobs and sommetimes this may be a long running process. 
+On the Janalia's LSF cluster the best way to run the pipeline, would be to run the main.nf either in an interactive job or by simply submitting `main.nf` to the cluster, as shown in the example scripts. The reason for this is that nextflow must run on a submit host in order to be able to submit jobs and sommetimes this may be a long running process. 
 
 To start an interactive job check [Janelia Wiki Page](https://wiki.int.janelia.org/wiki/display/ScientificComputing/Janelia+Compute+Cluster#JaneliaComputeCluster-ExampleInteractivejobcommands). Once the job is running the rest of the processing is as if you were running nextflow on any linux server or workstation. Keep in mind that if you want to run the pipeline on the node where the interactive node is running you need access to the GPU. 
 

@@ -16,10 +16,12 @@ RUN_NAME=${foldername}_ks2_test_01
 # PARENT_DIR - folder that contains DATA_DIR and OUTPUT_DIR
 # PARAM_DIR - folder containing this script and parameter files
 # WORKFLOW_DIR - ecephys-pipeline
+# DEFAULT config file - default parameters for the command line; can be edited to match your runs
 # MLM_FULLPATH - full path to MATLAB LICENCE file
 PARENT_DIR=/groups/apig/apig/jic
 PARAM_DIR=/groups/apig/apig/jic/ecephys_test_data/run_cluster_ecephys
 WORKFLOW_DIR=/groups/apig/home/colonellj/ecephys-pipeline
+DEFAULT_CONFIG_FILE=$WORKFLOW_DIR/containers/ecephys-modules/default_ecephys_config.json
 MLM_FULLPATH=27000@vm7142.int.janelia.org
 
 # PATHS to run local copy of the ecephys modules (rather than the version in the containers)
@@ -74,6 +76,8 @@ NXF_VER=20.10.0  nextflow run ${WORKFLOW_DIR}/main.nf \
     --pykilosort_container "${CONTAINER_SOURCE}/pykilosort:1.0.4" \
     --tprime_container "${CONTAINER_SOURCE}/tprime:1.7" \
     --lsf_opts "-P $LSF_PROJECT_CODE" \
+    --probe_config_json "$DEFAULT_CONFIG_FILE" \
+    --tprime_config_json "$DEFAULT_CONFIG_FILE" \
     --probe_steps ${PROBE_STEPS} \
     --runs ${RUNS_SPECS_FILE} \
     --ks_thresholds_by_region ${KS_TH_BY_REGION_FILE} \
@@ -100,7 +104,7 @@ NXF_VER=20.10.0  nextflow run ${WORKFLOW_DIR}/main.nf \
     --with_ks_filter false \
     --ks_car false \
     --ks_ver '2.0' \
-    --ks_output_tag 'ks2' \
+    --sort_output_tag 'ks2' \
     --ks_copy_results true \
     --ks_copy_fproc 0 \
     --ks_save_rez 0 \

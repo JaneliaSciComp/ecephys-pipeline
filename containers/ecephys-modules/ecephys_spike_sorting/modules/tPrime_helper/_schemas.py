@@ -13,7 +13,7 @@ class tPrimeParams(DefaultSchema):
     tPrime_3A = Boolean(required=False, default=False, help='is this 3A data?')
     toStream_path_3A = String(required=False, help='full path to toStream edges file')
     fromStream_list_3A = List(String, required=False, help='list of full paths to fromStream edges files')
-    ks_output_tag = String(required=False, default='ks2', help='tag for naming kilosort output folder')
+    sort_out_tag = String(required=False, default='ks2', help='tag for naming sorting output folder')
     psth_ex_str = String(required=False, help='extract string for events.csv for phy psth')
 
 
