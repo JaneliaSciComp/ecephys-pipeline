@@ -106,7 +106,7 @@ PROBE_STEPS="catGT_helper,kilosort_helper,kilosort_postprocessing,mean_waveforms
     --with_ks_filter false \
     --ks_car false \
     --ks_ver '2.0' \
-    --ks_output_tag 'pyks' \
+    --sort_out_tag 'pyks' \
     --ks_copy_results true \
     --ks_copy_fproc 0 \
     --ks_save_rez 0 \
