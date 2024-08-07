@@ -77,7 +77,7 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
     && ./mpm install \
     --release=r2022b \
     --destination=${MATLAB_INSTALL_LOCATION} \
-    --products MATLAB Curve_Fitting_Toolbox Parallel_Computing_Toolbox Statistics_and_Machine_Learning_Toolbox \
+    --products MATLAB Curve_Fitting_Toolbox Parallel_Computing_Toolbox Statistics_and_Machine_Learning_Toolbox Signal_Processing_Toolbox \
     || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) \
     && rm -f mpm /tmp/mathworks_root.log \
     && ln -s ${MATLAB_INSTALL_LOCATION}/bin/matlab /usr/local/bin/matlab

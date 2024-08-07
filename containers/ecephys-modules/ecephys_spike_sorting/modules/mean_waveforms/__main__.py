@@ -19,7 +19,7 @@ from .metrics_from_file import metrics_from_file
 
 def calculate_mean_waveforms(args):
 
-    print('ecephys spike sorting: mean waveforms module')
+    print('ecephys spike sorting: mean waveforms module local')
     
     start = time.time()
     
@@ -59,6 +59,30 @@ def calculate_mean_waveforms(args):
                 new_snr = os.path.join(dest,'cluster_snr_0.npy')
                 os.rename(old_snr, new_snr)
 
+        
+
+        # kilosort saves the spike_clusters files as uint32. 
+
+        # when phy re-saves after curation, it saves as int32 (!)
+
+        # to ensure the correct datatype for C_Waves, load the spike_clusters
+
+        # and convert if necessary
+
+        sc = np.load(clus_lbl_npy)
+
+        if sc.dtype != 'uint32':
+
+            sc = sc.astype('uint32')
+
+            np.save(clus_lbl_npy,sc)
+
+            
+
+        
+
+        
+
         # path to the 'runit.bat' executable that calls C_Waves.
         # Essential in linux where C_Waves executable is only callable through runit
         if sys.platform.startswith('win'):
@@ -81,6 +105,7 @@ def calculate_mean_waveforms(args):
         cwaves_cmd_parts.append(' -pre_samples=' + repr(args['mean_waveform_params']['pre_samples']))
         cwaves_cmd_parts.append(' -num_spikes=' + repr(args['mean_waveform_params']['spikes_per_epoch']))
         cwaves_cmd_parts.append(' -snr_radius=' + repr(args['mean_waveform_params']['snr_radius']))
+        cwaves_cmd_parts.append(' -snr_radius_um=' + repr(args['mean_waveform_params']['snr_radius_um']))
                                 
         print(cwaves_cmd_parts)
         
