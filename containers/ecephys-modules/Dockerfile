@@ -7,24 +7,24 @@ RUN dnf install -y \
         libX11
 
 WORKDIR /ecephys-install
-RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    -O miniconda-install.sh
+uname=Linux-x86_64
+RUN wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
 
 # This container is also used as a builder for other ecephys tools containers 
 # therefore we don't remove anything from ecephys-install
-RUN bash miniconda-install.sh -b -p /miniconda
+RUN bash Miniforge3.sh -b -p /miniforge
 
 COPY conda-requirements.yml /ecephys-install/
 
-ENV PATH=/miniconda/bin:${PATH}
-# ENV LD_LIBRARY_PATH=/miniconda/lib:${LD_LIBRARY_PATH}
+ENV PATH=/miniforge/bin:${PATH}
+# ENV LD_LIBRARY_PATH=/miniforge/lib:${LD_LIBRARY_PATH}
 
 WORKDIR /app/ecephys_spike_sorting
 
-# using 3.9 because creating the json config uses dictionary union operator ('|'')
+# using >= 3.9 because creating the json config uses dictionary union operator ('|'')
 RUN conda config --set always_yes yes && \
     conda update -q conda && \
-    conda install python=3.9 && \
+    conda install python=3.10 && \
     conda env update -n base -f /ecephys-install/conda-requirements.yml
 
 COPY ecephys_spike_sorting /ecephys-install/ecephys_spike_sorting/

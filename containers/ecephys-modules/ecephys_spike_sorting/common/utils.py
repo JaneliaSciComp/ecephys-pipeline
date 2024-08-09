@@ -242,12 +242,20 @@ def load(folder, filename):
     return np.load(os.path.join(folder, filename))
 
 
-def load_kilosort_data(folder,
-                       sample_rate=None,
-                       convert_to_seconds=True,
-                       use_master_clock=False,
-                       include_pcs=False,
-                       template_zero_padding=21):
+def load_kilosort_data(folder, 
+
+                       sample_rate = None, 
+
+                       convert_to_seconds = True, 
+
+                       use_master_clock = False, 
+
+                       include_pcs = False,
+
+                       template_zero_padding= 21):
+
+
+
     """
     Loads Kilosort output files from a directory
 
@@ -288,7 +296,8 @@ def load_kilosort_data(folder,
         Quality ratings from cluster_group.tsv file
     cluster_amplitude : Python list
         Average amplitude for each cluster from cluster_Amplitude.tsv file
-    pc_features (optinal) : numpy.ndarray (N x channels x num_PCs)
+    pc_features (optional) : numpy.ndarray (N x channels x num_PCs)
+
         PC features for each spike
     pc_feature_ind (optional) : numpy.ndarray (M x channels)
         Channels used for PC calculation for each unit
@@ -313,11 +322,31 @@ def load_kilosort_data(folder,
     if include_pcs:
         pc_features = load(folder, 'pc_features.npy')
         pc_feature_ind = load(folder, 'pc_feature_ind.npy')
-        template_features = load(folder, 'template_features.npy')
+        if os.path.isfile(os.path.join(folder, 'template_features.npy')):
+            template_features = load(folder, 'template_features.npy') 
+        else:
+            template_features = np.asarray([])
 
-    templates = templates[:, template_zero_padding:, :]  # remove zeros
-    spike_clusters = np.squeeze(spike_clusters)  # fix dimensions
-    spike_times = np.squeeze(spike_times)  # fix dimensions
+
+    # fix any nans in templates
+    if np.sum(np.isnan(templates)):
+        templates = np.nan_to_num(templates)
+        np.save(os.path.join(folder,'templates.npy'),templates)  
+
+     # zero padding differs between sort versions, so derive from the
+    # values in the templates
+    s1 = np.nansum(templates,axis=0)
+    s2 = np.nansum(s1,axis=1)
+    wz = np.where(s2==0)
+
+    if np.any(wz[0]):       
+        template_zero_padding = np.max(wz) + 1
+        print('template zero padding: ' + repr(template_zero_padding))
+        templates = templates[:,template_zero_padding:,:] # remove zeros
+    
+
+    spike_clusters = np.squeeze(spike_clusters) # fix dimensions
+    spike_times = np.squeeze(spike_times)# fix dimensions
 
     if convert_to_seconds and sample_rate is not None:
         spike_times = spike_times / sample_rate
@@ -514,6 +543,18 @@ def catGT_ex_params_from_str(ex_str):
     # spaces between options in the command string, and these are
     # appended to the comma delimited string parsed here. 
     # Remove spaces before parsing
+    # stream names for each js
+
+    stream_name = []
+    stream_name.append('nidq')
+    stream_name.append('obx')
+    stream_name.append('imec')
+    
+    stream_fileid = []
+    stream_fileid.append('.nidq.')
+    stream_fileid.append('.obx.')
+    stream_fileid.append('.ap.') 
+
     ex_str = ex_str.replace(' ','') #replace any spare spaces with commas
     
     eq_pos = ex_str.find('=')
@@ -537,6 +578,14 @@ def catGT_ex_params_from_str(ex_str):
             # name string = x(i)_word_<pulse_length>
             ex_parts[3] = ex_parts[5].replace('.', 'p')
             ex_name_str = ex_type + '_' + ex_parts[2] + '_' + ex_parts[5]
+        if stream_index == 0:
+
+            ex_name_str = stream_fileid[0] + ex_name_str
+
+        else:
+
+            ex_name_str = stream_name[stream_index] + repr(prb_index) + stream_fileid[stream_index] + ex_name_str
+
     else:
         # CatGT 2.5-like
         prb_index = 0      # for NI 

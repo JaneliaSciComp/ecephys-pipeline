@@ -2,6 +2,7 @@ from argschema import ArgSchema, ArgSchemaParser
 from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, String, Float, Dict, Int, List, Boolean
 from ...common.schemas import EphysParams, Directories
+from ..catGT_helper._schemas import CatGTParams
 
 class tPrimeParams(DefaultSchema):
     tPrime_path = InputDir(help='directory containing the TPrime executable.')
@@ -19,6 +20,7 @@ class tPrimeParams(DefaultSchema):
 
 class InputParameters(ArgSchema):
     tPrime_helper_params = Nested(tPrimeParams)
+    catGT_helper_params = Nested(CatGTParams)
     directories = Nested(Directories)
     ephys_params = Nested(EphysParams)
 

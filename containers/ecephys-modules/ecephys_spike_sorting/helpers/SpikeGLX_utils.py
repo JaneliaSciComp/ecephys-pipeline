@@ -69,12 +69,77 @@ def EphysParams(metaFullPath):
         probe_type = '3A'    #3A probe
 
     sample_rate = float(meta['imSampRate'])    
-
     num_channels = int(meta['nSavedChans'])
-
     uVPerBit = Chan0_uVPerBit(meta, probe_type)
+    
 
-    return(probe_type, sample_rate, num_channels, uVPerBit)
+    # get number of AP and SY channels in file
+    # used in waveform metrics grab only AP channels for calculations
+    # Note that with quad base SY can be larger than 1
+    nAP, nLF, nSY = SGLXMeta.ChannelCountsIM(meta)
+
+    
+
+    if 'snsGeomMap' in meta:
+        useGeom = True
+    else:
+        useGeom = False
+
+    
+
+        
+
+    # read shank map to get disabled (reference) channels
+    ref_channels = GetDisabledChan(meta, useGeom)
+
+    
+
+    xCoord, yCoord, shankInd, connected, NchanTOT = SGLXMeta.MetaToCoords(metaPath,-1)
+    sh, sh_counts = np.unique(shankInd, return_counts=True)
+
+    # get vpitch, hpitch, nColumn from shank with the largest numbers of sites
+
+    sh_mode = sh[np.argmax(sh_counts)]
+    sh_mode_sites = np.squeeze( np.argwhere(shankInd == sh_mode))
+    x_sh = xCoord[sh_mode_sites]
+    y_sh = yCoord[sh_mode_sites]
+    nColumn = len(np.unique(x_sh))    
+
+    
+
+    # NP 1.0 staggered patterns have been historically as 2 columns. These can
+    # be tricky to identify from the coorindates alone AND there are some type 0 
+    # probes that are NOT staggered.
+    vpitch = 0
+    hpitch = 0
+
+    stag_types = ['3A', 'NP1', 'NP1200', 'NP1210', 'NP1020', 'NP1021', 'NP1030', 'NP1031']
+    if (probe_type in stag_types) and (nColumn == 4):
+        nColumn = 2
+        vpitch = 20  # happens to be true for all staggered configurations
+        if probe_type in ['NP1020', 'NP1021', 'NP1030', 'NP1031']:
+            hpitch = 87
+        else:
+            hpitch = 32
+    else:
+        # these are linear or square pattern probes        
+        xval, xval_counts = np.unique(x_sh, return_counts=True)        
+        xval_mode = xval[np.argmax(xval_counts)]
+        xval_mode_sites = np.squeeze( np.argwhere(x_sh == xval_mode))        
+        yval_col = y_sh[xval_mode_sites]        
+        if len(yval_col) > 1:
+            ydiff = np.diff(np.sort(yval_col))
+            ydiffval, ydiff_counts = np.unique(ydiff, return_counts=True)
+            vpitch = ydiff[np.argmax(ydiff_counts)]
+        if len(xval) > 1:
+            xdiff = np.diff(np.sort(xval))
+            xdiffval, xdiff_counts = np.unique(xdiff, return_counts=True)
+            hpitch = xdiff[np.argmax(xdiff_counts)]
+
+    
+
+    return(probe_type, sample_rate, num_channels, ref_channels, uVPerBit, vpitch, hpitch, nColumn, nAP, nSY, useGeom)
+
 
 
 # Return gain for imec channels.
@@ -85,26 +150,70 @@ def Chan0_uVPerBit(meta, probe_type):
     # If all channels have the same gain (usually set that way for 
     # 3A and NP1 probes; always true for NP2 probes), can use
     # this value for all channels.
+    
 
-    imroList = meta['imroTbl'].split(sep=')')
-    # One entry for each channel plus header entry,
-    # plus a final empty entry following the last ')'
-    # channel zero is the 2nd element in the list
+    # first check if metadata includes the imChan0apGain key
 
-    if probe_type == 'NP21' or probe_type == 'NP24':
-        # NP 2.0; APGain = 80 for all channels
-        # voltage range = 1V
-        # 14 bit ADC
-        uVPerBit = (1e6)*(1.0/80)/pow(2,14)
-    else:
-        # 3A, 3B1, 3B2 (NP 1.0), or other NP 1.0-like probes
-        # voltage range = 1.2V
-        # 10 bit ADC
-        currList = imroList[1].split(sep=' ')   # 2nd element in list, skipping header
-        APgain = float(currList[3])
-        uVPerBit = (1e6)*(1.2/APgain)/pow(2,10)
+    if 'imChan0apGain' in meta:
+        APgain = float(meta['imChan0apGain'])
+        voltage_range = float(meta['imAiRangeMax']) - float(meta['imAiRangeMin'])
+        maxInt = float(meta['imMaxInt'])
+        uVPerBit = (1e6)*(voltage_range/APgain)/(2*maxInt)
+
+    else:     
+        imroList = meta['imroTbl'].split(sep=')')
+        # One entry for each channel plus header entry,
+        # plus a final empty entry following the last ')'
+        # channel zero is the 2nd element in the list
+ 
+
+        if probe_type == 'NP21' or probe_type == 'NP24':
+            # NP 2.0; APGain = 80 for all channels
+            # voltage range = 1V
+            # 14 bit ADC
+            uVPerBit = (1e6)*(1.0/80)/pow(2,14)
+            
+        elif probe_type == 'NP1110':
+            # UHD2 with switches, special imro table with gain in header            
+            currList = imroList[0].split(sep=',')
+            APgain = float(currList[3])
+            uVPerBit = (1e6)*(1.2/APgain)/pow(2,10)
+
+        else:
+            # 3A, 3B1, 3B2 (NP 1.0), or other NP 1.0-like probes
+            # voltage range = 1.2V
+            # 10 bit ADC
+            currList = imroList[1].split(sep=' ')   # 2nd element in list, skipping header
+            APgain = float(currList[3])
+            uVPerBit = (1e6)*(1.2/APgain)/pow(2,10)    
 
     return(uVPerBit)
+
+
+def GetDisabledChan(meta, useGeom):
+
+    chanCountList = meta['snsApLfSy'].split(sep=',')
+    AP = int(chanCountList[0])
+
+    if useGeom is True:
+        useMap = meta['snsGeomMap'].split(sep=')')
+    else:
+        useMap = meta['snsShankMap'].split(sep=')')     
+
+    # loop over known number of AP channels to avoid problems with
+    # extra entries in older data
+
+    connected = np.zeros((AP,)) 
+
+    for i in range(AP):
+        # get parameter list from this entry, skipping first header entry
+        currEntry = useMap[i+1]
+        currList = currEntry.split(sep=':')
+        connected[i] = int(currList[3]) 
+
+    disabled_chan = np.where(connected==0)[0].tolist()
+
+    return disabled_chan
 
 
 def ParseProbeStr(probe_string):
@@ -147,7 +256,22 @@ def ParseTrigStr(trigger_string, prb, gate, prb_folder):
     return first_trig, last_trig
 
 
-def ParseTcatName(tcat_name):
+def ParseGateStr(gate_string):
+
+    str_list = gate_string.split(',')
+    first_gate = int(str_list[0])
+    if len(str_list) > 1:
+        last_gate = int(str_list[1])
+
+    else:
+        last_gate = first_gate
+
+    return first_gate, last_gate
+
+
+
+def ParseTcatName(tcat_name):    
+
     tcat_pos = tcat_name.find('tcat',0)
     baseName = tcat_name[0:tcat_pos-1]  #subtrace 1 from tcat pos to remove _
     return baseName
@@ -200,8 +324,9 @@ def ParseCatGTLog(logPath, run_name, gate_string, prb_list):
 
 
 def CreateNITimeEvents(catGT_run_name, gate_string, catGT_dest):
+    # CatGT 1.9 and later always creates an output NI metadata file
+    # events are simply the times for the collected data
 
-    # new version of catGT (1.9) always creates an output NI metadata file
  
     output_folder = 'catgt_' + catGT_run_name + '_g' + gate_string
     niMeta_filename = catGT_run_name + '_g' + gate_string + '_tcat.nidq.meta'
@@ -217,5 +342,30 @@ def CreateNITimeEvents(catGT_run_name, gate_string, catGT_dest):
     out_name = catGT_run_name + '_g' + gate_string + '_tcat.nidq.times.npy'
     out_path = os.path.join(catGT_dest, output_folder, out_name)
     np.save(out_path,ni_times)
+    
+
+    # check for presence of an all_fyi file, indicating run with catgt 3.0 or later in pipeline
+    # supercat output will be named _fyi.txt 
+
+    fyi_all_path = Path(os.path.join(catGT_dest, output_folder, catGT_run_name + '_g' + gate_string + '_all_fyi.txt'))
+    fyi_single_path = Path(os.path.join(catGT_dest, output_folder, catGT_run_name + '_g' + gate_string + '_fyi.txt'))
+    fyi_exists = False
+
+    if Path(fyi_all_path).is_file():
+        fyi_exists = True
+        fyi_path = fyi_all_path
+
+    elif Path(fyi_single_path).is_file():
+        fyi_exists = True
+        fyi_path = fyi_single_path
+
+
+    if fyi_exists:
+
+        # append a line for the newly created times file        
+        file_fyi = open(fyi_path, "a")  # append mode
+        file_fyi.write('times_ni_N=' + out_path + '\n')
+        file_fyi.close()
+
 
     return

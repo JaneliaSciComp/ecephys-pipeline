@@ -77,6 +77,7 @@ def metrics_from_file(mean_waveform_fullpath,
     upsampling_factor = params['upsampling_factor']
     spread_threshold = params['spread_threshold']
     site_range = params['site_range']
+    nAP = params['nAP']
 
     # #############################################
 
@@ -89,6 +90,20 @@ def metrics_from_file(mean_waveform_fullpath,
     snr_array = np.load(snr_fullpath)
     clus_table = np.load(clus_fullpath)
     peak_channels = clus_table[:,1]
+    
+    # peak channels were estimated from the unwhitened templates, but the
+    # actual peak channel is sometimes offset (due to drift, or other effects)
+    # For any unit that has spikes and a calculable mean waveform, update the
+    # estimated peak channel with the measured one.
+    
+    if mean_waveforms.shape[1] > nAP:
+        # remove digital channel
+        mean_waveforms = mean_waveforms[:,0:nAP,:]
+    vpp_allchan = np.amax(mean_waveforms,2) - np.amin(mean_waveforms,2)
+    vpp_val = np.amax(vpp_allchan,1)
+    meas_pkchan = np.argmax(vpp_allchan,1)  
+    vpp_nonzero = (vpp_val > 0)  
+    peak_channels[vpp_nonzero] = meas_pkchan[vpp_nonzero]
 
     for cluster_idx, cluster_id in enumerate(cluster_ids):
 

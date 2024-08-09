@@ -33,7 +33,7 @@ def createInputJson(default_config,
                     extracted_data_directory=None,
                     kilosort_output_directory=None,
                     ks_make_copy=False,
-                    probe_type='3A',
+                    probe_type='',
                     gate_string='0',
                     trigger_string='0,0',
                     probe_string='0',
@@ -43,12 +43,13 @@ def createInputJson(default_config,
                     catGT_loccar_min_um=40,
                     catGT_loccar_max_um=160,
                     catGT_cmd_string = '-prb_fld -out_prb_fld',
-                    event_ex_param_str='XD=4,1,50',
-                    tPrime_im_ex_list='SY=0,384,6,500',
-                    tPrime_ni_ex_list='XA=0,1,3,500',
+                    catGT_maxZ_um = -1,
+                    event_ex_param_str='',
+                    tPrime_im_ex_list='',
+                    tPrime_ni_ex_list='',
                     sync_period=1.0,
-                    toStream_sync_params='SY=0,384,6,500',
-                    niStream_sync_params='XA=0,1,3,500',
+                    toStream_sync_params='',
+                    niStream_sync_params='',
                     sort_out_tag='ks2',
                     tPrime_3A=False,
                     toStream_path_3A=None,
@@ -82,7 +83,9 @@ def createInputJson(default_config,
                     pyks_alf_location='',
                     c_Waves_snr_um=160,
                     qm_isi_thresh=1.5/1000,
-                    include_pcs=True
+                    include_pcs=True,
+                    ks4_duplicate_spike_bins = 15,
+                    ks4_min_template_size_um = 10
                     ):
 
     # hard coded paths to code on your computer and system
@@ -115,8 +118,9 @@ def createInputJson(default_config,
         #
         #
         if input_meta_path is not None:
-            probe_type, sample_rate, num_channels, uVPerBit = SpikeGLX_utils.EphysParams(
-                input_meta_path)
+            probe_type, sample_rate, num_channels, reference_channels, \
+             uVPerBit, vpitch, hpitch,nColumn, nAP, nSY, useGeom = \
+             SpikeGLX_utils.EphysParams(input_meta_path)
             print('SpikeGLX params read from meta')
             print('probe type: {:s}, sample_rate: {:.5f}, num_channels: {:d}, uVPerBit: {:.4f}'.format
                   (probe_type, sample_rate, num_channels, uVPerBit))
@@ -126,6 +130,7 @@ def createInputJson(default_config,
                 'lfp_sample_rate': sample_rate / 12,
                 'num_channels': num_channels,
                 'bit_volts': uVPerBit,
+                'reference_channels':reference_channels
             }
         else:
             probe_sampling_info = {}
@@ -136,20 +141,14 @@ def createInputJson(default_config,
         print('kilosort output directory: ', kilosort_output_directory)
 
     else:
-        print('using default values for probe params')
-
-    # geometry params by probe type. expand the dictoionaries to add types
-    # vertical probe pitch vs probe type
-    vpitch = {'3A': 20, 'NP1': 20, 'NP21': 15, 'NP24': 15, 'NP1100': 6, 'NP1300':20}
-    hpitch = {'3A': 32, 'NP1': 32, 'NP21': 32, 'NP24': 32, 'NP1100': 6, 'NP1300':48}
-    nColumn = {'3A': 2, 'NP1': 2, 'NP21': 2, 'NP24': 2, 'NP1100': 8,'NP1300':2}
+        print('only SpikeGLX data is supported at this time')
 
     # CatGT needs the inner and outer redii for local common average referencing
     # specified in sites
     catGT_loccar_min_sites = int(
-        round(catGT_loccar_min_um/vpitch.get(probe_type)))
+        round(catGT_loccar_min_um/vpitch))
     catGT_loccar_max_sites = int(
-        round(catGT_loccar_max_um/vpitch.get(probe_type)))
+        round(catGT_loccar_max_um/vpitch))
     # print('loccar min: ' + repr(catGT_loccar_min_sites))
 
     # whiteningRange is the number of sites used for whitening in KIlosort
@@ -157,21 +156,21 @@ def createInputJson(default_config,
     # whitening radius for this probe geometery
     # for a Np 1.0 probe, 163 um => 32 sites
     nrows = np.sqrt((np.square(ks_whiteningRadius_um) -
-                     np.square(hpitch.get(probe_type))))/vpitch.get(probe_type)
-    ks_whiteningRange = int(round(2*nrows*nColumn.get(probe_type)))
+                    np.square(hpitch/vpitch)))
+    ks_whiteningRange = int(round(2*nrows*nColumn))
     if ks_whiteningRange > 384:
         ks_whiteningRange = 384
 
     # nNeighbors is the number of sites kilosort includes in a template.
     # Calculate the number of sites within that radisu.
     nrows = np.sqrt((np.square(ks_templateRadius_um) -
-                     np.square(hpitch.get(probe_type))))/vpitch.get(probe_type)
-    ks_nNeighbors = int(round(2*nrows*nColumn.get(probe_type)))
+                     np.square(hpitch/vpitch)))
+    ks_nNeighbors = int(round(2*nrows*nColumn))
     if ks_nNeighbors > ks_maxNeighbors:
         ks_nNeighbors = ks_maxNeighbors
     print('ks_nNeighbors: ' + repr(ks_nNeighbors))
 
-    c_waves_radius_sites = int(round(c_Waves_snr_um/vpitch.get(probe_type)))
+    c_waves_radius_sites = int(round(c_Waves_snr_um/vpitch))
     # Create string designating temporary output file for KS2 (gets inserted into KS2 config.m file)
     # full path for temp whitened data file
     fproc = os.path.join(kilosort_output_tmp, 'temp_wh.dat')
@@ -189,6 +188,12 @@ def createInputJson(default_config,
                                     'continuous.dat')
 
     kilosort_parent_dir, kilosort_dirname = os.path.split(kilosort_output_directory)
+       
+    # get KS4 params from the KS2,2.5,3.0 versions
+    th_list_str = ks_Th[1:len(ks_Th)-1]   #strip square brackets
+    th_list = th_list_str.split(',')
+    ks4_Th_universal = int(th_list[0])
+    ks4_Th_learned = int(th_list[1])
 
     dictionary = {}
     dictionary['directories'] = default_config['directories'] | {
@@ -255,6 +260,26 @@ def createInputJson(default_config,
         'nblocks': ks_nblocks,
         'doFilter': ks_doFilter,
     }
+    dictionary['ks4_helper_params'] = default_config['ks4_helper_params'] | {
+            'do_CAR' :  True if ks_car == 0 else False,
+            'Th_universal' : ks4_Th_universal,
+            'Th_learned' : ks4_Th_learned,
+            'duplicate_spike_bins' : ks4_duplicate_spike_bins,
+            'nblocks' : ks_nblocks,
+            'sig_interp' : 20.0,
+            'whitening_range' : ks_whiteningRange,
+            'min_template_size' : ks4_min_template_size_um,
+            'template_sizes' : 5,
+            'template_from_data' : True,
+            'neareast_chans' : 10,
+            'nearest_templates' : 100,
+            'ccg_threshold' : 0.25,
+            'acg_threshold' : 0.20,
+            'ks_make_copy': ks_make_copy,
+            'save_extra_vars' : include_pcs,    # to save Wall and pc features
+            'doFilter' : ks_doFilter,       # not yet used
+            'templateSeed' : ks_LTseed      # not yet used
+    }
     dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
         "include_pcs": include_pcs,
     }
@@ -301,7 +326,7 @@ def createInputJson(default_config,
         "toStream_sync_params": toStream_sync_params,
         "ni_sync_params": niStream_sync_params,
         "sort_out_tag": sort_out_tag,
-	"psth_ex_str": event_ex_param_str,
+	    "psth_ex_str": event_ex_param_str,
         "tPrime_3A": tPrime_3A,
         "toStream_path_3A": toStream_path_3A,
         "fromStream_list_3A": fromStream_list_3A,

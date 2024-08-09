@@ -1,7 +1,5 @@
 channels:
-  - anaconda
   - conda-forge
-  - defaults
 
 dependencies:
   - coverage
@@ -29,3 +27,4 @@ dependencies:
     - xmljson
     - bumpversion
     - cookiecutter
+    - phylib

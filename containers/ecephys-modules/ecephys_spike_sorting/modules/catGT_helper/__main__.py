@@ -26,6 +26,28 @@ def run_CatGT(args):
     else:
         print('unknown system, cannot run CatGt')
 
+    # common average referencing
+    car_mode = args['catGT_helper_params']['car_mode']
+    if car_mode == 'loccar':
+        if ['catGT_helper_params']['useGeom']:
+            inner_um = args['catGT_helper_params']['loccar_inner_um']
+            outer_um = args['catGT_helper_params']['loccar_outer_um']
+            car_str = ' -loccar_um=' + repr(inner_um) + ',' + repr(outer_um)
+        else:
+            inner_site = args['catGT_helper_params']['loccar_inner']
+            outer_site = args['catGT_helper_params']['loccar_outer']
+            car_str = ' -loccar=' + repr(inner_site) + ',' + repr(outer_site)
+    elif car_mode == 'gbldmx':
+        car_str = ' -gbldmx'    
+    elif car_mode == 'gblcar':
+        car_str = ' -gblcar'
+    elif car_mode == 'None' or car_mode == 'none':
+        car_str = ''
+    
+    # build max z string, assuming z is given in um from bottom row
+
+    maxZ_str = '-maxZ=' + args['catGT_helper_params']['probe_string'] \
+            + ',1,' + repr(args['catGT_helper_params']['maxZ_um'])
     cmd_parts = list()
 
     cmd_parts.append(catGTexe_fullpath)
@@ -35,21 +57,14 @@ def run_CatGT(args):
     cmd_parts.append('-t=' + args['catGT_helper_params']['trigger_string'])
     cmd_parts.append('-prb=' + args['catGT_helper_params']['probe_string'])
     cmd_parts.append(args['catGT_helper_params']['stream_string'])
-    # common average referencing
-    car_mode = args['catGT_helper_params']['car_mode']
-    if car_mode == 'loccar':
-        inner_site = args['catGT_helper_params']['loccar_inner']
-        outer_site = args['catGT_helper_params']['loccar_outer']
-        cmd_parts.append('-loccar=' + repr(inner_site) + ',' + repr(outer_site))
-    elif car_mode == 'gbldmx':
-        cmd_parts.append('-gbldmx')
-    elif car_mode == 'gblcar':
-        cmd_parts.append('-gblcar')
+    cmd_parts.append(car_str)
+    if args['catGT_helper_params']['maxZ_um'] > 0:
+        cmd_parts.append(maxZ_str)
     cmd_parts.append(args['catGT_helper_params']['cmdStr'])
     
     # To avoid potential collisions of different jobs writeing to the _ct_offsets and _fyi files
     # call CatGT WITHOUT the -out_prb_fld option, and create a destination folder with 
-    # the probe name
+    # the probe name. The fyi_all file is compiled in TPrime_helper
     runName_gate = args['catGT_helper_params']['run_name'] + '_g' + \
             args['catGT_helper_params']['gate_string']
     catgt_runName = 'catgt_' + runName_gate

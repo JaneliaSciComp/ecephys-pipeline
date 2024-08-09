@@ -56,7 +56,9 @@ def run_kilosort(args):
             print('not omitting noisy channels')
             MaskChannels = np.asarray([],dtype='int64')
                 
-        MetaToCoords(metaFullPath=metaFullPath, outType=1, badChan=MaskChannels, destFullPath=destFullPath)
+        connected = MetaToCoords(metaFullPath=metaFullPath, outType=1, badChan=MaskChannels, destFullPath=destFullPath)[3]
+        # create channel map to reference the raw data for KS2.5 and KS3
+        chan_map_raw = np.where(connected==1)[0] 
         # end of SpikeGLX block
 
     else:
@@ -149,10 +151,20 @@ def run_kilosort(args):
         chan_phy_binary = cm.size
         fix_phy_params(output_dir, output_dir.parent, fp_save_name,
                        chan_phy_binary, args['ephys_params']['sample_rate'])
+        # if version = 2.5 or 3.0, save the channel_map for raw data, but don't point to it
+        if args['kilosort_helper_params']['kilosort2_params']['KSver'] in ['2.5', '3.0']:
+            np.save(os.path.join(output_dir,'channel_map_raw.npy'), chan_map_raw)
     else:
         chan_phy_binary = args['ephys_params']['num_channels']
         fix_phy_params(output_dir, dat_dir, dat_name,
-                       chan_phy_binary, args['ephys_params']['sample_rate'])                
+                       chan_phy_binary, args['ephys_params']['sample_rate'])
+        # if version = 2.5 or 3.0, make a copy of the existing channel_map.npy file, and write one for 
+        # raw or filtered binary
+        if args['kilosort_helper_params']['kilosort2_params']['KSver'] in ['2.5', '3.0']:
+            cm_path = os.path.join(output_dir, 'channel_map.npy')
+            cm = np.load(cm_path)
+            np.save(os.path.join(output_dir,'channel_map_ks_preprocessed.npy'),cm)
+            np.save(os.path.join(output_dir,'channel_map.npy'), chan_map_raw)               
 
     # make a copy of the channel map to the data directory
     # named according to the binary and meta file
