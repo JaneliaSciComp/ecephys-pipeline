@@ -13,6 +13,7 @@ from ...common.utils import getFileVersion
 from ...common.epoch import get_epochs_from_nwb_file
 
 from .metrics import calculate_metrics
+from .ibl_metrics import calculate_ibl_metrics
 
 
 def calculate_quality_metrics(args):
@@ -51,6 +52,7 @@ def calculate_quality_metrics(args):
             pc_feature_ind = []
 
         metrics = calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, channel_map, channel_pos, templates, pc_features, pc_feature_ind, args['quality_metrics_params'])
+        ibl_metrics = calculate_ibl_metrics(spike_times, spike_clusters, amplitudes, args['quality_metrics_params'], args['ephys_params']['sample_rate'])
 
     except FileNotFoundError:
 
@@ -61,6 +63,8 @@ def calculate_quality_metrics(args):
         return {"execution_time" : execution_time,
             "quality_metrics_output_file" : None} 
 
+    # merge allen and ibl metrics
+    metrics = metrics.merge(ibl_metrics, on='cluster_id', suffixes=('_quality_metrics','_ibl'))
 
     # build name for waveform_metrics file with matched version
     wm_args = args['waveform_metrics']['waveform_metrics_file']

@@ -43,3 +43,9 @@ $RUNCMD docker build \
     -t registry.int.janelia.org/ecephys/pykilosort:${PYKILOSORT_VERSION} \
     -t pykilosort:${PYKILOSORT_VERSION} \
     containers/pykilosort
+    
+$RUNCMD docker build \
+    --build-arg ECEPHYS_VERSION=${ECEPHYS_VERSION} \
+    -t registry.int.janelia.org/ecephys/ks4:${KS4_VERSION} \
+    -t ks4:${KS4_VERSION} \
+    containers/pykilosort

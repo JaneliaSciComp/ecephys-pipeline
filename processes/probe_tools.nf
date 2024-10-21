@@ -98,6 +98,10 @@ process create_probe_config {
         create_bool_arg('--ks_no_temp_files', params.ks_no_temp_files),
         create_bool_arg('--ks_non_deterministic', params.ks_non_deterministic),
         create_arg('--ks_nblocks', params.ks_nblocks),
+        create_arg('--ks4_Th_universal, parms.ks4_Th_universal),
+        create_arg('--ks4_Th_learned, params.ks4_Th_learned),
+        create_arg('--ks4_duplicate_spike_bins, params.ks4_duplicate_spike_bins),
+        create_arg('--ks4_min_template_size_um, params.ks4_min_template_size_um),
         create_bool_arg('--include_pcs', params.include_pcs),
         create_arg('--catgt_run_name', run_name),
         create_arg('--probe_type', probe_type),
@@ -306,9 +310,13 @@ process run_depth_estimation {
 }
 
 process run_kilosort {
-    container { params.with_pyks
-                    ? params.pykilosort_container
-                    : params.kilosort_container }   
+    if params.with_pyks {
+        container params.pykilosort_container }
+    else if  params.with_ks4 {
+        container params.ks4_container }
+    else if  params.with_ks4 {
+        params.kilosort_container }
+ 
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }
     errorStrategy { get_key_value_or_default_key(params, 'kilosort_errorStrategy', 'errorStrategy') }

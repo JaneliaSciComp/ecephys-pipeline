@@ -7,8 +7,7 @@ RUN dnf install -y \
         libX11
 
 WORKDIR /ecephys-install
-uname=Linux-x86_64
-RUN wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+RUN wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
 
 # This container is also used as a builder for other ecephys tools containers 
 # therefore we don't remove anything from ecephys-install

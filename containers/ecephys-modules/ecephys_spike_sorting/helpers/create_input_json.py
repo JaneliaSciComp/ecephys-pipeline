@@ -278,7 +278,8 @@ def createInputJson(default_config,
             'ks_make_copy': ks_make_copy,
             'save_extra_vars' : include_pcs,    # to save Wall and pc features
             'doFilter' : ks_doFilter,       # not yet used
-            'templateSeed' : ks_LTseed      # not yet used
+            'template_seed' : ks_LTseed,     # not yet used
+            'cluster_seed' : ks_CSBseed
     }
     dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
         "include_pcs": include_pcs,

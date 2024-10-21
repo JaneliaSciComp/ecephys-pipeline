@@ -46,8 +46,6 @@ end
 rootZ       = ops.rootZ;
 ops.fbinary = fullfile(ops.datafile);
 
-% print out ops
-ops
 
 % preprocess data to create temp_wh.dat
 rez = preprocessDataSub(ops);

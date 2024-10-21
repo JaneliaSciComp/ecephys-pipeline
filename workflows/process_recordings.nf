@@ -57,14 +57,16 @@ workflow process_all_recordings {
             recording_meta_file = "${recording_dir}/${recording_name.substring(0,ext_index)}.meta"
         }
         def recording_basename = extract_basename(recording_name)
-        def recording_config_file = global_config(config_dir, recording_basename)
+        def config_name = "${recording_basename}_${params.sort_out_tag}"
+        def recording_config_file = global_config(config_dir, config_name)      
         def gate = extract_gate(recording_name)
         def probe = extract_probe(recording_name)
-        def ks_output_dir = "${results_dir}/${recording_basename}/imec${probe}_${params.ks_output_tag}"
-        //def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_${params.ks_output_tag}"
+        def ks_output_dir = "${results_dir}/${recording_basename}/imec${probe}_${params.sort_out_tag}"
+        //def probe_ks_output_dir = "${results_dir}/catgt_${run_folder_name}/${probe_folder_name}/imec${probe}_${params.sort_out_tag}"
         def ks_th = "'${get_key_value_or_default_key(params.ks_thresholds_by_region, region, 'default_value')}'"
         def ref_per_ms = "'${get_key_value_or_default_key(params.ref_per_ms_by_region, region, 'default_value')}'"
-	def ks_output_tag = params.ks_output_tag
+        def rec_ks_working_dir = "${params.ks_working_dir}/${recording_name}_${params.sort_out_tag}"
+	    def sort_out_tag = params.sort_out_tag
 
         def r = [
             -1,  // there's no probe index
@@ -74,7 +76,7 @@ workflow process_all_recordings {
             recording_meta_file,
             recording_config_file,
             '', // run_folder_name,
-            recording_basename,
+            config_name,   //used to name the config files
             recording_basename,
             gate, // gate
             probe,
@@ -83,7 +85,7 @@ workflow process_all_recordings {
             ks_th,
             ref_per_ms,
             ks_output_dir,
-            params.ks_working_dir,
+            rec_ks_working_dir,
             results_dir, //  catgt_output_dir
             '', // probe_stream_params
             '', // probe_catgt_cmd
@@ -92,7 +94,7 @@ workflow process_all_recordings {
             '', // ni_ex_list
             '', // to_stream_sync_params
             '', // ni_stream_sync_params
-	    ks_output_tag, 
+	        sort_out_tag, 
         ]
         log.debug "Recording config params: $r"
         r

@@ -5,10 +5,11 @@ include {
 def default_params() {
     [
         catgt_container: 'registry.int.janelia.org/ecephys/catgt:4.2',
-        cwaves_container: 'registry.int.janelia.org/ecephys/cwaves:1.9',
-        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.6',
-        kilosort_container: 'registry.int.janelia.org/ecephys/kilosort:1.0.4',
+        cwaves_container: 'registry.int.janelia.org/ecephys/cwaves:2.0',
+        ecephys_modules_container: 'registry.int.janelia.org/ecephys/ecephys-modules:1.0.7',
+        kilosort_container: 'registry.int.janelia.org/ecephys/kilosort:1.0.5',
         pykilosort_container: 'registry.int.janelia.org/ecephys/pykilosort:1.0.4',
+        ks4_container: 'registry.int.janelia.org/ecephys/ks4:1.0.0',
         tprime_container: 'registry.int.janelia.org/ecephys/tprime:1.7',
 
         runtime_opts: '',
@@ -82,6 +83,15 @@ def default_params() {
         ks_non_deterministic: false,
         ks_nblocks: '',
         include_pcs: false,
+        
+        // ks4 specific params
+        with_ks4: true,
+        ks4_Th_universal: 9.0,
+        ks4_Th_learned: 8.0,
+        ks4_duplicate_spike_bins: 7,
+        ks4_min_template_size_um: 10,
+        
+        
 
         process_lf: true, // this must be true if depth_estimation is run
 
