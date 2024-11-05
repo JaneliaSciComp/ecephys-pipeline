@@ -14,3 +14,4 @@ $RUNCMD docker push registry.int.janelia.org/ecephys/cwaves:${CWAVES_VERSION}
 $RUNCMD docker push registry.int.janelia.org/ecephys/tprime:${TPRIME_VERSION}
 $RUNCMD docker push registry.int.janelia.org/ecephys/kilosort:${KILOSORT_VERSION}
 $RUNCMD docker push registry.int.janelia.org/ecephys/pykilosort:${PYKILOSORT_VERSION}
+$RUNCMD docker push registry.int.janelia.org/ecephys/ks4:${KS4_VERSION}

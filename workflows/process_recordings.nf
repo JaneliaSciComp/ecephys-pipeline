@@ -111,7 +111,7 @@ workflow process_all_recordings {
         def process_output = process_input | run_kilosort
         def process_errors
 
-        (ks_output, process_errors) = check_ks_errors(get_kilosort_helper_module(), process_input, process_output)
+        (ks_output, process_errors) = check_ks_errors(get_kilosort_helper_module(params.with_pyks, params.with_ks4), process_input, process_output)
         errors_output = errors_output.concat(process_errors)
     } else {
         ks_output = ks_input

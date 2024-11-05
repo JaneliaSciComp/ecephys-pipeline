@@ -141,14 +141,14 @@ def get_probe_data_filename(run_name, gate, probe, trigger, file_type) {
     "${run_folder_name}_t${trigger}.imec${probe}${file_type}"
 }
 
-def get_kilosort_helper_module() {
-    if params.with_pyks {
-        return 'pykilosort_helper'}
-    else if params.with_ks4 {
-        return 'ks4_helper' }
-    else {
-        return kilosort_helper}
-        
+def get_kilosort_helper_module(with_pyks, with_ks4) {
+    if (with_pyks) 
+        return 'pykilosort_helper'
+    else if (with_ks4) 
+        return 'ks4_helper' 
+    else 
+        return 'kilosort_helper'
+           
 }
 
 def processingErrorsFoundClosure(m) {

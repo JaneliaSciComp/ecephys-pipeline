@@ -81,11 +81,13 @@ def createInputJson(default_config,
                     ks_maxNeighbors=64, # 64 for standard build of KS
                     pyks_preprocessing_function='kilosort2',
                     pyks_alf_location='',
+                    ks4_Th_universal=9.0,
+                    ks4_Th_learned=8.0,
+                    ks4_duplicate_spike_ms=0.25,
+                    ks4_min_template_size_um=10,                  
                     c_Waves_snr_um=160,
                     qm_isi_thresh=1.5/1000,
                     include_pcs=True,
-                    ks4_duplicate_spike_bins = 15,
-                    ks4_min_template_size_um = 10
                     ):
 
     # hard coded paths to code on your computer and system
@@ -155,16 +157,14 @@ def createInputJson(default_config,
     # preprocessing. Calculate the number of sites within the user-specified
     # whitening radius for this probe geometery
     # for a Np 1.0 probe, 163 um => 32 sites
-    nrows = np.sqrt((np.square(ks_whiteningRadius_um) -
-                    np.square(hpitch/vpitch)))
+    nrows = np.sqrt((np.square(ks_whiteningRadius_um) - np.square(hpitch)))/vpitch 
     ks_whiteningRange = int(round(2*nrows*nColumn))
     if ks_whiteningRange > 384:
         ks_whiteningRange = 384
 
     # nNeighbors is the number of sites kilosort includes in a template.
     # Calculate the number of sites within that radisu.
-    nrows = np.sqrt((np.square(ks_templateRadius_um) -
-                     np.square(hpitch/vpitch)))
+    nrows = np.sqrt((np.square(ks_whiteningRadius_um) - np.square(hpitch)))/vpitch                     
     ks_nNeighbors = int(round(2*nrows*nColumn))
     if ks_nNeighbors > ks_maxNeighbors:
         ks_nNeighbors = ks_maxNeighbors
@@ -260,27 +260,33 @@ def createInputJson(default_config,
         'nblocks': ks_nblocks,
         'doFilter': ks_doFilter,
     }
+  
     dictionary['ks4_helper_params'] = default_config['ks4_helper_params'] | {
             'do_CAR' :  True if ks_car == 0 else False,
-            'Th_universal' : ks4_Th_universal,
-            'Th_learned' : ks4_Th_learned,
-            'duplicate_spike_bins' : ks4_duplicate_spike_bins,
-            'nblocks' : ks_nblocks,
-            'sig_interp' : 20.0,
-            'whitening_range' : ks_whiteningRange,
-            'min_template_size' : ks4_min_template_size_um,
-            'template_sizes' : 5,
-            'template_from_data' : True,
-            'neareast_chans' : 10,
-            'nearest_templates' : 100,
-            'ccg_threshold' : 0.25,
-            'acg_threshold' : 0.20,
-            'ks_make_copy': ks_make_copy,
             'save_extra_vars' : include_pcs,    # to save Wall and pc features
-            'doFilter' : ks_doFilter,       # not yet used
             'template_seed' : ks_LTseed,     # not yet used
-            'cluster_seed' : ks_CSBseed
+            'cluster_seed' : ks_CSBseed,     # not yet used
+            'doFilter' : ks_doFilter,        # not yet used
+            'ks_make_copy': ks_make_copy,
+            'save_preprocessed_copy': bool(ks_copy_fproc),
+            # ks4_params are limited to members of the KS4 'settings' list
+            'ks4_params' : default_config['ks4_helper_params']['ks4_params'] | {           
+                    'Th_universal' : ks4_Th_universal,
+                    'Th_learned' : ks4_Th_learned,  
+                    'duplicate_spike_ms' : ks4_duplicate_spike_ms,
+                    'nblocks' : ks_nblocks,
+                    'sig_interp' : 20.0,
+                    'whitening_range' : ks_whiteningRange,
+                    'min_template_size' : ks4_min_template_size_um,
+                    'template_sizes' : 5,
+                    'templates_from_data' : True,
+                    'nearest_chans' : 10,
+                    'nearest_templates' : 100,
+                    'ccg_threshold' : 0.25,
+                    'acg_threshold' : 0.20,
+            }
     }
+    
     dictionary['ks_postprocessing_params'] = default_config['ks_postprocessing_params'] | {
         "include_pcs": include_pcs,
     }

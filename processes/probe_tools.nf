@@ -49,7 +49,7 @@ process create_probe_config {
           val(ni_ex_list),
           val(to_stream_sync_params),
           val(ni_stream_sync_params),
-	  val(sort_out_tag)
+    	  val(sort_out_tag)
 
     output:
     tuple val(probe_index),
@@ -98,10 +98,10 @@ process create_probe_config {
         create_bool_arg('--ks_no_temp_files', params.ks_no_temp_files),
         create_bool_arg('--ks_non_deterministic', params.ks_non_deterministic),
         create_arg('--ks_nblocks', params.ks_nblocks),
-        create_arg('--ks4_Th_universal, parms.ks4_Th_universal),
-        create_arg('--ks4_Th_learned, params.ks4_Th_learned),
-        create_arg('--ks4_duplicate_spike_bins, params.ks4_duplicate_spike_bins),
-        create_arg('--ks4_min_template_size_um, params.ks4_min_template_size_um),
+        create_arg('--ks4_Th_universal', params.ks4_Th_universal),
+        create_arg('--ks4_Th_learned', params.ks4_Th_learned),
+        create_arg('--ks4_duplicate_spike_ms', params.ks4_duplicate_spike_ms),
+        create_arg('--ks4_min_template_size_um', params.ks4_min_template_size_um),
         create_bool_arg('--include_pcs', params.include_pcs),
         create_arg('--catgt_run_name', run_name),
         create_arg('--probe_type', probe_type),
@@ -310,12 +310,13 @@ process run_depth_estimation {
 }
 
 process run_kilosort {
-    if params.with_pyks {
-        container params.pykilosort_container }
-    else if  params.with_ks4 {
-        container params.ks4_container }
-    else if  params.with_ks4 {
-        params.kilosort_container }
+    
+    if (params.with_pyks) 
+         container {params.pykilosort_container} 
+    else if (params.with_ks4) 
+        container {params.ks4_container} 
+    else 
+        container {params.kilosort_container} 
  
     cpus { params.ks_cpus }
     memory { get_str_value_or_default(params, 'ks_mem', '') }
@@ -349,7 +350,7 @@ process run_kilosort {
           env(errors_found)
 
     script:
-    def helper_module = get_kilosort_helper_module()
+    def helper_module = get_kilosort_helper_module(params.with_pyks, params.with_ks4)
     def helper_module_params = "${helper_module}_params".toString()
     def code = create_code_block(
                 helper_module,

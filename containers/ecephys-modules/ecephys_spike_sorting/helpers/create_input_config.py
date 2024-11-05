@@ -53,9 +53,9 @@ def main(argv):
     parser.add_argument('--ks_nblocks', type=int, default=5, help='number of blocks used to segment probe')
     parser.add_argument('--pyks_preproc', default='kilosort2', help='PyyKilosort preprocessing function')
     parser.add_argument('--pyks_alf', default='', help='ALF location')    
-    parser.add_argument('--ks4_Th_universal', defualt=9.0, help='ks4 Th_universal'),
+    parser.add_argument('--ks4_Th_universal', default=9.0, help='ks4 Th_universal'),
     parser.add_argument('--ks4_Th_learned', default=8.0, help='ks4 Th_learned'),
-    parser.add_argument('--ks4_duplicate_spike_bins', default=7, help='ks4 duplicate spike bins'),
+    parser.add_argument('--ks4_duplicate_spike_ms', default=0.25, help='ks4 duplicate spike threshold'),
     parser.add_argument('--ks4_min_template_size_um', default=10, help='ks4 minimum template size in um'), 
     parser.add_argument('--catgt_run_name', help='CatGT run name')
     parser.add_argument('--probe_type')
@@ -146,9 +146,9 @@ def main(argv):
         ks_deterministic=not args.ks_non_deterministic,
         ks_nblocks=args.ks_nblocks,
         # KS4 args        
-        ks4_Th_universal=args.ks4_Th_univseral,
+        ks4_Th_universal=args.ks4_Th_universal,
         ks4_Th_learned=args.ks4_Th_learned,
-        ks4_duplicate_spike_bins=args.ks4_duplicate_spike_bins,
+        ks4_duplicate_spike_ms=args.ks4_duplicate_spike_ms,
         ks4_min_template_size_um=args.ks4_min_template_size_um,
         # CatGT args
         extracted_data_directory=args.catgt_output_dir,

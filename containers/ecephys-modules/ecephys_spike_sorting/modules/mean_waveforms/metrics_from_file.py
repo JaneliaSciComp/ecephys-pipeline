@@ -12,6 +12,7 @@ from ...common.epoch import Epoch
 from ...common.utils import printProgressBar
 
 def metrics_from_file(mean_waveform_fullpath,
+                      median_waveform_fullpath,
                       snr_fullpath,
                       clus_fullpath,
                       spike_times, 
@@ -87,6 +88,7 @@ def metrics_from_file(mean_waveform_fullpath,
     total_units = len(cluster_ids)
     
     mean_waveforms = np.load(mean_waveform_fullpath)
+    median_peak_waveforms = np.load(median_waveform_fullpath)
     snr_array = np.load(snr_fullpath)
     clus_table = np.load(clus_fullpath)
     peak_channels = clus_table[:,1]
@@ -104,6 +106,8 @@ def metrics_from_file(mean_waveform_fullpath,
     meas_pkchan = np.argmax(vpp_allchan,1)  
     vpp_nonzero = (vpp_val > 0)  
     peak_channels[vpp_nonzero] = meas_pkchan[vpp_nonzero]
+    
+    median_vpp_arr = np.max(median_peak_waveforms, axis = 1) - np.min(median_peak_waveforms, axis=1)
 
     for cluster_idx, cluster_id in enumerate(cluster_ids):
 
@@ -111,10 +115,13 @@ def metrics_from_file(mean_waveform_fullpath,
 
         snr = snr_array[cluster_idx,0]
         nSpike = snr_array[cluster_idx,1]
+        med_amp = median_vpp_arr[cluster_idx]
+        
         # if at least one spike, calculate metrics and concatenate to existing dataframe
         if nSpike > 0:
             metrics = pd.concat([metrics, calculate_waveform_metrics_from_avg(mean_waveforms[cluster_idx,:],
                                                                      snr,
+                                                                     med_amp,
                                                                      cluster_id, 
                                                                      peak_channels[cluster_idx], 
                                                                      channel_map,

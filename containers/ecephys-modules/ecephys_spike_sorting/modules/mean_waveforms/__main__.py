@@ -104,13 +104,16 @@ def calculate_mean_waveforms(args):
         # for first version, retain original names
         if clu_version == 0:
             mean_waveform_fullpath = os.path.join(dest, 'mean_waveforms.npy')
+            median_waveform_fullpath = os.path.join(dest, 'median_peak_waveforms.npy')
             snr_fullpath = os.path.join(dest, 'cluster_snr.npy')
         else:
             # build names with version number and rename
             # version 0 files are not renamed to maintain compatiblity with
             mean_waveform_fullpath = os.path.join(dest, 'mean_waveforms_' + repr(clu_version) + '.npy')
+            median_waveform_fullpath = os.path.join(dest, 'median_peak_waveforms_' + repr(clu_version) + '.npy')
             snr_fullpath = os.path.join(dest, 'cluster_snr_' + repr(clu_version) + '.npy')
             os.rename(os.path.join(dest, 'mean_waveforms.npy'), mean_waveform_fullpath)
+            os.rename(os.path.join(dest, 'median_peak_waveforms.npy'), median_waveform_fullpath)
             os.rename(os.path.join(dest, 'cluster_snr.npy'), snr_fullpath)
             
         
@@ -143,7 +146,8 @@ def calculate_mean_waveforms(args):
         site_x = np.squeeze(loadmat(chanMapMat)['xcoords'])
         site_y = np.squeeze(loadmat(chanMapMat)['ycoords'])
 
-        metrics = metrics_from_file(mean_waveform_fullpath, snr_fullpath, clus_table_npy, \
+        metrics = metrics_from_file(mean_waveform_fullpath, median_waveform_fullpath, \
+                    snr_fullpath, clus_table_npy, \
                     spike_times, \
                     spike_clusters, \
                     templates, \

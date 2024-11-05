@@ -88,7 +88,7 @@ def default_params() {
         with_ks4: true,
         ks4_Th_universal: 9.0,
         ks4_Th_learned: 8.0,
-        ks4_duplicate_spike_bins: 7,
+        ks4_duplicate_spike_ms: 0.25,
         ks4_min_template_size_um: 10,
         
         

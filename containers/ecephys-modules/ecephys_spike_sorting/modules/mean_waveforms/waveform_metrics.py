@@ -89,6 +89,7 @@ def calculate_waveform_metrics(waveforms,
 
 def calculate_waveform_metrics_from_avg(avg_waveform,
                                         snr,
+                                        med_amp,
                                         cluster_id, 
                                         peak_channel, 
                                         channel_map, 
@@ -168,12 +169,12 @@ def calculate_waveform_metrics_from_avg(avg_waveform,
         mean_2D_waveform, timestamps, local_peak, site_x, site_y, spread_threshold, site_range)
 
     data = [[cluster_id, epoch_name, peak_channel, snr, duration, halfwidth, PT_ratio, repolarization_slope,
-              recovery_slope, amplitude, spread, velocity_above, velocity_below]]
+              recovery_slope, amplitude, spread, velocity_above, velocity_below, med_amp]]
 
     metrics = pd.DataFrame(data,
                            columns=['cluster_id', 'epoch_name', 'peak_channel', 'snr', 'duration', 'halfwidth',
                                      'PT_ratio', 'repolarization_slope', 'recovery_slope', 'amplitude',
-                                     'spread', 'velocity_above', 'velocity_below'])
+                                     'spread', 'velocity_above', 'velocity_below', 'median_amplitude'])
 
     return metrics
 
