@@ -291,7 +291,7 @@ def createInputJson(default_config,
         "include_pcs": include_pcs,
     }
     dictionary['waveform_metrics'] = default_config['waveform_metrics'] | {
-        "waveform_metrics_file": os.path.join(kilosort_output_directory, 'waveform_metrics.csv'),        
+        "waveform_metrics_file": os.path.join(kilosort_output_directory, 'waveform_metrics.csv'),          
     }
     dictionary['cluster_metrics'] = default_config['cluster_metrics'] | {
         "cluster_metrics_file": os.path.join(kilosort_output_directory, 'metrics.csv'),
@@ -324,6 +324,9 @@ def createInputJson(default_config,
         "car_mode": catGT_car_mode,
         "loccar_inner": catGT_loccar_min_sites,
         "loccar_outer": catGT_loccar_max_sites,
+        "loccar_inner_um" : catGT_loccar_min_um,
+        "loccar_outer_um" : catGT_loccar_max_um,
+        "useGeom" : useGeom,
         "cmdStr": catGT_cmd_string,
     }
     dictionary['tPrime_helper_params'] = default_config['tPrime_helper_params'] | {

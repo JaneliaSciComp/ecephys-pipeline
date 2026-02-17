@@ -29,7 +29,7 @@ def run_CatGT(args):
     # common average referencing
     car_mode = args['catGT_helper_params']['car_mode']
     if car_mode == 'loccar':
-        if ['catGT_helper_params']['useGeom']:
+        if args['catGT_helper_params']['useGeom']:
             inner_um = args['catGT_helper_params']['loccar_inner_um']
             outer_um = args['catGT_helper_params']['loccar_outer_um']
             car_str = ' -loccar_um=' + repr(inner_um) + ',' + repr(outer_um)
@@ -83,9 +83,11 @@ def run_CatGT(args):
     
     cmd_parts.append('-no_catgt_fld')
     cmd_parts.append('-dest=' + catgt_prbDir)
-
-    print('CatGT command line:',  cmd_parts)
-
+   
+    print(cmd_parts)
+    # unlike Popen (used in the windows version of the pipeline) subprocess takes a list
+    # of string arguments (cmd_parts) each of which is already enclosed in single 
+    # quotes.
     start = time.time()
     subprocess.call(cmd_parts)
 
@@ -109,32 +111,6 @@ def run_CatGT(args):
     shutil.copyfile(os.path.join(logPath, logName),
                     os.path.join(catgt_prbDir, catgt_logName))
     
-
-    # run_name = args['catGT_helper_params']['run_name'] + '_g' + args['catGT_helper_params']['gate_string']
-    # fyi_path = os.path.join(catgt_runDir, (run_name + '_fyi.txt'))
-    # if Path(fyi_path).is_file():
-    #     new_name = run_name + '_prb' + prb_title + '_fyi.txt'
-    #     new_path = os.path.join(catgt_runDir, new_name)
-    #     shutil.copyfile(fyi_path, new_path)
-    
-    # all_fyi_path =  os.path.join(catgt_runDir, (run_name + '_all_fyi.txt'))
-    # temp_path = os.path.join(catgt_runDir, 'temp.txt')
-    # if Path(fyi_path).is_file():        
-    #     if Path(all_fyi_path).is_file():
-    #         # append current fyi
-    #         if os_str == 'linux':
-    #             cat_fyi_cmd = 'cat ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
-    #         else:
-    #             cat_fyi_cmd = 'type ' + all_fyi_path + ' ' + fyi_path + ' > ' + temp_path
-    #         print(cat_fyi_cmd)
-    #         subprocess.Popen(cat_fyi_cmd, shell='False').wait()
-    #         os.remove(all_fyi_path)
-    #         shutil.copyfile(temp_path, all_fyi_path)
-    #         os.remove(temp_path)
-    #     else:
-    #         # copy current fyi to all_fyi
-    #         shutil.copyfile(fyi_path, all_fyi_path)                    
-            
 
     print('total time: ' + str(np.around(execution_time, 2)) + ' seconds')
 

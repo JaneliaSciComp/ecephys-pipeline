@@ -22,7 +22,7 @@ class CatGTParams(DefaultSchema):
                        help='Outer radius for loccar in sites')
     loccar_inner_um = Int(require=False, default=40, 
                        help='Inner radius for loccar in um')
-    loccar_outer_um = Int(require=False, default=40, 
+    loccar_outer_um = Int(require=False, default=200, 
                       help='Outer radius for loccar in um')
     maxZ_um = Float(require=False, default=-1, 
                        help='If > -1, maximum z from bottom row to analyze and save')
