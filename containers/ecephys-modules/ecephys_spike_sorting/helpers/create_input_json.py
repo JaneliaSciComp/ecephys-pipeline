@@ -76,7 +76,10 @@ def createInputJson(default_config,
                     ks_Th='[10,4]',
                     ks_CSBseed=1,
                     ks_LTseed=1,
+                    ks_template_from_data = True,
                     ks_templateRadius_um=163,
+                    ks_tmin = 0,
+                    ks_tmax = -1,
                     ks_working_dir='/tmp/kilosort_datatemp',
                     ks_maxNeighbors=64, # 64 for standard build of KS
                     pyks_preprocessing_function='kilosort2',
@@ -264,8 +267,6 @@ def createInputJson(default_config,
     dictionary['ks4_helper_params'] = default_config['ks4_helper_params'] | {
             'do_CAR' :  True if ks_car == 0 else False,
             'save_extra_vars' : include_pcs,    # to save Wall and pc features
-            'template_seed' : ks_LTseed,     # not yet used
-            'cluster_seed' : ks_CSBseed,     # not yet used
             'doFilter' : ks_doFilter,        # not yet used
             'ks_make_copy': ks_make_copy,
             'save_preprocessed_copy': bool(ks_copy_fproc),
@@ -279,11 +280,14 @@ def createInputJson(default_config,
                     'whitening_range' : ks_whiteningRange,
                     'min_template_size' : ks4_min_template_size_um,
                     'template_sizes' : 5,
-                    'templates_from_data' : True,
+                    'templates_from_data' : ks_template_from_data,
                     'nearest_chans' : 10,
                     'nearest_templates' : 100,
                     'ccg_threshold' : 0.25,
                     'acg_threshold' : 0.20,
+                    'cluster_init_seed' : ks_CSBseed,
+                    'tmin' : ks_tmin,
+                    'tmax' : ks_tmax
             }
     }
     

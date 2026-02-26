@@ -12,7 +12,32 @@ from kilosort.parameters import DEFAULT_SETTINGS
 from ...common.SGLXMetaToCoords import readMeta, MetaToCoords
 
 from pathlib import Path
+import torch
+import random
 
+
+def set_seed(seed=42):
+    # Python random module
+    random.seed(seed)
+    # Numpy
+    np.random.seed(seed)
+    # PyTorch CPU and GPU
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # For multi-GPU
+    
+    # CuDNN settings
+    torch.backends.cudnn.deterministic = True  # Uses deterministic convolution algorithms
+    torch.backends.cudnn.benchmark = False     # Disables auto-tuner for optimal performance
+    
+    # Force deterministic algorithms
+    torch.use_deterministic_algorithms(True)
+    
+    # Recommended for reproducibility in CUDA
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    
+    # Set OMP_NUM_THREADS
+    os.environ["OMP_NUM_THREADS"] = str(1)
 
 def _string_as_list_param(dict, param, default_val):
     v = dict.get(param, default_val)
@@ -180,6 +205,8 @@ def run_ks4(args):
     settings = _get_ks_params(meta_file, settings_from_json)
     print(repr(settings))
 #    print(repr(ks4_prb))
+
+    set_seed(42)    # 
     
     run_kilosort(settings, 
                  probe=ks4_prb, 

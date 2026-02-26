@@ -102,6 +102,7 @@ process create_probe_config {
         create_arg('--ks4_Th_learned', params.ks4_Th_learned),
         create_arg('--ks4_duplicate_spike_ms', params.ks4_duplicate_spike_ms),
         create_arg('--ks4_min_template_size_um', params.ks4_min_template_size_um),
+        create_arg('--ks4_template_from_data', params.ks_template_from_data)
         create_bool_arg('--include_pcs', params.include_pcs),
         create_arg('--catgt_run_name', run_name),
         create_arg('--probe_type', probe_type),

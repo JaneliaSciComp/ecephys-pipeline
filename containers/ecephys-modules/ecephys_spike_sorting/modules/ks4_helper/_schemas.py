@@ -3,11 +3,10 @@ from argschema.schemas import DefaultSchema
 from argschema.fields import Nested, InputDir, String, Float, Dict, Int, Bool, NumpyArray
 from ...common.schemas import EphysParams, Directories, CommonFiles
 
-
 class ks4_params(DefaultSchema):    
     Th_universal = Float(required=False, default=9, help='threshold for creating templates')
     Th_learned = Float(required=False, default=8, help='threshold for creating templates')
-    Th_single_ch = Float(required=False, default=8, help='threshold crossings for pre-clustering (in PCA projection space)')
+    Th_single_ch = Float(required=False, default=6, help='threshold crossings for pre-clustering (in PCA projection space)')
     duplicate_spike_ms = Float(required=False, default=0.25, help='Number of bins for which subsequent spikes from the same cluster are assumed to be artifacts. A value of 0 disables this step.')
     nblocks = Int(required=False, default=5, help='number of blocks used to segment the probe when tracking drift, 0 == do not track, 1 == rigid, > 1 == non-rigid')
     sig_interp = Float(required=True, default=20.0, help='sigma for the Gaussian interpolation in drift correction um)')
@@ -21,13 +20,12 @@ class ks4_params(DefaultSchema):
     nearest_templates = Int(required=False, default=100, help='Number of nearest spike template locations to consider when finding local maxima during spike detection.')
     ccg_threshold = Float(required=False, default=0.25, help='Fraction of refractory period violations that are allowed in the CCG compared to baseline; used to perform splits and merges. ')
     acg_threshold = Float(required=False, default=0.20, help='Fraction of refractory period violations that are allowed in the ACG compared to baseline; used to assign "good" units. ')
-   
+    cluster_init_seed = Int(required=False, default=5, help='start seed for clustering')
+
     
 class KS4HelperParameters(DefaultSchema):
     do_CAR = Bool(required=False, default=True, help='set to True to perform common average referencing (median subtraction)')
     save_extra_vars = Bool(required=False, default=False, help='If true, save Wall and pc features in save_to_phy ')
-    template_seed = Int(required=False, default=0, help='seed to pick which batches are used for finding universal templates')
-    cluster_seed = Int(required=False, default=0, help='start seed for clustering')
     ks_make_copy = Bool(required=False, default=False, help='If true, make a copy of the original KS output')
     doFilter = Int(required=False, default=0, help='filter if = 1, skip bp filtering if = 0')
     save_preprocessed_copy = Bool(required=False, default=False, help='Copy processed binary to output directory')

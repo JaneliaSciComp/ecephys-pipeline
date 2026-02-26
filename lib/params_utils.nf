@@ -90,7 +90,7 @@ def default_params() {
         ks4_Th_learned: 8.0,
         ks4_duplicate_spike_ms: 0.25,
         ks4_min_template_size_um: 10,
-        
+        ks_template_from_data: True,
         
 
         process_lf: true, // this must be true if depth_estimation is run

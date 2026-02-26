@@ -150,7 +150,10 @@
                 "nearest_chans" : 10,
                 "nearest_templates" : 100,
                 "ccg_threshold" : 0.25,
-                "acg_threshold" : 0.20 
+                "acg_threshold" : 0.20,
+                "cluster_init_seed" : 0,
+                "tmin" : 0,
+                "tmax" : -1
             }     
     },
     "ks_postprocessing_params": {
