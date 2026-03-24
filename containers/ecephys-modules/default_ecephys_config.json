@@ -133,10 +133,9 @@
     "ks4_helper_params": {
             "do_CAR" : false,
             "save_extra_vars" : true,  
-            "template_seed" : 0,
-            "cluster_seed": 0,
             "doFilter" : 0,
-            "ks_make_copy": false,  
+            "ks_make_copy": false,
+            "ks4_det": true,
             "ks4_params": {  
                 "Th_universal" : 8,
                 "Th_learned" : 9,

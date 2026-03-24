@@ -62,7 +62,7 @@ def createInputJson(default_config,
                     ks_sigma_mask=30,
                     ks_fshigh=150,
                     ks_fslow=None,
-                    ks_car=0,
+                    ks_car=False,
                     ks_save_temp_files=True,
                     ks_deterministic=True,
                     ks_nblocks=5,
@@ -77,6 +77,7 @@ def createInputJson(default_config,
                     ks_CSBseed=1,
                     ks_LTseed=1,
                     ks_template_from_data = True,
+                    ks4_det = False,
                     ks_templateRadius_um=163,
                     ks_tmin = 0,
                     ks_tmax = -1,
@@ -148,6 +149,8 @@ def createInputJson(default_config,
     else:
         print('only SpikeGLX data is supported at this time')
 
+    # checking determinism param
+    print(f'create_input_json ks4_det: {ks4_det} ')
     # CatGT needs the inner and outer redii for local common average referencing
     # specified in sites
     catGT_loccar_min_sites = int(
@@ -240,7 +243,7 @@ def createInputJson(default_config,
             'whiteningRange': ks_whiteningRange,
             'nNeighbors': ks_nNeighbors,
             'doFilter': ks_doFilter,
-            'CAR': 1 if ks_car else 0,
+            'CAR': ks_car,
         }
     }
     dictionary['pykilosort_helper_params'] = default_config['pykilosort_helper_params'] | {
@@ -265,11 +268,12 @@ def createInputJson(default_config,
     }
   
     dictionary['ks4_helper_params'] = default_config['ks4_helper_params'] | {
-            'do_CAR' :  True if ks_car == 0 else False,
+            'do_CAR' :  ks_car,
             'save_extra_vars' : include_pcs,    # to save Wall and pc features
             'doFilter' : ks_doFilter,        # not yet used
             'ks_make_copy': ks_make_copy,
             'save_preprocessed_copy': bool(ks_copy_fproc),
+            'ks4_det': ks4_det,
             # ks4_params are limited to members of the KS4 'settings' list
             'ks4_params' : default_config['ks4_helper_params']['ks4_params'] | {           
                     'Th_universal' : ks4_Th_universal,

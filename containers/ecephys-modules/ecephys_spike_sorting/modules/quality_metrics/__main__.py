@@ -22,7 +22,6 @@ def calculate_quality_metrics(args):
 
     start = time.time()
 
-    include_pcs = args['quality_metrics_params']['include_pcs']
 
     # make usre we can write an output file
     output_file_args = args['cluster_metrics']['cluster_metrics_file']
@@ -34,22 +33,14 @@ def calculate_quality_metrics(args):
     print("Loading data...")
 
     try:
-        if include_pcs:
-            spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
-            channel_pos, clusterIDs, cluster_quality, cluster_amplitude, pc_features, pc_feature_ind, template_features = \
-                    load_kilosort_data(args['directories']['kilosort_output_directory'], \
-                        args['ephys_params']['sample_rate'], \
-                        use_master_clock = False,
-                        include_pcs = include_pcs)
-        else:
-            spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
-            channel_pos, clusterIDs, cluster_quality, cluster_amplitude = \
-            load_kilosort_data(args['directories']['kilosort_output_directory'], \
-                        args['ephys_params']['sample_rate'], \
-                        use_master_clock = False,
-                        include_pcs = include_pcs)
-            pc_features = []
-            pc_feature_ind = []
+
+        spike_times, spike_clusters, spike_templates, detection_templates, amplitudes, templates, channel_map, \
+        channel_pos, clusterIDs, cluster_quality, cluster_amplitude, pc_features, pc_feature_ind, template_features, spike_positions = \
+                load_kilosort_data(args['directories']['kilosort_output_directory'], \
+                    args['ephys_params']['sample_rate'], \
+                    use_master_clock = False)
+
+
 
         metrics = calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, channel_map, channel_pos, templates, pc_features, pc_feature_ind, args['quality_metrics_params'])
         ibl_metrics = calculate_ibl_metrics(spike_times, spike_clusters, amplitudes, args['quality_metrics_params'], args['ephys_params']['sample_rate'])

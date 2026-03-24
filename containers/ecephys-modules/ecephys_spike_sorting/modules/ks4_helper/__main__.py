@@ -16,7 +16,7 @@ import torch
 import random
 
 
-def set_seed(seed=42):
+def set_seed(seed=42, deterministic = False):
     # Python random module
     random.seed(seed)
     # Numpy
@@ -26,18 +26,19 @@ def set_seed(seed=42):
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)  # For multi-GPU
     
-    # CuDNN settings
-    torch.backends.cudnn.deterministic = True  # Uses deterministic convolution algorithms
-    torch.backends.cudnn.benchmark = False     # Disables auto-tuner for optimal performance
-    
-    # Force deterministic algorithms
-    torch.use_deterministic_algorithms(True)
-    
-    # Recommended for reproducibility in CUDA
-    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-    
-    # Set OMP_NUM_THREADS
-    os.environ["OMP_NUM_THREADS"] = str(1)
+    if deterministic: 
+        # CuDNN settings
+        torch.backends.cudnn.deterministic = True  # Uses deterministic convolution algorithms
+        torch.backends.cudnn.benchmark = False     # Disables auto-tuner for optimal performance
+        
+        # Force deterministic algorithms
+        torch.use_deterministic_algorithms(True, warn_only = True)
+        
+        # Recommended for reproducibility in CUDA
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+        
+        # Set OMP_NUM_THREADS
+        os.environ["OMP_NUM_THREADS"] = str(1)
 
 def _string_as_list_param(dict, param, default_val):
     v = dict.get(param, default_val)
@@ -175,7 +176,19 @@ def run_ks4(args):
     
     start = time.time()
     print('ecephys spike sorting: ks4 helper module')
-        
+    
+    if torch.cuda.is_available():
+        print(f"CUDA Available: {torch.cuda.is_available()}")
+        gpu_count = torch.cuda.device_count()
+        print(f"Number of GPUs available: {gpu_count}")
+
+        print("Available GPU devices:")
+        # Create a list of device objects and print their names                 
+        for device_id in range(gpu_count):
+            print(f"* Device ID {device_id}: {torch.cuda.get_device_name(device_id)}")
+    else:
+        print("CUDA is not available. Only CPU is available.")
+            
     input_file_name = args['ephys_params']['ap_band_file']
     input_file = Path(input_file_name)
 
@@ -203,10 +216,18 @@ def run_ks4(args):
     
     settings_from_json = args['ks4_helper_params']['ks4_params']
     settings = _get_ks_params(meta_file, settings_from_json)
+
     print(repr(settings))
+    # check for presence of the template file
+    DOWNLOADS_DIR = Path.home().joinpath('.kilosort')
+    basename = 'wTEMP.npz'
+    cached_file = os.fspath(DOWNLOADS_DIR.joinpath(basename))
+    print(f'expected path to cached template: {cached_file}')
+    print(f'cached file exists: {os.path.exists(cached_file)}')
 #    print(repr(ks4_prb))
 
-    set_seed(42)    # 
+    set_seed( seed = args['ks4_helper_params']['ks4_params']['cluster_init_seed'],\
+                  deterministic = args['ks4_helper_params']['ks4_det'])
     
     run_kilosort(settings, 
                  probe=ks4_prb, 

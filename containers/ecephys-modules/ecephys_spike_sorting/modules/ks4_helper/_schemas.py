@@ -32,6 +32,7 @@ class KS4HelperParameters(DefaultSchema):
     fproc = String(required=False, default='D:\kilosort_datatemp\temp_wh.dat', help='Processed data file on a fast ssd')
     fshigh = Float(required=False, allow_none=True, default=300, help='high pass filter frequency')
     fslow = Float(required=False, allow_none=True, default=10000, help='low pass filter frequency')
+    ks4_det = Bool(required=False, default=False, help='set to True to set torch determinism params')
     ks4_params = Nested(ks4_params, required=True, help='Parameters used to auto-generate a Kilosort config file')
 
 class InputParameters(ArgSchema):

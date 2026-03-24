@@ -122,7 +122,7 @@ def calculate_mean_waveforms(args):
         
         # load in kilosort output needed for these calculations
         ks_output_dir = args['directories']['kilosort_output_directory']
-        spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
+        spike_times, spike_clusters, spike_templates, detection_templates, amplitudes, templates, channel_map, \
         channel_pos, clusterIDs, cluster_quality, cluster_amplitude = \
                 load_kilosort_data(ks_output_dir, \
                     args['ephys_params']['sample_rate'], \
@@ -254,7 +254,7 @@ def calculate_mean_waveforms(args):
         rawData = np.memmap(args['ephys_params']['ap_band_file'], dtype='int16', mode='r')
         data = np.reshape(rawData, (int(rawData.size/args['ephys_params']['num_channels']), args['ephys_params']['num_channels']))
     
-        spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
+        spike_times, spike_clusters, spike_templates, detection_templates, amplitudes, templates, channel_map, \
         channel_pos, clusterIDs, cluster_quality, cluster_amplitude = \
                 load_kilosort_data(args['directories']['kilosort_output_directory'], \
                     args['ephys_params']['sample_rate'], \

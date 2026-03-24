@@ -14,6 +14,7 @@ def main(argv):
         else:
             return '-' + arg
 
+    print(argv)
     parser = argparse.ArgumentParser(description='Create input json tool', allow_abbrev=False)
 
     parser.add_argument('--default_config_template',
@@ -50,14 +51,15 @@ def main(argv):
     parser.add_argument('--ks_car', action='store_true', help='common average referencing')
     parser.add_argument('--ks_no_temp_files', action='store_true', help='Do not save temp files')
     parser.add_argument('--ks_non_deterministic', action='store_true', help='Use a stochastic process')
-    parser.add_argument('--ks_nblocks', type=int, default=5, help='number of blocks used to segment probe')
+    parser.add_argument('--ks_nblocks', type=int, default=6, help='number of blocks used to segment probe')
     parser.add_argument('--pyks_preproc', default='kilosort2', help='PyyKilosort preprocessing function')
     parser.add_argument('--pyks_alf', default='', help='ALF location')    
-    parser.add_argument('--ks4_Th_universal', default=9.0, help='ks4 Th_universal'),
-    parser.add_argument('--ks4_Th_learned', default=8.0, help='ks4 Th_learned'),
-    parser.add_argument('--ks4_duplicate_spike_ms', default=0.25, help='ks4 duplicate spike threshold'),
-    parser.add_argument('--ks4_template_from_data', default=True, help='ks4 derive templates from data'),
-    parser.add_argument('--ks4_min_template_size_um', default=10, help='ks4 minimum template size in um'), 
+    parser.add_argument('--ks4_Th_universal', default=9.0, help='ks4 Th_universal')
+    parser.add_argument('--ks4_Th_learned', default=8.0, help='ks4 Th_learned')
+    parser.add_argument('--ks4_duplicate_spike_ms', default=0.25, help='ks4 duplicate spike threshold')
+    parser.add_argument('--ks4_template_from_data', action='store_true', help='ks4 derive templates from data')
+    parser.add_argument('--ks4_det', action='store_false', help='ks4 set torch determinism to true')
+    parser.add_argument('--ks4_min_template_size_um', default=10, help='ks4 minimum template size in um')
     parser.add_argument('--catgt_run_name', help='CatGT run name')
     parser.add_argument('--probe_type')
     parser.add_argument('--gate_string', default='0')
@@ -108,6 +110,13 @@ def main(argv):
         kilosort_output_directory = args.kilosort_output_dir
     else:
         kilosort_output_directory = ''
+        
+        
+    # checking the template from data
+    print(f'create_input_config ks4_det: {args.ks4_det} ')
+    print(f'create_input_config args.ks_car: {args.ks_car} ')
+    print(f'create_input_config args.ks_mode: {args.ks_mode} ')
+    
     info = createInputJson(
         default_config,
         args.output_config_file,
@@ -152,6 +161,7 @@ def main(argv):
         ks4_duplicate_spike_ms=args.ks4_duplicate_spike_ms,
         ks4_min_template_size_um=args.ks4_min_template_size_um,
         ks_template_from_data=args.ks4_template_from_data,
+        ks4_det=args.ks4_det,
         # CatGT args
         extracted_data_directory=args.catgt_output_dir,
         catGT_run_name=args.catgt_run_name,

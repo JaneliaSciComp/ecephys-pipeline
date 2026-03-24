@@ -60,8 +60,8 @@ def default_params() {
         ks_csb_seed: 1,
         ks_lt_seed: 1,
     	sort_out_tag: 'ks2',
-        ks_copy_results: false,
-        ks_mask_bad_channels: true,
+        ks_copy_results: false,      //add to keep a copy of hte phy folder before dup removal
+        ks_mask_bad_channels: false, //add to command line for ks2-3 removal of bad channels
         ks_ver: '2.0',
         ks_remove_dups: 0,
         ks_save_rez: 1,
@@ -82,7 +82,7 @@ def default_params() {
         ks_no_temp_files: false,
         ks_non_deterministic: false,
         ks_nblocks: '',
-        include_pcs: false,
+        include_pcs: false, //add to command line for ks2-3 removal of bad channels
         
         // ks4 specific params
         with_ks4: true,
@@ -90,7 +90,8 @@ def default_params() {
         ks4_Th_learned: 8.0,
         ks4_duplicate_spike_ms: 0.25,
         ks4_min_template_size_um: 10,
-        ks_template_from_data: True,
+        ks_template_from_data: true,
+        ks4_det: false,
         
 
         process_lf: true, // this must be true if depth_estimation is run

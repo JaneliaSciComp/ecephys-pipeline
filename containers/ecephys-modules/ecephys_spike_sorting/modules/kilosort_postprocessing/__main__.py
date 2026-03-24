@@ -22,28 +22,16 @@ def run_postprocessing(args):
 
     start = time.time()
     
-    include_pcs = args['ks_postprocessing_params']['include_pcs']
     
-    if include_pcs:
-        spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
-        channel_pos, clusterIDs, cluster_quality, cluster_amplitude, pc_features, pc_feature_ind, template_features = \
+    spike_times, spike_clusters, spike_templates, detection_templates, amplitudes, templates, channel_map, \
+    channel_pos, clusterIDs, cluster_quality, cluster_amplitude, pc_features, pc_feature_ind, \
+    channel_positions, template_features, spike_positions = \
                     load_kilosort_data(args['directories']['kilosort_output_directory'], \
                         args['ephys_params']['sample_rate'], \
                         convert_to_seconds = False, \
                         use_master_clock = False, \
-                        include_pcs = include_pcs )
-    else:
-        spike_times, spike_clusters, spike_templates, amplitudes, templates, channel_map, \
-        channel_pos, clusterIDs, cluster_quality, cluster_amplitude = \
-                    load_kilosort_data(args['directories']['kilosort_output_directory'], \
-                        args['ephys_params']['sample_rate'], \
-                        convert_to_seconds = False, \
-                        use_master_clock = False, \
-                        include_pcs = include_pcs )
-        # empty arrays to stand in for the missing variables
-        pc_features = []
-        pc_feature_ind = []
-        template_features = []
+                        include_pcs = True )
+
         
     if args['ks_postprocessing_params']['align_avg_waveform']: 
         spike_times = align_spike_times(spike_times,
@@ -53,11 +41,12 @@ def run_postprocessing(args):
                                         args['ks_postprocessing_params']['cWaves_path'])
         
     if args['ks_postprocessing_params']['remove_duplicates']:
-        spike_times, spike_clusters, spike_templates, amplitudes, pc_features, \
-        template_features, overlap_matrix, overlap_summary = \
+        spike_times, spike_clusters, spike_templates, detection_templates, amplitudes, pc_features, \
+        template_features, spike_positions, overlap_matrix, overlap_summary = \
             remove_double_counted_spikes(spike_times, 
                                          spike_clusters,
                                          spike_templates, 
+                                         detection_templates,
                                          amplitudes, 
                                          channel_map,
                                          channel_pos,
@@ -65,6 +54,7 @@ def run_postprocessing(args):
                                          pc_features, 
                                          pc_feature_ind, 
                                          template_features,
+                                         spike_positions,
                                          cluster_amplitude,
                                          args['ephys_params']['sample_rate'],
                                          args['ks_postprocessing_params'])
@@ -78,9 +68,15 @@ def run_postprocessing(args):
     np.save(os.path.join(output_dir, 'spike_clusters.npy'), spike_clusters)
     np.save(os.path.join(output_dir, 'spike_templates.npy'), spike_templates)
     
-    if args['ks_postprocessing_params']['include_pcs']:
+    if pc_features.size > 0:
         np.save(os.path.join(output_dir, 'pc_features.npy'), pc_features)
+    if template_features.size > 0: 
         np.save(os.path.join(output_dir, 'template_features.npy'), template_features)
+    if spike_positions.size > 0:
+        np.save(os.path.join(output_dir, 'spike_positions.npy'), spike_positions )
+    if detection_templates.size > 0:
+        np.save(os.path.join(output_dir, 'spike_detection_templates.npy'), detection_templates )
+    
     
     if args['ks_postprocessing_params']['remove_duplicates']:
         np.save(os.path.join(output_dir, 'overlap_matrix.npy'), overlap_matrix)

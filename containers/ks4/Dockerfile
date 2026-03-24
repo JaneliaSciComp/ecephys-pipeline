@@ -44,8 +44,8 @@ RUN cd /app/ks4 && \
     ls && \
     conda env update -n base -f environment_docker.yml && \
     . /miniforge/etc/profile.d/conda.sh && \
-    conda activate base && \
-    conda install pytorch torchvision -c pytorch -c nvidia && \
+    conda activate base && \       
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 && \
     pip install -e .
 
 
