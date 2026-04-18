@@ -99,12 +99,13 @@ workflow process_probes_for_all_runs {
         def probe_stream_params
         def probe_sync_extract_flags = "SY=${probe},${params.probe_sync_ch_values}"
         def probe_catgt_extract_string
-	def ni_extract_cmd_args = params.ni_present ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
+	    def ni_extract_cmd_args = (params.ni_present || params.ob_present) ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
         def lf_flag = params.process_lf ? '-lf' : ''
         if (probe_index == 0) {
             // if this is the first probe proceessed, process the ni stream with it
             def ni_flag = params.ni_present ? '-ni' : ''
-            probe_stream_params = "'ap ${ni_flag} ${lf_flag}'" // this will be hyphenated by the config tool
+            def ob_flag = params.ob_present ? '-ob -obx=0' : ''
+            probe_stream_params = "'ap ${ni_flag} ${ob_flag} ${lf_flag}'" // this will be hyphenated by the config tool
             //probe_catgt_extract_string = "'${probe_sync_extract_flags} ${ni_extract_cmd_args}'"
 	    probe_catgt_extract_string = "'${ni_extract_cmd_args}'"
         } else {
@@ -307,7 +308,7 @@ workflow process_tprime {
             }
             .join(' ')
         def im_ex_list = "'${probes_sync_ch_args}'"
-	def ni_extract_cmd_args = params.ni_present ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
+	def ni_extract_cmd_args = (params.ni_present || params.ob_present) ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
         def ni_ex_list = params.has_aux_data ? "'${ni_extract_cmd_args}'" : 'None'
         def to_stream_sync_params = params.to_stream_sync_cmd_args
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : 'None'

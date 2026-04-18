@@ -17,13 +17,13 @@ RUN apt-get update -y && \
 
 WORKDIR /tmp-install
 
-COPY --from=builder /ecephys-install/miniconda-install.sh .
+COPY --from=builder /ecephys-install/Miniforge3.sh .
 COPY --from=builder /ecephys-install/conda-requirements.yml .
 
-RUN bash miniconda-install.sh -b -p /miniconda && \
-    rm miniconda-install.sh
+RUN bash Miniforge3.sh -b -p /miniforge && \
+    rm Miniforge3.sh
 
-ENV PATH=/miniconda/bin:${PATH}
+ENV PATH=/miniforge/bin:${PATH}
 
 RUN conda config --set always_yes yes && \
     conda update -q conda && \

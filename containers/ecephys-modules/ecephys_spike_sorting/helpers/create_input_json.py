@@ -315,7 +315,8 @@ def createInputJson(default_config,
     }
     dictionary['mean_waveform_params'] = default_config['mean_waveform_params'] | {
         "mean_waveforms_file": os.path.join(kilosort_output_directory, 'mean_waveforms.npy'),
-        "snr_radius": c_waves_radius_sites
+        "snr_radius": c_waves_radius_sites,
+        "nAP" : nAP
     }
     dictionary['noise_waveform_params'] = default_config['noise_waveform_params'] | {
     }

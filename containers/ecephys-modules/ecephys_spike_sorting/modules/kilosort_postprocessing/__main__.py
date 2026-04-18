@@ -25,7 +25,7 @@ def run_postprocessing(args):
     
     spike_times, spike_clusters, spike_templates, detection_templates, amplitudes, templates, channel_map, \
     channel_pos, clusterIDs, cluster_quality, cluster_amplitude, pc_features, pc_feature_ind, \
-    channel_positions, template_features, spike_positions = \
+    template_features, spike_positions = \
                     load_kilosort_data(args['directories']['kilosort_output_directory'], \
                         args['ephys_params']['sample_rate'], \
                         convert_to_seconds = False, \

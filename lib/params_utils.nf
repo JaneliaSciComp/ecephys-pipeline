@@ -97,6 +97,7 @@ def default_params() {
         process_lf: true, // this must be true if depth_estimation is run
 
         ni_present: true,
+        ob_present: false,
         ni_extract_cmd_args: '-xa=0,0,0,1,3,500 -xia=0,0,1,3,3,0 -xd=0,0,-1,1,50 -xid=0,0,-1,2,1.7 -xid=0,0,-1,3,5 -xid=0,0,-1,3,5',
 
 	    catgt_skip: false, //when true, skip creation of catgt output (for rerunning)

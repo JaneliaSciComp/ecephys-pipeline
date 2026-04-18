@@ -58,7 +58,7 @@ def main(argv):
     parser.add_argument('--ks4_Th_learned', default=8.0, help='ks4 Th_learned')
     parser.add_argument('--ks4_duplicate_spike_ms', default=0.25, help='ks4 duplicate spike threshold')
     parser.add_argument('--ks4_template_from_data', action='store_true', help='ks4 derive templates from data')
-    parser.add_argument('--ks4_det', action='store_false', help='ks4 set torch determinism to true')
+    parser.add_argument('--ks4_det', action='store_true', help='ks4 set torch determinism to true')
     parser.add_argument('--ks4_min_template_size_um', default=10, help='ks4 minimum template size in um')
     parser.add_argument('--catgt_run_name', help='CatGT run name')
     parser.add_argument('--probe_type')
