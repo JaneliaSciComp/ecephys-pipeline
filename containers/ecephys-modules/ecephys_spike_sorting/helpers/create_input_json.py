@@ -141,6 +141,7 @@ def createInputJson(default_config,
         else:
             probe_sampling_info = {}
             uVPerBit = 2.34375  # default gain - needed by ks2 params
+            vpitch = 15  # default, toa avoid error when setting up for TPrime
             if probe_type:
                 probe_sampling_info['probe_type'] = probe_type
 

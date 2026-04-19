@@ -27,7 +27,7 @@ ENV PATH=/miniforge/bin:${PATH}
 
 RUN conda config --set always_yes yes && \
     conda update -q conda && \
-    conda install python=3.9
+    conda install python=3.10
 
 RUN conda env update -n base -f conda-requirements.yml && \
     rm -f conda-requirements.yml
