@@ -131,7 +131,7 @@ def default_params() {
 
         sync_period: 1.0,
         has_aux_data: true,
-        to_stream_sync_cmd_args: 'imec0', // SY=${probe_sync_ch_values}
+        to_stream_sync_params: 'imec0', // to_stream name
         ni_stream_sync_cmd_args: 'None',
     ]
 }

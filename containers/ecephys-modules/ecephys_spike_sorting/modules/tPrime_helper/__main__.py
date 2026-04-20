@@ -41,9 +41,9 @@ def call_TPrime(args):
     start = time.time()
     
     # build paths to the input data for TPrime
-    first_gate, last_gate = SpikeGLX_utils.ParseGateStr(args['catGT_helper_params']['gate_string'])
+    first_gate, last_gate = SpikeGLX_utils.ParseGateStr(args['tPrime_helper_params']['gate_string'])
     catGT_dest = args['directories']['extracted_data_directory']
-    run_name = args['catGT_helper_params']['run_name'] + '_g' + str(first_gate)
+    run_name = args['tPrime_helper_params']['catGT_run_name'] + '_g' + str(first_gate)
     run_dir_name = 'catgt_' + run_name
     prb_dir_prefix = run_name + '_imec'
     
@@ -278,7 +278,11 @@ def parse_stream(stream_str):
         ip = 0 # never more than one ni stream
     elif stream_str.find('obx') > -1:
         js = 1
-        ip = int(stream_str.partition('obx')[2])
+        # for obx streams, the stream string includes
+        # the onebox index (ip) and the idnex of the extraction
+        # separated by '_'s
+        temp = stream_str.partition('obx')[2]
+        ip = int(temp.partition('_')[0])
     elif stream_str.find('imec') > -1:
         js = 2
         ip = int(stream_str.partition('imec')[2])

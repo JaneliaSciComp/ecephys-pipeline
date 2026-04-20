@@ -115,7 +115,7 @@ def main(argv):
     # checking the template from data
     print(f'create_input_config ks4_det: {args.ks4_det} ')
     print(f'create_input_config args.ks_car: {args.ks_car} ')
-    print(f'create_input_config args.ks_mode: {args.ks_mode} ')
+    print(f'create_input_config to_stream_sync_params: {args.to_stream_sync_params} ')
     
     info = createInputJson(
         default_config,

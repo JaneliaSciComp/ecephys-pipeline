@@ -56,5 +56,5 @@ where 1234343434343434343434343 is the value from the "Your tokens" page.
 | --c_waves_snr_um | 160 | |
 | --has_aux_data | true | |
 | --sync_period | 1.0 | |
-| --to_stream_sync_cmd_args | `"SY=0,-1,6,500"` | |
+| --to_stream_sync_parms | `"imec0"` | |
 | --ni_stream_sync_cmd_args | `"XA=0,1,3,500"` | |

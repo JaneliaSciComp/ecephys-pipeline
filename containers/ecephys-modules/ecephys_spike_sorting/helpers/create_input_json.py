@@ -94,6 +94,7 @@ def createInputJson(default_config,
                     include_pcs=True,
                     ):
 
+    print(f'toStream_sync_params: {toStream_sync_params}')
     # hard coded paths to code on your computer and system
     kilosort_repository = '/app/kilosort-{}'.format(ks_ver)
 
@@ -142,6 +143,11 @@ def createInputJson(default_config,
             probe_sampling_info = {}
             uVPerBit = 2.34375  # default gain - needed by ks2 params
             vpitch = 15  # default, toa avoid error when setting up for TPrime
+            hpitch = 32
+            nColumn = 2
+            nAP = 384
+            nSY = 1
+            useGeom = True
             if probe_type:
                 probe_sampling_info['probe_type'] = probe_type
 
@@ -197,10 +203,14 @@ def createInputJson(default_config,
     kilosort_parent_dir, kilosort_dirname = os.path.split(kilosort_output_directory)
        
     # get KS4 params from the KS2,2.5,3.0 versions
-    th_list_str = ks_Th[1:len(ks_Th)-1]   #strip square brackets
-    th_list = th_list_str.split(',')
-    ks4_Th_universal = int(th_list[0])
-    ks4_Th_learned = int(th_list[1])
+    if ks_Th is not None:
+        th_list_str = ks_Th[1:len(ks_Th)-1]   #strip square brackets
+        th_list = th_list_str.split(',')
+        ks4_Th_universal = int(th_list[0])
+        ks4_Th_learned = int(th_list[1])
+    else:
+        ks4_Th_universal = 8
+        ks4_Th_learned = 9
 
     dictionary = {}
     dictionary['directories'] = default_config['directories'] | {
@@ -350,6 +360,8 @@ def createInputJson(default_config,
         "tPrime_3A": tPrime_3A,
         "toStream_path_3A": toStream_path_3A,
         "fromStream_list_3A": fromStream_list_3A,
+        "catGT_run_name": catGT_run_name,
+        "gate_string": gate_string,
     }
     dictionary['psth_events'] = default_config['psth_events'] | {
         "event_ex_param_str": event_ex_param_str,

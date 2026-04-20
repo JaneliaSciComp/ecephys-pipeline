@@ -121,7 +121,7 @@ workflow process_probes_for_all_runs {
         }
         def im_ex_list = ''
         def ni_ex_list = params.has_aux_data ? "'${ni_extract_cmd_args}'" : 'None'
-        def to_stream_sync_params = params.to_stream_sync_cmd_args
+        def to_stream_sync_params = params.to_stream_sync_params
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : 'None'
 	def catgt_skip = params.catgt_skip
         def sort_out_tag = params.sort_out_tag
@@ -308,9 +308,9 @@ workflow process_tprime {
             }
             .join(' ')
         def im_ex_list = "'${probes_sync_ch_args}'"
-	def ni_extract_cmd_args = (params.ni_present || params.ob_present) ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
+	    def ni_extract_cmd_args = (params.ni_present || params.ob_present) ? get_hyphenated_value_param(params, 'ni_extract_cmd_args') : ''
         def ni_ex_list = params.has_aux_data ? "'${ni_extract_cmd_args}'" : 'None'
-        def to_stream_sync_params = params.to_stream_sync_cmd_args
+        def to_stream_sync_params = params.to_stream_sync_params
         def ni_stream_sync_params = params.has_aux_data ? params.ni_stream_sync_cmd_args : 'None'
         def sort_out_tag = params.sort_out_tag
         def run_config_file = global_config("${config_dir}/${run_folder_name}", run_folder_name)
