@@ -106,6 +106,7 @@ def default_params() {
         catgt_loccar_min: 40,
         catgt_loccar_max: 160,
         catgt_do_gfix: false,
+        catgt_sepShanks: false,       
 
         event_ex_cmd_arg: 'xd=0,0,-1,1,50',
         c_waves_snr_um: 160,

@@ -44,6 +44,7 @@ def createInputJson(default_config,
                     catGT_loccar_max_um=160,
                     catGT_cmd_string = '-prb_fld -out_prb_fld',
                     catGT_maxZ_um = -1,
+                    catGT_sepShanks = False,
                     event_ex_param_str='',
                     tPrime_im_ex_list='',
                     tPrime_ni_ex_list='',
@@ -139,6 +140,9 @@ def createInputJson(default_config,
                 'bit_volts': uVPerBit,
                 'reference_channels':reference_channels
             }
+            if (catGT_sepShanks):
+                nShank, sepShanks_str, out_ind_list = SpikeGLX_utils.CreateSepShanksString(input_meta_path)
+                catGT_cmd_string = f'{catGT_cmd_string} {sepShanks_str}'
         else:
             probe_sampling_info = {}
             uVPerBit = 2.34375  # default gain - needed by ks2 params

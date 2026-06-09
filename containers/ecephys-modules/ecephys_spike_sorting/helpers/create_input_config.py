@@ -69,6 +69,7 @@ def main(argv):
     parser.add_argument('--catgt_car_mode', default='gbldmx')
     parser.add_argument('--catgt_loccar_min', type=float)
     parser.add_argument('--catgt_loccar_max', type=float)
+    parser.add_argument('--catgt_sepShanks', action='store_true', help='separate shanks in catgt')
     parser.add_argument('--catgt_cmd', type=hyphenated)
     parser.add_argument('--catgt_extract_string', type=hyphenated)
     parser.add_argument('--catgt_output_dir')
@@ -113,7 +114,7 @@ def main(argv):
         
         
     # checking the template from data
-    print(f'create_input_config ks4_det: {args.ks4_det} ')
+    print(f'create_input_config catgt_sepShanks: {args.catgt_sepShanks} ')
     print(f'create_input_config args.ks_car: {args.ks_car} ')
     print(f'create_input_config to_stream_sync_params: {args.to_stream_sync_params} ')
     
@@ -174,6 +175,7 @@ def main(argv):
         catGT_loccar_min_um=args.catgt_loccar_min,
         catGT_loccar_max_um=args.catgt_loccar_max,
         catGT_cmd_string=catGT_cmd_string,
+        catGT_sepShanks=args.catgt_sepShanks,
         # C_Waves args       
         c_Waves_snr_um=args.c_waves_snr_um,
         qm_isi_thresh=qm_isi_thresh,

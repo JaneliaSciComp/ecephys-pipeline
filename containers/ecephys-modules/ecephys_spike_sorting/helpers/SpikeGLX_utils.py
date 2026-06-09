@@ -369,3 +369,61 @@ def CreateNITimeEvents(catGT_run_name, gate_string, catGT_dest):
 
 
     return
+
+
+def CreateSepShanksString(metaFullPath):
+    # create sepShanks string for CatGT 44 and later
+    # The sepShanks option automatically generates a save 
+    # string with the channels for each shank.
+    # For the 2020 probe (Quad base) the SYNC signal for each shank
+    # is saved with the neural data. For other multishank probes, the 
+    # common SYNC signal is saved with each shank.
+    # first create Path object from string
+    metaPath = Path(metaFullPath)
+    metaStem = metaPath.stem
+    imec_pos = metaStem.rfind('imec',0)
+    ap_pos = metaStem.rfind('.ap',0) 
+    if imec_pos > 0 and ap_pos > 0:
+        # good metadata name
+        imStr = metaStem[imec_pos:ap_pos]
+        if len(imStr) == 4:
+            prb_ind = 0      # 3A data, no probe index
+        else:
+            prb_ind = int(imStr[4:len(imStr)])
+    else:
+       print('Incorrect metadata filenmae.') 
+       sh = []
+       sepShanks_str = ''
+       out_ind_list = []
+       
+    nShank, shankInd = shank_info(metaPath)
+    sh = np.unique(shankInd)
+    sepShanks_str = f'-sepShanks={prb_ind}'
+    out_ind_list = []
+    
+    for i in range(nShank):  
+        if np.isin(i,sh):
+            out_ind_str = str(int(1000 + 10*prb_ind + i))
+            out_ind_list.append(out_ind_str)
+        else:
+            out_ind_str = '-1'
+        sepShanks_str = sepShanks_str + ','  + out_ind_str
+
+        
+           
+    return len(sh), sepShanks_str, out_ind_list
+
+
+def shank_info(metaFullPath):
+    # re-reads the metadata, which is inefficient.
+    # However, keeps the calling script simple
+        
+    metaPath = Path(metaFullPath)
+    meta = SGLXMeta.readMeta(metaPath)
+    
+    if 'snsGeomMap' in meta:
+        [nShank, shankWidth, shankPitch, shankInd, xCoord, yCoord, connected] = SGLXMeta.geomMapToGeom(meta)
+    else:   
+        [nShank, shankWidth, shankPitch, shankInd, xCoord, yCoord, connected] = SGLXMeta.shankMapToGeom(meta)
+    
+    return nShank, shankInd
